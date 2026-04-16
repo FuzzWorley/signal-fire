@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_16_000009) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_16_000010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,6 +80,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_000009) do
     t.index ["host_id"], name: "index_notifications_on_host_id"
     t.index ["send_at"], name: "index_notifications_on_send_at"
     t.index ["status"], name: "index_notifications_on_status"
+  end
+
+  create_table "phone_verifications", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "phone_number", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "verified_at"
+    t.index ["phone_number", "code"], name: "index_phone_verifications_on_phone_number_and_code"
+    t.index ["phone_number"], name: "index_phone_verifications_on_phone_number"
   end
 
   create_table "push_tokens", force: :cascade do |t|
