@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get "/auth/google_oauth2/callback", to: "auth/sessions#google_callback"
 
   # Placeholder routes — replaced with full implementations in Chunks 4 & 5
+  root to: redirect("/host/login")
   get "/host/dashboard", to: redirect("/host/login"), as: :host_dashboard
   get "/admin", to: redirect("/admin/login"), as: :admin_root
 

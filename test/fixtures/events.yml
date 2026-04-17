@@ -1,0 +1,25 @@
+upcoming_event:
+  totem: main_totem
+  host_user: host_user
+  title: Morning Run
+  slug: main-totem-morning-run
+  recurrence_type: one_time
+  start_time: <%= 1.hour.from_now %>
+  end_time: <%= 2.hours.from_now %>
+  chat_url: https://chat.whatsapp.com/test123
+  chat_platform: whatsapp
+  status: active
+  created_by_admin: false
+
+past_event:
+  totem: main_totem
+  host_user: host_user
+  title: Past Run
+  slug: main-totem-past-run
+  recurrence_type: one_time
+  start_time: <%= 3.hours.ago %>
+  end_time: <%= 2.hours.ago %>
+  chat_url: https://chat.whatsapp.com/past456
+  chat_platform: whatsapp
+  status: active
+  created_by_admin: false

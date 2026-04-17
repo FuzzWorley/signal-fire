@@ -1,0 +1,7 @@
+main_totem:
+  name: Main Totem
+  slug: main-totem
+
+secondary_totem:
+  name: Secondary Totem
+  slug: secondary-totem
