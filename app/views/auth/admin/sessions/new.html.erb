@@ -1,0 +1,19 @@
+<h1>Admin Sign In</h1>
+
+<%= form_with url: admin_login_path do |f| %>
+  <% if flash[:alert] %>
+    <p><%= flash[:alert] %></p>
+  <% end %>
+
+  <div>
+    <%= f.label :email, "Email" %>
+    <%= f.email_field :email, required: true, autocomplete: "email" %>
+  </div>
+
+  <div>
+    <%= f.label :password, "Password" %>
+    <%= f.password_field :password, required: true, autocomplete: "current-password" %>
+  </div>
+
+  <%= f.submit "Sign in" %>
+<% end %>

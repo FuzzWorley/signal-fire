@@ -1,0 +1,14 @@
+<h1>Sign in with a magic link</h1>
+
+<p>Enter your email and we'll send you a link to sign in.</p>
+
+<%= form_with url: host_magic_link_path do |f| %>
+  <div>
+    <%= f.label :email, "Email" %>
+    <%= f.email_field :email, required: true, autocomplete: "email" %>
+  </div>
+
+  <%= f.submit "Send magic link" %>
+<% end %>
+
+<p><%= link_to "Sign in with password instead", host_login_path %></p>

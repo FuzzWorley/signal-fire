@@ -1,0 +1,52 @@
+host_user:
+  email: host@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Host User
+  auth_method: email
+  is_host: true
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+deactivated_host_user:
+  email: deactivated@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Deactivated Host
+  auth_method: email
+  is_host: true
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+invited_host_user:
+  email: invited@example.com
+  name: Invited Host
+  auth_method: email
+  is_host: true
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+admin_user:
+  email: admin@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Admin User
+  auth_method: email
+  is_host: false
+  is_admin: true
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+regular_user:
+  email: user@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Regular User
+  auth_method: email
+  is_host: false
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+google_user:
+  email: google@example.com
+  google_uid: "google_uid_abc123"
+  name: Google User
+  auth_method: google
+  is_host: false
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'

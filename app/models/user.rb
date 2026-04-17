@@ -15,6 +15,7 @@ class User < ApplicationRecord
                     format: { with: URI::MailTo::EMAIL_REGEXP },
                     if: :email_auth?
   validates :email, uniqueness: { case_sensitive: false, allow_nil: true }, unless: :email_auth?
+  validates :google_uid, uniqueness: true, allow_nil: true
   validates :password, length: { minimum: 8 }, if: -> { email_auth? && password.present? }
   validates :auth_method, presence: true
 

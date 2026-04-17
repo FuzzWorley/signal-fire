@@ -3,28 +3,32 @@ class Auth::SessionsController < ApplicationController
 
   def google_callback
     auth = request.env["omniauth.auth"]
+    google_uid = auth["uid"]
+    email = auth.dig("info", "email")
+    name = auth.dig("info", "name")
 
-    user = User.find_by(google_uid: auth["uid"]) ||
-           User.find_by(email: auth.dig("info", "email")) ||
-           User.new
+    user = User.find_by(google_uid: google_uid) ||
+           User.find_by(email: email)
 
-    user.assign_attributes(
-      google_uid: auth["uid"],
-      email: auth.dig("info", "email"),
-      name: user.name.presence || auth.dig("info", "name") || ""
-    )
-    user.save!
-
-    if api_request?
-      render json: { token: JwtService.encode(user_id: user.id), user: user.slice(:id, :name, :email) }
+    if user
+      user.update!(google_uid: google_uid, auth_method: :google)
     else
-      session[:user_id] = user.id
+      user = User.create!(
+        google_uid: google_uid,
+        email: email,
+        name: name,
+        auth_method: :google
+      )
+    end
+
+    session[:user_id] = user.id
+
+    if user.is_admin?
+      redirect_to admin_root_path
+    elsif user.is_host? && user.host_profile&.active?
+      redirect_to host_dashboard_path
+    else
       redirect_to root_path
     end
-  end
-
-  def destroy
-    session.delete(:user_id)
-    redirect_to root_path
   end
 end

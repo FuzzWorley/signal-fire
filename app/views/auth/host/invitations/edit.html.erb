@@ -1,0 +1,21 @@
+<h1>Set Your Password</h1>
+
+<p>Welcome, <%= @host_profile.display_name %>. Please set a password to activate your account.</p>
+
+<%= form_with url: host_accept_invite_path(token: params[:token]), method: :patch do |f| %>
+  <% if flash[:alert] %>
+    <p><%= flash[:alert] %></p>
+  <% end %>
+
+  <div>
+    <%= f.label :password, "Password" %>
+    <%= f.password_field :password, required: true, autocomplete: "new-password", minlength: 8 %>
+  </div>
+
+  <div>
+    <%= f.label :password_confirmation, "Confirm password" %>
+    <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
+  </div>
+
+  <%= f.submit "Activate account" %>
+<% end %>
