@@ -1,7 +1,14 @@
 main_totem:
   name: Main Totem
   slug: main-totem
+  active: true
 
 secondary_totem:
   name: Secondary Totem
   slug: secondary-totem
+  active: true
+
+inactive_totem:
+  name: Inactive Totem
+  slug: inactive-totem
+  active: false

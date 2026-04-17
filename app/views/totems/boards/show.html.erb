@@ -1,0 +1,29 @@
+<% content_for :title, @totem.name %>
+
+<div class="min-h-screen bg-[#f2f0d9]">
+  <header class="px-4 pt-8 pb-6">
+    <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-1">Signal Fire</p>
+    <h1 class="font-serif text-3xl text-[#1a1a12]"><%= @totem.name %></h1>
+    <% if @totem.location_description.present? %>
+      <p class="mt-1 text-sm text-[#867a60]"><%= @totem.location_description %></p>
+    <% end %>
+  </header>
+
+  <main class="px-4 pb-24 space-y-8">
+    <% if @active_now.any? %>
+      <%= render "active_now_section", events: @active_now %>
+    <% end %>
+
+    <% if @upcoming.any? %>
+      <%= render "upcoming_section", events: @upcoming %>
+    <% end %>
+
+    <% if @active_now.empty? && @upcoming.empty? %>
+      <p class="text-center text-[#867a60] py-12 text-sm">No upcoming events right now.</p>
+    <% end %>
+  </main>
+
+  <% unless @footer_dismissed %>
+    <%= render "footer_nudge" %>
+  <% end %>
+</div>

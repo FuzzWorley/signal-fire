@@ -1,0 +1,4 @@
+<%= form_with url: totem_event_check_ins_path(totem.slug, event.slug), method: :post do |f| %>
+  <%= f.submit "Check in anonymously",
+        class: "w-full bg-[#e24820] hover:bg-[#c43a18] text-white font-medium rounded-lg px-4 py-3 cursor-pointer transition-colors" %>
+<% end %>

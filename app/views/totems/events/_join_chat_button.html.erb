@@ -1,0 +1,13 @@
+<% platform_labels = {
+  "whatsapp"  => "Join WhatsApp Group",
+  "discord"   => "Join Discord",
+  "telegram"  => "Join Telegram",
+  "signal"    => "Join Signal Group",
+  "groupme"   => "Join GroupMe",
+  "slack"     => "Join Slack"
+} %>
+
+<%= link_to platform_labels.fetch(event.chat_platform, "Join Chat"), event.chat_url,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      class: "block w-full text-center bg-[#1a1a12] text-[#f2f0d9] font-medium rounded-lg px-4 py-3" %>

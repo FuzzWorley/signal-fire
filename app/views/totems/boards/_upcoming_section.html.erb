@@ -1,0 +1,8 @@
+<section aria-label="Upcoming events">
+  <h2 class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-3">Upcoming</h2>
+  <div class="space-y-3">
+    <% events.each do |event| %>
+      <%= render "event_card", event: event, totem: @totem, active_now: false %>
+    <% end %>
+  </div>
+</section>

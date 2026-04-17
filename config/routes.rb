@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Public web — Totem Board (Chunk 3)
+  get  "/about",                                      to: "pages#about",                       as: :about
+  get  "/t/:slug",                                    to: "totems/boards#show",                as: :totem_board
+  get  "/t/:slug/e/:event_slug",                      to: "totems/events#show",                as: :totem_event
+  post "/t/:slug/e/:event_slug/check_ins",            to: "totems/check_ins#create",           as: :totem_event_check_ins
+  post "/empty_totem_email_captures",                 to: "empty_totem_email_captures#create", as: :empty_totem_email_captures
+
   # Google OAuth (GET /auth/google_oauth2 is handled by OmniAuth middleware)
   get "/auth/google_oauth2/callback", to: "auth/sessions#google_callback"
 

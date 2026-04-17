@@ -37,6 +37,21 @@ class Event < ApplicationRecord
     Time.current.between?(window_start, window_end)
   end
 
+  def window_state
+    return :cancelled if cancelled?
+
+    now = Time.current
+    window_before_start = start_time - CHECKIN_WINDOW_BEFORE_MINUTES.minutes
+    window_after_end    = end_time   + CHECKIN_WINDOW_AFTER_MINUTES.minutes
+
+    if now < window_before_start   then :before
+    elsif now < start_time         then :starting_soon
+    elsif now <= end_time          then :happening_now
+    elsif now <= window_after_end  then :just_ended
+    else                                :past
+    end
+  end
+
   def next_occurrence
     return start_time unless weekly?
 

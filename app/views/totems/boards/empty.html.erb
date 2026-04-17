@@ -1,0 +1,21 @@
+<% content_for :title, @totem.name %>
+
+<div class="min-h-screen bg-[#f2f0d9] flex flex-col items-center justify-center px-4 py-16">
+  <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-2">Signal Fire</p>
+  <h1 class="font-serif text-3xl text-[#1a1a12] mb-2"><%= @totem.name %></h1>
+  <p class="text-[#867a60] text-sm mb-10 text-center">No events here yet. Leave your email and we'll let you know when something's happening.</p>
+
+  <%= form_with url: empty_totem_email_captures_path, method: :post, class: "w-full max-w-sm space-y-3" do |f| %>
+    <%= hidden_field_tag :totem_id, @totem.id %>
+    <div>
+      <%= label_tag :email, "Email address", class: "sr-only" %>
+      <%= email_field_tag :email, nil,
+            placeholder: "your@email.com",
+            required: true,
+            autocomplete: "email",
+            class: "w-full border border-[#867a60] bg-white rounded px-4 py-3 text-[#1a1a12] placeholder-[#867a60] focus:outline-none focus:ring-2 focus:ring-[#e24820]" %>
+    </div>
+    <%= submit_tag "Notify me",
+          class: "w-full bg-[#e24820] hover:bg-[#c43a18] text-white font-medium rounded px-4 py-3 cursor-pointer transition-colors" %>
+  <% end %>
+</div>

@@ -1,0 +1,16 @@
+<% content_for :title, "Checked in!" %>
+
+<div class="min-h-screen bg-[#f2f0d9] flex flex-col items-center justify-center px-4 text-center">
+  <div class="text-5xl mb-6">🔥</div>
+  <h1 class="font-serif text-3xl text-[#1a1a12] mb-2">You're checked in</h1>
+  <p class="text-[#867a60] mb-8">Thanks for showing up. See you out there.</p>
+
+  <div class="space-y-3 w-full max-w-xs">
+    <%= link_to "Back to event",
+          totem_event_path(@totem.slug, @event.slug),
+          class: "block w-full text-center bg-[#1a1a12] text-[#f2f0d9] font-medium rounded-lg px-4 py-3" %>
+    <%= link_to "View all events",
+          totem_board_path(@totem.slug),
+          class: "block w-full text-center border border-[#867a60]/40 text-[#1a1a12] font-medium rounded-lg px-4 py-3" %>
+  </div>
+</div>

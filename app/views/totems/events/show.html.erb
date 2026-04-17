@@ -1,0 +1,48 @@
+<% content_for :title, "#{@event.title} · #{@totem.name}" %>
+
+<div class="min-h-screen bg-[#f2f0d9]">
+  <header class="px-4 pt-6 pb-4 border-b border-[#867a60]/20">
+    <%= link_to totem_board_path(@totem.slug),
+          class: "inline-flex items-center gap-1 text-sm text-[#867a60] mb-4" do %>
+      ← <%= @totem.name %>
+    <% end %>
+
+    <% if @event.cancelled? %>
+      <%= render "cancelled_banner" %>
+    <% end %>
+
+    <div class="flex items-start justify-between gap-2 mt-2">
+      <h1 class="font-serif text-2xl text-[#1a1a12] leading-tight"><%= @event.title %></h1>
+      <%= render "window_chip", state: @window_state %>
+    </div>
+
+    <p class="mt-2 text-sm text-[#867a60]">
+      <%= @event.next_occurrence.strftime("%A, %B %-d · %-I:%M %p").downcase %>
+      –
+      <%= @event.end_time.strftime("%-I:%M %p").downcase %>
+      <% if @event.weekly? %>
+        <span class="font-mono text-xs ml-1">· every week</span>
+      <% end %>
+    </p>
+  </header>
+
+  <main class="px-4 pt-6 pb-32 space-y-6">
+    <% if @event.description.present? %>
+      <section>
+        <p class="text-[#1a1a12] leading-relaxed"><%= @event.description %></p>
+      </section>
+    <% end %>
+
+    <% if @event.community_norms.present? %>
+      <%= render "community_norms", norms: @event.community_norms %>
+    <% end %>
+  </main>
+
+  <div class="fixed bottom-0 inset-x-0 bg-[#f2f0d9] border-t border-[#867a60]/20 px-4 py-4 space-y-3">
+    <%= render "join_chat_button", event: @event %>
+
+    <% if [:starting_soon, :happening_now, :just_ended].include?(@window_state) %>
+      <%= render "check_in_button", event: @event, totem: @totem %>
+    <% end %>
+  </div>
+</div>

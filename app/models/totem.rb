@@ -10,6 +10,40 @@ class Totem < ApplicationRecord
 
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
 
+  def board_empty?
+    return true unless active
+
+    has_upcoming = events.active.where(recurrence_type: "weekly").exists? ||
+                   events.active.where(recurrence_type: "one_time").where("start_time > ?", Time.current).exists?
+
+    has_recent = events.active.where("end_time > ? AND end_time < ?", 30.days.ago, Time.current).exists?
+
+    !has_upcoming && !has_recent
+  end
+
+  def active_now_events
+    now = Time.current
+    window_start = now - Event::CHECKIN_WINDOW_AFTER_MINUTES.minutes
+    window_end   = now + Event::CHECKIN_WINDOW_BEFORE_MINUTES.minutes
+
+    events.active
+          .where("start_time <= ? AND end_time >= ?", window_end, window_start)
+          .sort_by { |e|
+            if e.start_time <= now && e.end_time >= now
+              [0, e.start_time.to_i]
+            elsif e.start_time > now
+              [1, e.start_time.to_i]
+            else
+              [2, -e.end_time.to_i]
+            end
+          }
+  end
+
+  def upcoming_events
+    window_end = Time.current + Event::CHECKIN_WINDOW_BEFORE_MINUTES.minutes
+    events.active.reject(&:active_now?).select { |e| e.next_occurrence > window_end }.sort_by(&:next_occurrence)
+  end
+
   private
 
   def generate_slug

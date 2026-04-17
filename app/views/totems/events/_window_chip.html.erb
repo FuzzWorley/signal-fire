@@ -1,0 +1,13 @@
+<% label, color_class = case state
+   when :happening_now  then ["Happening now",  "bg-[#e24820] text-white"]
+   when :starting_soon  then ["Starting soon",  "bg-[#e24820] text-white"]
+   when :just_ended     then ["Just ended",      "bg-[#867a60] text-white"]
+   when :cancelled      then [nil, nil]
+   else [nil, nil]
+   end %>
+
+<% if label %>
+  <span class="shrink-0 font-mono text-xs px-2 py-1 rounded-full <%= color_class %>">
+    <%= label %>
+  </span>
+<% end %>
