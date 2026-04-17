@@ -1,14 +1,67 @@
 class Event < ApplicationRecord
-  belongs_to :host
-  belongs_to :totem_page, optional: true
-  has_many :attendances, dependent: :destroy
-  has_many :attendees, through: :attendances, source: :user
-  has_many :notifications, dependent: :destroy
-  has_many :story_cards, dependent: :destroy
+  CHECKIN_WINDOW_BEFORE_MINUTES = 30
+  CHECKIN_WINDOW_AFTER_MINUTES = 30
 
-  enum :status, { draft: "draft", scheduled: "scheduled", live: "live", completed: "completed", canceled: "canceled" }
+  belongs_to :totem
+  belongs_to :host_user, class_name: "User"
+  has_many :check_ins
+  has_one :anonymous_check_in_count
+  has_many :notification_deliveries
+
+  enum :recurrence_type, { one_time: "one_time", weekly: "weekly" }
+  enum :chat_platform, {
+    whatsapp: "whatsapp",
+    discord: "discord",
+    telegram: "telegram",
+    signal: "signal",
+    groupme: "groupme",
+    slack: "slack"
+  }
+  enum :status, { active: "active", cancelled: "cancelled" }
 
   validates :title, presence: true
+  validates :slug, presence: true, uniqueness: true
+  validates :recurrence_type, presence: true
   validates :start_time, presence: true
-  validates :scheduled_duration_min, numericality: { greater_than: 0, less_than_or_equal_to: 240 }
+  validates :end_time, presence: true
+  validates :chat_url, presence: true
+  validates :chat_platform, presence: true
+  validates :status, presence: true
+  validate :end_time_after_start_time
+
+  before_validation :generate_slug, if: -> { slug.blank? && title.present? }
+
+  def active_now?
+    window_start = start_time - CHECKIN_WINDOW_BEFORE_MINUTES.minutes
+    window_end = end_time + CHECKIN_WINDOW_AFTER_MINUTES.minutes
+    Time.current.between?(window_start, window_end)
+  end
+
+  def next_occurrence
+    return start_time unless weekly?
+
+    now = Time.current
+    return start_time if start_time > now
+
+    weeks_ahead = ((now - start_time) / 1.week).ceil
+    start_time + weeks_ahead.weeks
+  end
+
+  private
+
+  def generate_slug
+    base = "#{totem&.slug}-#{title.parameterize}"
+    candidate = base
+    n = 2
+    while Event.where.not(id: id).exists?(slug: candidate)
+      candidate = "#{base}-#{n}"
+      n += 1
+    end
+    self.slug = candidate
+  end
+
+  def end_time_after_start_time
+    return unless start_time && end_time
+    errors.add(:end_time, "must be after start time") if end_time <= start_time
+  end
 end
