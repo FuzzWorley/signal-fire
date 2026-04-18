@@ -1,11 +1,74 @@
-<% content_for :title, "About Signal Fire" %>
+<% content_for :title, "Signal Fire — How it works" %>
 
-<div class="min-h-screen bg-[#f2f0d9] px-4 py-12 max-w-prose mx-auto">
-  <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-2">Signal Fire</p>
-  <h1 class="font-serif text-4xl text-[#1a1a12] mb-8">About</h1>
+<div class="min-h-screen bg-white text-ink flex flex-col">
+  <%# Nav %>
+  <nav class="border-b border-stone/20 px-6 py-4 flex items-center justify-between">
+    <a href="/" class="font-semibold text-lg tracking-tight text-ink">Signal Fire</a>
+    <div class="flex items-center gap-6 text-sm">
+      <a href="/about" class="text-ink hover:text-ember transition-colors">How it works</a>
+      <%= link_to "For hosts", host_login_path, class: "text-ink hover:text-ember transition-colors" %>
+      <a href="#" class="font-semibold text-ink hover:text-ember transition-colors">Get the app</a>
+    </div>
+  </nav>
 
-  <div class="space-y-4 text-[#1a1a12] leading-relaxed">
-    <p>Signal Fire connects people to in-person community events — runs, hikes, swims, yoga, and more — in St. Pete, FL.</p>
-    <p>Scan a QR code at a local spot, see what's happening, and join the group chat. No account needed.</p>
-  </div>
+  <%# Hero %>
+  <section class="px-6 py-16 max-w-4xl mx-auto w-full">
+    <p class="text-xs font-mono tracking-widest text-stone uppercase mb-6">How it works</p>
+    <h1 class="font-serif text-5xl leading-tight mb-6 max-w-2xl">
+      A permission structure for strangers to become participants.
+    </h1>
+    <p class="text-lg text-stone max-w-xl leading-relaxed">
+      Signal Fire turns physical public spaces into bulletin boards for real community. Scan a totem, see what's happening, join the group chat.
+    </p>
+  </section>
+
+  <%# Three steps %>
+  <section class="px-6 pb-16 max-w-4xl mx-auto w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div>
+        <p class="text-xs font-mono text-stone mb-3">01</p>
+        <h2 class="text-xl font-semibold mb-2">Scan a totem.</h2>
+        <p class="text-stone leading-relaxed">A QR code on a fire-marked artifact at a park, court, or hall. No app required.</p>
+      </div>
+      <div>
+        <p class="text-xs font-mono text-stone mb-3">02</p>
+        <h2 class="text-xl font-semibold mb-2">See what's lit.</h2>
+        <p class="text-stone leading-relaxed">Schedule, norms, and the one-tap invitation to join a WhatsApp or Signal group.</p>
+      </div>
+      <div>
+        <p class="text-xs font-mono text-stone mb-3">03</p>
+        <h2 class="text-xl font-semibold mb-2">Show up.</h2>
+        <p class="text-stone leading-relaxed">Check in when you arrive. You'll be welcomed by hosts who already expect you.</p>
+      </div>
+    </div>
+  </section>
+
+  <%# FAQ %>
+  <section class="px-6 pb-24 max-w-4xl mx-auto w-full border-t border-stone/20 pt-8">
+    <p class="text-xs font-mono tracking-widest text-stone uppercase mb-8">FAQ</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-semibold mb-2">What is a totem?</h3>
+        <p class="text-stone leading-relaxed">A physical object placed by a host — usually bright orange, often with a QR code — that marks a community gathering spot.</p>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2">Is it free?</h3>
+        <p class="text-stone leading-relaxed">Yes. Free for attendees, free for hosts.</p>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2">How do I become a host?</h3>
+        <p class="text-stone leading-relaxed">V1 is invite-only. Email us at <a href="mailto:hosts@signalfire.app" class="underline hover:text-ember transition-colors">hosts@signalfire.app</a>.</p>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2">What if my totem is damaged?</h3>
+        <p class="text-stone leading-relaxed">Let us know — we'll replace it.</p>
+      </div>
+    </div>
+  </section>
+
+  <%# Footer %>
+  <footer class="mt-auto border-t border-stone/20 px-6 py-4 flex justify-between text-sm text-stone">
+    <span>Community Play Tools &middot; St. Petersburg, FL</span>
+    <a href="mailto:ryan@communityplaytools.com" class="hover:text-ember transition-colors">ryan@communityplaytools.com</a>
+  </footer>
 </div>
