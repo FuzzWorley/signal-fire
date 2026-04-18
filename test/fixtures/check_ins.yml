@@ -1,0 +1,4 @@
+regular_user_active_now:
+  user: regular_user
+  event: active_now_event
+  checked_in_at: <%= 5.minutes.ago %>

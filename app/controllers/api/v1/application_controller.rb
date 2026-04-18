@@ -3,6 +3,16 @@ class Api::V1::ApplicationController < ActionController::API
 
   private
 
+  def optionally_authenticate_api_user!
+    token = bearer_token
+    return unless token
+
+    payload = JwtService.decode(token)
+    return unless payload
+
+    @current_user = User.find_by(id: payload[:user_id])
+  end
+
   def authenticate_api_user!
     token = bearer_token
     unless token

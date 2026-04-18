@@ -54,6 +54,33 @@ Rails.application.routes.draw do
         post "google",   to: "google#create"
         post "apple",    to: "apple#create"
       end
+
+      # Public — optional auth
+      resources :totems, param: :slug, only: [:show] do
+        resources :events, param: :event_slug, only: [:show] do
+          resources :anonymous_check_ins, only: [:create]
+        end
+        resources :email_captures, only: [:create]
+      end
+
+      # Authenticated check-in by event ID
+      resources :events, only: [] do
+        resources :check_ins, only: [:create]
+      end
+
+      # Authenticated subscription management
+      resources :host_subscriptions, only: [:create, :destroy, :update]
+      resources :totem_follows, only: [:create, :destroy, :update]
+
+      # Authenticated home feed
+      get "home", to: "home#index"
+
+      # Authenticated user profile
+      resource :me, controller: "me", only: [:show, :update, :destroy] do
+        get  :check_ins
+        get  :subscriptions
+        post :push_token
+      end
     end
   end
 end
