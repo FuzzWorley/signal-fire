@@ -1,21 +1,39 @@
-<h1>Set Your Password</h1>
+<% content_for :title, "Set your password — Signal Fire" %>
 
-<p>Welcome, <%= @host_profile.display_name %>. Please set a password to activate your account.</p>
+<div class="min-h-screen bg-paper flex flex-col items-center justify-center px-4">
+  <div class="w-full max-w-sm">
+    <div class="mb-8 text-center">
+      <h1 class="font-serif text-4xl text-ink mb-1">Signal Fire</h1>
+      <p class="text-stone text-sm font-mono uppercase tracking-widest">Host Portal</p>
+    </div>
 
-<%= form_with url: host_accept_invite_path(token: params[:token]), method: :patch do |f| %>
-  <% if flash[:alert] %>
-    <p><%= flash[:alert] %></p>
-  <% end %>
+    <div class="bg-white/60 border border-stone/20 rounded-2xl p-8 shadow-sm">
+      <h2 class="text-ink font-semibold text-lg mb-2">Welcome, <%= @host_profile.display_name %>!</h2>
+      <p class="text-stone text-sm mb-6">Set a password to activate your host account.</p>
 
-  <div>
-    <%= f.label :password, "Password" %>
-    <%= f.password_field :password, required: true, autocomplete: "new-password", minlength: 8 %>
+      <%= form_with url: host_accept_invite_path, method: :patch, class: "space-y-5" do |f| %>
+        <%= hidden_field_tag :token, params[:token] %>
+
+        <div>
+          <%= f.label :password, "Password", class: "block text-sm font-medium text-ink mb-1" %>
+          <%= f.password_field :password,
+                required: true,
+                autocomplete: "new-password",
+                minlength: 8,
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+        </div>
+
+        <div>
+          <%= f.label :password_confirmation, "Confirm password", class: "block text-sm font-medium text-ink mb-1" %>
+          <%= f.password_field :password_confirmation,
+                required: true,
+                autocomplete: "new-password",
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+        </div>
+
+        <%= f.submit "Activate account",
+              class: "w-full bg-ember text-white font-semibold py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+      <% end %>
+    </div>
   </div>
-
-  <div>
-    <%= f.label :password_confirmation, "Confirm password" %>
-    <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
-  </div>
-
-  <%= f.submit "Activate account" %>
-<% end %>
+</div>

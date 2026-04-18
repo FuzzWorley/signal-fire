@@ -1,3 +1,20 @@
-<h1>Check your email</h1>
+<% content_for :title, "Check your email — Signal Fire" %>
 
-<p>If that email is registered, we've sent you a sign-in link. It expires in 30 minutes.</p>
+<div class="min-h-screen bg-paper flex flex-col items-center justify-center px-4">
+  <div class="w-full max-w-sm text-center">
+    <div class="mb-8">
+      <h1 class="font-serif text-4xl text-ink mb-1">Signal Fire</h1>
+      <p class="text-stone text-sm font-mono uppercase tracking-widest">Host Portal</p>
+    </div>
+
+    <div class="bg-white/60 border border-stone/20 rounded-2xl p-8 shadow-sm">
+      <div class="text-3xl mb-4">🔥</div>
+      <h2 class="text-ink font-semibold text-lg mb-2">Check your email</h2>
+      <p class="text-stone text-sm">We sent a sign-in link to your inbox. It expires in 30 minutes.</p>
+    </div>
+
+    <p class="mt-4 text-sm text-stone">
+      <%= link_to "← Back to sign in", host_login_path, class: "text-ink underline underline-offset-2 hover:text-ember transition" %>
+    </p>
+  </div>
+</div>

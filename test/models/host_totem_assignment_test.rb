@@ -23,7 +23,7 @@ class HostTotemAssignmentTest < ActiveSupport::TestCase
 
   test "same host can be assigned to different totems" do
     HostTotemAssignment.create!(host_user: users(:host_user), totem: totems(:secondary_totem))
-    other = build_assignment(totem: totems(:main_totem))
+    other = build_assignment(totem: totems(:inactive_totem))
     assert other.valid?
   end
 

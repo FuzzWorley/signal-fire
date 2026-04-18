@@ -1,0 +1,54 @@
+<% content_for :title, "Dashboard — Signal Fire" %>
+
+<div class="space-y-8">
+  <%# Header %>
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-serif text-3xl text-ink">Dashboard</h1>
+      <p class="text-stone text-sm mt-0.5">
+        <%= @subscriber_count %> <%= "subscriber".pluralize(@subscriber_count) %>
+        <% if @totems.any? %>
+          · <%= @totems.map(&:name).to_sentence %>
+        <% end %>
+      </p>
+    </div>
+    <%= link_to "New event", new_host_event_path,
+          class: "bg-ember text-white font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition text-sm" %>
+  </div>
+
+  <%# Upcoming events %>
+  <section>
+    <h2 class="font-mono text-xs uppercase tracking-widest text-stone mb-3">Upcoming</h2>
+
+    <% if @upcoming_events.any? %>
+      <div class="space-y-3">
+        <% @upcoming_events.each do |event| %>
+          <%= render "host/events/event_row", event: event %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="border border-dashed border-stone/30 rounded-xl p-8 text-center">
+        <p class="text-stone text-sm mb-3">No upcoming events yet.</p>
+        <%= link_to "Create your first event →", new_host_event_path,
+              class: "text-ember font-medium text-sm hover:underline" %>
+      </div>
+    <% end %>
+  </section>
+
+  <%# Past events %>
+  <% if @past_events.any? %>
+    <section>
+      <details>
+        <summary class="font-mono text-xs uppercase tracking-widest text-stone mb-3 cursor-pointer select-none hover:text-ink transition list-none flex items-center gap-2">
+          <span>Past events</span>
+          <span class="text-stone/60">(<%= @past_events.size %>)</span>
+        </summary>
+        <div class="mt-3 space-y-3">
+          <% @past_events.each do |event| %>
+            <%= render "host/events/event_row", event: event %>
+          <% end %>
+        </div>
+      </details>
+    </section>
+  <% end %>
+</div>

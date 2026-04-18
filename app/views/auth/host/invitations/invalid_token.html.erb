@@ -1,4 +1,17 @@
-<h1>Invalid or Expired Link</h1>
+<% content_for :title, "Invalid link — Signal Fire" %>
 
-<p>This invitation link is invalid or has expired.</p>
-<p><%= link_to "Request a new magic link", host_magic_link_path %></p>
+<div class="min-h-screen bg-paper flex flex-col items-center justify-center px-4">
+  <div class="w-full max-w-sm text-center">
+    <div class="mb-8">
+      <h1 class="font-serif text-4xl text-ink mb-1">Signal Fire</h1>
+      <p class="text-stone text-sm font-mono uppercase tracking-widest">Host Portal</p>
+    </div>
+
+    <div class="bg-white/60 border border-stone/20 rounded-2xl p-8 shadow-sm">
+      <h2 class="text-ink font-semibold text-lg mb-2">This link has expired</h2>
+      <p class="text-stone text-sm mb-6">Invite links are valid for 48 hours. Request a new one below.</p>
+      <%= link_to "Request a new link", host_magic_link_path,
+            class: "inline-block bg-ember text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-ember/90 transition" %>
+    </div>
+  </div>
+</div>

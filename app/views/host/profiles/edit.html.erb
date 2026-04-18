@@ -1,0 +1,76 @@
+<% content_for :title, "Profile — Signal Fire" %>
+
+<div class="max-w-xl space-y-8">
+  <h1 class="font-serif text-3xl text-ink">Profile</h1>
+
+  <%# Profile info %>
+  <div class="bg-white/60 border border-stone/20 rounded-2xl p-6">
+    <h2 class="font-semibold text-ink mb-4">Public info</h2>
+
+    <% if @host_profile.errors.any? %>
+      <div class="bg-ember/10 border border-ember/30 rounded-lg p-4 mb-4">
+        <ul class="list-disc list-inside text-sm text-ember space-y-0.5">
+          <% @host_profile.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with url: host_profile_path, method: :patch, class: "space-y-4" do |f| %>
+      <div>
+        <label class="block text-sm font-medium text-ink mb-1">Email</label>
+        <p class="px-3 py-2 bg-stone/10 border border-stone/20 rounded-lg text-stone text-sm"><%= current_user.email %></p>
+      </div>
+
+      <div>
+        <%= label_tag :display_name, "Display name", class: "block text-sm font-medium text-ink mb-1" %>
+        <%= text_field_tag "profile[display_name]", @host_profile.display_name,
+              class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+      </div>
+
+      <div>
+        <%= label_tag :blurb, "Bio", class: "block text-sm font-medium text-ink mb-1" %>
+        <p class="text-xs text-stone mb-1">Shown on your event pages.</p>
+        <%= text_area_tag "profile[blurb]", @host_profile.blurb,
+              rows: 3,
+              placeholder: "A short bio visible to attendees on your event pages.",
+              class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition resize-y" %>
+      </div>
+
+      <%= submit_tag "Save profile",
+            class: "bg-ember text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <%# Password change %>
+  <div class="bg-white/60 border border-stone/20 rounded-2xl p-6">
+    <h2 class="font-semibold text-ink mb-4">Change password</h2>
+
+    <%= form_with url: host_profile_path, method: :patch, class: "space-y-4" do |f| %>
+      <div>
+        <%= label_tag :current_password, "Current password", class: "block text-sm font-medium text-ink mb-1" %>
+        <%= password_field_tag "profile[current_password]",
+              autocomplete: "current-password",
+              class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+      </div>
+
+      <div>
+        <%= label_tag :password, "New password", class: "block text-sm font-medium text-ink mb-1" %>
+        <%= password_field_tag "profile[password]",
+              autocomplete: "new-password",
+              class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+      </div>
+
+      <div>
+        <%= label_tag :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-ink mb-1" %>
+        <%= password_field_tag "profile[password_confirmation]",
+              autocomplete: "new-password",
+              class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+      </div>
+
+      <%= submit_tag "Change password",
+            class: "bg-ember text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+    <% end %>
+  </div>
+</div>

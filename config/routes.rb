@@ -11,10 +11,19 @@ Rails.application.routes.draw do
   # Google OAuth (GET /auth/google_oauth2 is handled by OmniAuth middleware)
   get "/auth/google_oauth2/callback", to: "auth/sessions#google_callback"
 
-  # Placeholder routes — replaced with full implementations in Chunks 4 & 5
   root to: redirect("/host/login")
-  get "/host/dashboard", to: redirect("/host/login"), as: :host_dashboard
   get "/admin", to: redirect("/admin/login"), as: :admin_root
+
+  # Host dashboard (Chunk 4)
+  get "/host", to: redirect("/host/dashboard"), as: :host_root
+  namespace :host do
+    get "dashboard", to: "dashboard#show", as: :dashboard
+    resources :events do
+      member { patch :cancel, to: "events/cancellations#update" }
+    end
+    get  "profile", to: "profiles#edit",   as: :profile
+    patch "profile", to: "profiles#update"
+  end
 
   # Host auth
   scope "/host", as: :host do

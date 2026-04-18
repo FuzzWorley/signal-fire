@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Signal Fire — Host Dashboard" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-paper text-ink min-h-screen">
+    <%# Flash messages %>
+    <% if flash[:notice] %>
+      <div class="fixed top-0 inset-x-0 z-50 bg-glen text-ink text-sm font-medium px-4 py-2 text-center" role="alert">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="fixed top-0 inset-x-0 z-50 bg-ember text-white text-sm font-medium px-4 py-2 text-center" role="alert">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%# Top nav %>
+    <header class="border-b border-stone/20 bg-paper sticky top-0 z-40">
+      <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+          <%= link_to host_dashboard_path, class: "font-serif text-xl text-ink hover:text-ember transition" do %>
+            Signal Fire
+          <% end %>
+          <nav class="hidden sm:flex items-center gap-4 text-sm">
+            <%= link_to "Dashboard", host_dashboard_path,
+                  class: "text-stone hover:text-ink transition #{request.path == host_dashboard_path ? 'text-ink font-medium' : ''}" %>
+            <%= link_to "Events", host_events_path,
+                  class: "text-stone hover:text-ink transition #{request.path.start_with?('/host/events') ? 'text-ink font-medium' : ''}" %>
+            <%= link_to "Profile", host_profile_path,
+                  class: "text-stone hover:text-ink transition #{request.path == host_profile_path ? 'text-ink font-medium' : ''}" %>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <% if current_user %>
+            <span class="text-sm text-stone hidden sm:block"><%= current_user.host_profile&.display_name || current_user.email %></span>
+            <%= button_to "Sign out", host_logout_path, method: :delete,
+                  class: "text-sm text-stone hover:text-ink transition cursor-pointer" %>
+          <% end %>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <%= yield %>
+    </main>
+  </body>
+</html>

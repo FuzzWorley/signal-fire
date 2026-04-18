@@ -1,0 +1,23 @@
+<% content_for :title, "Events — Signal Fire" %>
+
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="font-serif text-3xl text-ink">Events</h1>
+    <%= link_to "New event", new_host_event_path,
+          class: "bg-ember text-white font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition text-sm" %>
+  </div>
+
+  <% if @events.any? %>
+    <div class="space-y-3">
+      <% @events.each do |event| %>
+        <%= render "event_row", event: event %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="border border-dashed border-stone/30 rounded-xl p-12 text-center">
+      <p class="text-stone mb-3">You haven't created any events yet.</p>
+      <%= link_to "Create your first event →", new_host_event_path,
+            class: "text-ember font-medium hover:underline" %>
+    </div>
+  <% end %>
+</div>

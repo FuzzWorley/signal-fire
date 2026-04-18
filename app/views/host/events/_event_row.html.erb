@@ -1,0 +1,43 @@
+<div class="bg-white/60 border border-stone/20 rounded-xl px-5 py-4 flex items-start justify-between gap-4">
+  <div class="min-w-0">
+    <div class="flex items-center gap-2 flex-wrap mb-0.5">
+      <span class="font-medium text-ink truncate"><%= event.title %></span>
+      <% if event.cancelled? %>
+        <span class="font-mono text-xs uppercase tracking-wider text-white bg-stone px-2 py-0.5 rounded-full">Cancelled</span>
+      <% elsif event.active_now? %>
+        <span class="font-mono text-xs uppercase tracking-wider text-white bg-ember px-2 py-0.5 rounded-full">Happening now</span>
+      <% end %>
+      <% if event.weekly? %>
+        <span class="font-mono text-xs uppercase tracking-wider text-stone border border-stone/30 px-2 py-0.5 rounded-full">Weekly</span>
+      <% end %>
+    </div>
+
+    <p class="text-sm text-stone">
+      <%= event.totem.name %> ·
+      <% if event.weekly? %>
+        <%= event.next_occurrence.strftime("%A at %-I:%M %p") %>
+      <% else %>
+        <%= event.start_time.strftime("%b %-d at %-I:%M %p") %>
+      <% end %>
+    </p>
+
+    <p class="text-xs text-stone/70 font-mono mt-1">
+      <%= event.anonymous_check_in_count&.count || 0 %> anonymous check-ins
+    </p>
+  </div>
+
+  <div class="flex items-center gap-2 shrink-0">
+    <%= link_to "Edit", edit_host_event_path(event),
+          class: "text-sm text-stone hover:text-ink transition" %>
+
+    <% if event.active? && event.one_time? %>
+      <%= button_to "Cancel", cancel_host_event_path(event), method: :patch,
+            data: { turbo_confirm: "Cancel \"#{event.title}\"? This cannot be undone." },
+            class: "text-sm text-stone hover:text-ember transition cursor-pointer" %>
+    <% end %>
+
+    <%= button_to "Delete", host_event_path(event), method: :delete,
+          data: { turbo_confirm: "Delete \"#{event.title}\"? This cannot be undone." },
+          class: "text-sm text-stone hover:text-ember transition cursor-pointer" %>
+  </div>
+</div>

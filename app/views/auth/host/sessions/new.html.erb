@@ -1,21 +1,40 @@
-<h1>Host Sign In</h1>
+<% content_for :title, "Host Sign In — Signal Fire" %>
 
-<%= form_with url: host_login_path do |f| %>
-  <% if flash[:alert] %>
-    <p><%= flash[:alert] %></p>
-  <% end %>
+<div class="min-h-screen bg-paper flex flex-col items-center justify-center px-4">
+  <div class="w-full max-w-sm">
+    <div class="mb-8 text-center">
+      <h1 class="font-serif text-4xl text-ink mb-1">Signal Fire</h1>
+      <p class="text-stone text-sm font-mono uppercase tracking-widest">Host Portal</p>
+    </div>
 
-  <div>
-    <%= f.label :email, "Email" %>
-    <%= f.email_field :email, required: true, autocomplete: "email" %>
+    <div class="bg-white/60 border border-stone/20 rounded-2xl p-8 shadow-sm">
+      <h2 class="text-ink font-semibold text-lg mb-6">Sign in</h2>
+
+      <%= form_with url: host_login_path, class: "space-y-5" do |f| %>
+        <div>
+          <%= f.label :email, "Email", class: "block text-sm font-medium text-ink mb-1" %>
+          <%= f.email_field :email,
+                required: true,
+                autocomplete: "email",
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink placeholder-stone/60 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+        </div>
+
+        <div>
+          <%= f.label :password, "Password", class: "block text-sm font-medium text-ink mb-1" %>
+          <%= f.password_field :password,
+                required: true,
+                autocomplete: "current-password",
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink placeholder-stone/60 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+        </div>
+
+        <%= f.submit "Sign in",
+              class: "w-full bg-ember text-white font-semibold py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+      <% end %>
+    </div>
+
+    <p class="text-center mt-4 text-sm text-stone">
+      Forgot your password?
+      <%= link_to "Request a magic link", host_magic_link_path, class: "text-ink underline underline-offset-2 hover:text-ember transition" %>
+    </p>
   </div>
-
-  <div>
-    <%= f.label :password, "Password" %>
-    <%= f.password_field :password, required: true, autocomplete: "current-password" %>
-  </div>
-
-  <%= f.submit "Sign in" %>
-<% end %>
-
-<p><%= link_to "Request a magic link", host_magic_link_path %></p>
+</div>

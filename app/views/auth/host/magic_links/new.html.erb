@@ -1,14 +1,32 @@
-<h1>Sign in with a magic link</h1>
+<% content_for :title, "Magic Link — Signal Fire" %>
 
-<p>Enter your email and we'll send you a link to sign in.</p>
+<div class="min-h-screen bg-paper flex flex-col items-center justify-center px-4">
+  <div class="w-full max-w-sm">
+    <div class="mb-8 text-center">
+      <h1 class="font-serif text-4xl text-ink mb-1">Signal Fire</h1>
+      <p class="text-stone text-sm font-mono uppercase tracking-widest">Host Portal</p>
+    </div>
 
-<%= form_with url: host_magic_link_path do |f| %>
-  <div>
-    <%= f.label :email, "Email" %>
-    <%= f.email_field :email, required: true, autocomplete: "email" %>
+    <div class="bg-white/60 border border-stone/20 rounded-2xl p-8 shadow-sm">
+      <h2 class="text-ink font-semibold text-lg mb-2">Magic link sign-in</h2>
+      <p class="text-stone text-sm mb-6">Enter your email and we'll send you a sign-in link valid for 30 minutes.</p>
+
+      <%= form_with url: host_magic_link_path, class: "space-y-5" do |f| %>
+        <div>
+          <%= f.label :email, "Email", class: "block text-sm font-medium text-ink mb-1" %>
+          <%= f.email_field :email,
+                required: true,
+                autocomplete: "email",
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink placeholder-stone/60 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+        </div>
+
+        <%= f.submit "Send magic link",
+              class: "w-full bg-ember text-white font-semibold py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+      <% end %>
+    </div>
+
+    <p class="text-center mt-4 text-sm text-stone">
+      <%= link_to "← Back to sign in", host_login_path, class: "text-ink underline underline-offset-2 hover:text-ember transition" %>
+    </p>
   </div>
-
-  <%= f.submit "Send magic link" %>
-<% end %>
-
-<p><%= link_to "Sign in with password instead", host_login_path %></p>
+</div>
