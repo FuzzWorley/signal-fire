@@ -13,6 +13,7 @@ class Totems::CheckInsController < ApplicationController
       record = AnonymousCheckInCount.find_or_create_by!(event: @event)
       AnonymousCheckInCount.increment_counter(:count, record.id)
       cookies[cookie_key] = { value: "1", expires: 24.hours.from_now }
+      AnalyticsService.track("check_in_anonymous", event_id: @event.id, totem_id: @totem.id)
     end
 
     render "check_ins/success"

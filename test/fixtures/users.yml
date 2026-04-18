@@ -50,3 +50,33 @@ google_user:
   is_host: false
   is_admin: false
   notification_prefs: '{"new_event": true, "reminder": true}'
+
+# User who follows host_user via HostSubscription
+subscriber_user:
+  email: subscriber@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Subscriber User
+  auth_method: email
+  is_host: false
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+# User who follows main_totem via TotemFollow
+follower_user:
+  email: follower@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Follower User
+  auth_method: email
+  is_host: false
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
+# User who qualifies via both channels (for dedup testing, no push token)
+both_user:
+  email: both@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Both User
+  auth_method: email
+  is_host: false
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'

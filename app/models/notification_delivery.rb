@@ -2,7 +2,7 @@ class NotificationDelivery < ApplicationRecord
   belongs_to :user
   belongs_to :event
 
-  enum :notification_type, { new_event: "new_event", reminder: "reminder" }
+  enum :notification_type, { new_event: "new_event", reminder: "reminder", cancelled: "cancelled" }
   enum :source_type, { host_subscription: "host_subscription", totem_follow: "totem_follow" }
 
   validates :notification_type, presence: true

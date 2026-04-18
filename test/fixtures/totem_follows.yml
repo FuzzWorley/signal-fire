@@ -1,0 +1,11 @@
+follower_follows_main:
+  user: follower_user
+  totem: main_totem
+  notify_new_event: true
+  notify_reminder: true
+
+both_follows_main:
+  user: both_user
+  totem: main_totem
+  notify_new_event: true
+  notify_reminder: true

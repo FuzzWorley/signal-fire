@@ -31,6 +31,8 @@ class Event < ApplicationRecord
   validate :end_time_after_start_time
 
   before_validation :generate_slug, if: -> { slug.blank? && title.present? }
+  after_create :enqueue_new_event_jobs
+  after_update :enqueue_cancellation_job, if: -> { saved_change_to_status?(to: "cancelled") }
 
   def active_now?
     window_start = start_time - CHECKIN_WINDOW_BEFORE_MINUTES.minutes
@@ -64,6 +66,16 @@ class Event < ApplicationRecord
   end
 
   private
+
+  def enqueue_new_event_jobs
+    NewEventNotificationJob.perform_later(id)
+    fire_at = next_occurrence - 1.hour
+    PreEventReminderJob.set(wait_until: fire_at).perform_later(id)
+  end
+
+  def enqueue_cancellation_job
+    EventCancellationNotificationJob.perform_later(id)
+  end
 
   def generate_slug
     base = "#{totem&.slug}-#{title.parameterize}"

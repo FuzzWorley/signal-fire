@@ -7,6 +7,13 @@ class Totems::BoardsController < ApplicationController
       return redirect_to totem_board_path(@totem.slug)
     end
 
+    AnalyticsService.track(
+      "totem_board_viewed",
+      totem_id: @totem.id,
+      auth_state: current_user ? :authenticated : :anonymous,
+      source: params[:source] || :qr_scan
+    )
+
     if @totem.board_empty?
       render :empty
     else

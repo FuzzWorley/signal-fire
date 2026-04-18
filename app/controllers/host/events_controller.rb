@@ -18,6 +18,13 @@ class Host::EventsController < Host::ApplicationController
     @event.host_user = current_user
 
     if @event.save
+      AnalyticsService.track(
+        "host_event_created",
+        host_user_id: current_user.id,
+        event_id: @event.id,
+        totem_id: @event.totem_id,
+        created_by_admin: @event.created_by_admin
+      )
       redirect_to host_events_path, notice: "Event created."
     else
       @totems = host_totems

@@ -1,0 +1,11 @@
+subscriber_follows_host:
+  user: subscriber_user
+  host_user: host_user
+  notify_new_event: true
+  notify_reminder: true
+
+both_follows_host:
+  user: both_user
+  host_user: host_user
+  notify_new_event: true
+  notify_reminder: true
