@@ -16,6 +16,12 @@ class Totems::CheckInsController < ApplicationController
       AnalyticsService.track("check_in_anonymous", event_id: @event.id, totem_id: @totem.id)
     end
 
+    redirect_to totem_event_check_in_success_path(@totem.slug, @event.slug)
+  end
+
+  def success
+    @totem = Totem.find_by!(slug: params[:slug])
+    @event = @totem.events.find_by!(slug: params[:event_slug])
     render "check_ins/success"
   end
 end

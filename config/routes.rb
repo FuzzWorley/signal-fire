@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get  "/t/:slug",                                    to: "totems/boards#show",                as: :totem_board
   get  "/t/:slug/e/:event_slug",                      to: "totems/events#show",                as: :totem_event
   post "/t/:slug/e/:event_slug/check_ins",            to: "totems/check_ins#create",           as: :totem_event_check_ins
+  get  "/t/:slug/e/:event_slug/check_ins/success",   to: "totems/check_ins#success",          as: :totem_event_check_in_success
   post "/empty_totem_email_captures",                 to: "empty_totem_email_captures#create", as: :empty_totem_email_captures
 
   # Google OAuth (GET /auth/google_oauth2 is handled by OmniAuth middleware)
