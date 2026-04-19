@@ -141,8 +141,6 @@ end
 # ---------------------------------------------------------------------------
 # Events — Waterfront North
 # ---------------------------------------------------------------------------
-AnonymousCheckInCount.delete_all
-Event.delete_all # Clear existing events to ensure idempotent seeding of specific event states
 # Weekly recurring events (normal / upcoming board state)
 Event.find_or_create_by!(slug: "waterfront-north-sunday-mass-ecstatic-dance") do |e|
   e.totem         = waterfront
