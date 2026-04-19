@@ -1,13 +1,39 @@
-<% platform_labels = {
-  "whatsapp"  => "Join WhatsApp Group",
-  "discord"   => "Join Discord",
-  "telegram"  => "Join Telegram",
-  "signal"    => "Join Signal Group",
-  "groupme"   => "Join GroupMe",
-  "slack"     => "Join Slack"
+<% platform_icons = {
+  "whatsapp"  => { letter: "W", color: "#25D366" },
+  "discord"   => { letter: "D", color: "#5865F2" },
+  "telegram"  => { letter: "T", color: "#2AABEE" },
+  "signal"    => { letter: "S", color: "#3A76F0" },
+  "groupme"   => { letter: "G", color: "#00AFF0" },
+  "slack"     => { letter: "#", color: "#4A154B" }
 } %>
 
-<%= link_to platform_labels.fetch(event.chat_platform, "Join Chat"), event.chat_url,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      class: "block w-full text-center bg-[#1a1a12] text-[#f2f0d9] font-medium rounded-lg px-4 py-3" %>
+<% icon = platform_icons[event.chat_platform] %>
+
+<% if event.cancelled? %>
+  <div>
+    <%= link_to event.chat_url,
+          target: "_blank", rel: "noopener noreferrer",
+          class: "flex items-center justify-center gap-2 w-full text-center border border-[#867a60]/40 text-[#1a1a12] font-medium rounded-lg px-4 py-3 hover:border-[#867a60] transition-colors" do %>
+      <% if icon %>
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded text-white text-xs font-bold"
+              style="background-color: <%= icon[:color] %>;">
+          <%= icon[:letter] %>
+        </span>
+      <% end %>
+      Open the <%= event.chat_platform.capitalize %> group
+    <% end %>
+    <p class="text-xs text-center text-[#867a60] mt-1">Group chat may still be active at host discretion.</p>
+  </div>
+<% else %>
+  <%= link_to event.chat_url,
+        target: "_blank", rel: "noopener noreferrer",
+        class: "flex items-center justify-center gap-2 w-full text-center bg-[#1a1a12] text-[#f2f0d9] font-medium rounded-lg px-4 py-3 hover:bg-[#2a2a1a] transition-colors" do %>
+    <% if icon %>
+      <span class="inline-flex items-center justify-center w-5 h-5 rounded text-white text-xs font-bold"
+            style="background-color: <%= icon[:color] %>;">
+        <%= icon[:letter] %>
+      </span>
+    <% end %>
+    Join on <%= event.chat_platform.capitalize %>
+  <% end %>
+<% end %>

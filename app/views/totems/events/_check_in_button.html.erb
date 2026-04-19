@@ -1,4 +1,12 @@
+<% state = event.window_state %>
+<% btn_text = case state
+   when :happening_now then "Check in"
+   when :starting_soon then "Check in — starting soon"
+   when :just_ended    then "Check in — just ended"
+   else "Check in"
+   end %>
+
 <%= form_with url: totem_event_check_ins_path(totem.slug, event.slug), method: :post do |f| %>
-  <%= f.submit "Check in anonymously",
+  <%= f.submit btn_text,
         class: "w-full bg-[#e24820] hover:bg-[#c43a18] text-white font-medium rounded-lg px-4 py-3 cursor-pointer transition-colors" %>
 <% end %>

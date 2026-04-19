@@ -1,6 +1,8 @@
 <section class="border border-[#867a60]/30 rounded-lg p-4 bg-white">
   <h2 class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-3">Community norms</h2>
-  <div class="text-sm text-[#1a1a12] leading-relaxed prose prose-sm max-w-none">
-    <%= simple_format norms %>
-  </div>
+  <ul class="space-y-1">
+    <% norms.split(/\n+/).map(&:strip).reject(&:empty?).each do |norm| %>
+      <li class="text-sm text-[#1a1a12]">• <%= norm.sub(/\A[•\-\*]\s*/, "") %></li>
+    <% end %>
+  </ul>
 </section>

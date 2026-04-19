@@ -3,6 +3,7 @@ class Totems::EventsController < ApplicationController
     @totem = Totem.find_by!(slug: params[:slug])
     @event = @totem.events.find_by!(slug: params[:event_slug])
     @window_state = @event.window_state
+    @host_profile = @event.host_user.host_profile
 
     AnalyticsService.track(
       "event_detail_viewed",

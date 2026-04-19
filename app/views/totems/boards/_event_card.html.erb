@@ -1,34 +1,73 @@
 <% state = event.window_state %>
 <% occurrence = event.next_occurrence %>
+<% host_name = event.host_user.host_profile&.display_name %>
 
-<%= link_to totem_event_path(totem.slug, event.slug),
-      class: "block rounded-lg border p-4 transition-colors #{active_now ? 'border-[#e24820] bg-[#fff7f5]' : 'border-[#867a60]/30 bg-white hover:border-[#867a60]'}" do %>
-  <div class="flex items-start justify-between gap-2">
-    <div class="flex-1 min-w-0">
-      <h3 class="font-medium text-[#1a1a12] truncate"><%= event.title %></h3>
-      <p class="text-sm text-[#867a60] mt-0.5">
-        <%= occurrence.strftime("%-I:%M %p").downcase %>
-        <% if event.weekly? %>
-          <span class="font-mono text-xs ml-1">· weekly</span>
-        <% end %>
-      </p>
+<% if active_now %>
+  <%# Active-now card: div container with linked title and inline check-in form %>
+  <% minutes_until = state == :starting_soon ? [((event.start_time - Time.current) / 60).round, 1].max : nil %>
+  <% chip_text = case state
+     when :happening_now then "HAPPENING NOW"
+     when :starting_soon then "STARTS IN #{minutes_until} MIN"
+     when :just_ended    then "JUST ENDED"
+     end %>
+  <% chip_bg = state == :just_ended ? "bg-[#867a60]" : "bg-[#e24820]" %>
+  <% card_border = state == :just_ended ? "border-[#867a60]/40 bg-white/70 opacity-85" : "border-[#e24820] bg-[#fff7f5]" %>
+
+  <div class="rounded-lg border p-4 <%= card_border %>">
+    <% if chip_text %>
+      <span class="inline-block font-mono text-xs text-white <%= chip_bg %> px-2 py-1 rounded mb-2">
+        <%= chip_text %>
+      </span>
+    <% end %>
+
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex-1 min-w-0">
+        <%= link_to event.title, totem_event_path(totem.slug, event.slug),
+              class: "block font-medium text-[#1a1a12] hover:text-[#e24820] transition-colors" %>
+        <p class="text-sm text-[#867a60] mt-0.5">
+          <%= occurrence.strftime("%-I:%M %p") %> – <%= event.end_time.strftime("%-I:%M %p") %>
+          <% if host_name %> · with <%= host_name %><% end %>
+        </p>
+      </div>
     </div>
 
-    <% if active_now %>
-      <% chip_label = case state
-         when :happening_now  then "Now"
-         when :starting_soon  then "Soon"
-         when :just_ended     then "Just ended"
-         end %>
-      <% if chip_label %>
-        <span class="shrink-0 font-mono text-xs bg-[#e24820] text-white px-2 py-1 rounded-full">
-          <%= chip_label %>
-        </span>
-      <% end %>
+    <% if event.description.present? %>
+      <p class="mt-2 text-sm text-[#867a60] line-clamp-2"><%= event.description %></p>
     <% end %>
-  </div>
 
-  <% if event.description.present? %>
-    <p class="mt-2 text-sm text-[#867a60] line-clamp-2"><%= event.description %></p>
+    <div class="mt-3">
+      <%= form_with url: totem_event_check_ins_path(totem.slug, event.slug), method: :post do |f| %>
+        <% btn_text = case state
+           when :happening_now then "Check in"
+           when :starting_soon then "Check in — starting soon"
+           when :just_ended    then "Check in — just ended"
+           end %>
+        <% btn_class = state == :just_ended \
+             ? "border-[#867a60] text-[#867a60] hover:bg-[#867a60]/5" \
+             : "border-[#e24820] text-[#e24820] hover:bg-[#e24820]/5" %>
+        <%= f.submit btn_text,
+              class: "w-full border rounded-lg px-4 py-2 text-sm font-medium cursor-pointer transition-colors bg-transparent #{btn_class}" %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <%# Upcoming card: full link with chevron %>
+  <%= link_to totem_event_path(totem.slug, event.slug),
+        class: "block rounded-lg border border-[#867a60]/30 bg-white hover:border-[#867a60] transition-colors p-4" do %>
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex-1 min-w-0">
+        <h3 class="font-medium text-[#1a1a12]"><%= event.title %></h3>
+        <p class="text-sm text-[#867a60] mt-0.5">
+          <%= event.weekly? ? "Every #{occurrence.strftime('%A')}" : occurrence.strftime("%a, %b %-d") %>
+          · <%= occurrence.strftime("%-I:%M %p") %>
+          <% if host_name %> · with <%= host_name %><% end %>
+        </p>
+      </div>
+      <span class="text-[#867a60] shrink-0 text-lg leading-none">›</span>
+    </div>
+
+    <% if event.description.present? %>
+      <p class="mt-2 text-sm text-[#867a60] line-clamp-2"><%= event.description %></p>
+    <% end %>
   <% end %>
 <% end %>

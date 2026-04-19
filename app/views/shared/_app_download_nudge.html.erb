@@ -1,7 +1,37 @@
-<div class="rounded-lg bg-[#1a1a12] text-[#f2f0d9] p-4">
-  <p class="font-medium mb-1">Get the Signal Fire app</p>
-  <p class="text-sm text-[#867a60] mb-4">Event reminders, easy check-in, follow your favorite hosts.</p>
-  <%= link_to "Download",
-        "#",
-        class: "inline-block bg-[#e24820] text-white font-medium rounded px-4 py-2 text-sm" %>
+<%# Bottom sheet modal — triggered by app-nudge Stimulus controller %>
+<div data-app-nudge-target="sheet"
+     class="hidden fixed inset-0 z-50 flex flex-col justify-end"
+     data-action="click->app-nudge#closeOnBackdrop">
+  <%# Backdrop %>
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  <%# Sheet %>
+  <div class="relative bg-white rounded-t-2xl px-6 pt-4 pb-8 max-w-lg w-full mx-auto">
+    <%# Drag handle %>
+    <div class="w-10 h-1 bg-[#867a60]/30 rounded-full mx-auto mb-6"></div>
+
+    <h2 class="font-semibold text-[#1a1a12] text-lg mb-2">Signal Fire works better in the app</h2>
+    <ul class="text-sm text-[#867a60] space-y-1 mb-6">
+      <li>· Subscribe to hosts and follow totems for alerts</li>
+      <li>· Keep a personal check-in history</li>
+    </ul>
+
+    <div class="flex gap-3 mb-4">
+      <a href="#"
+         class="flex-1 text-center border border-[#867a60]/40 rounded-lg px-3 py-3 hover:border-[#867a60] transition-colors">
+        <span class="block text-xs text-[#867a60]">Download on the</span>
+        <span class="block text-sm font-semibold text-[#1a1a12]">App Store</span>
+      </a>
+      <a href="#"
+         class="flex-1 text-center border border-[#867a60]/40 rounded-lg px-3 py-3 hover:border-[#867a60] transition-colors">
+        <span class="block text-xs text-[#867a60]">Get it on</span>
+        <span class="block text-sm font-semibold text-[#1a1a12]">Google Play</span>
+      </a>
+    </div>
+
+    <button data-action="click->app-nudge#close"
+            class="block w-full text-center text-sm text-[#867a60] py-2">
+      Not now, keep browsing
+    </button>
+  </div>
 </div>

@@ -27,6 +27,7 @@ class Totem < ApplicationRecord
     window_end   = now + Event::CHECKIN_WINDOW_BEFORE_MINUTES.minutes
 
     events.active
+          .includes(host_user: :host_profile)
           .where("start_time <= ? AND end_time >= ?", window_end, window_start)
           .sort_by { |e|
             if e.start_time <= now && e.end_time >= now
@@ -41,7 +42,7 @@ class Totem < ApplicationRecord
 
   def upcoming_events
     window_end = Time.current + Event::CHECKIN_WINDOW_BEFORE_MINUTES.minutes
-    events.active.reject(&:active_now?).select { |e| e.next_occurrence > window_end }.sort_by(&:next_occurrence)
+    events.active.includes(host_user: :host_profile).reject(&:active_now?).select { |e| e.next_occurrence > window_end }.sort_by(&:next_occurrence)
   end
 
   private

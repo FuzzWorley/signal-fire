@@ -39,3 +39,4 @@ memory/
 02_tech_spec.md
 /app/assets/builds/*
 !/app/assets/builds/.keep
+QA_REPORT.md
