@@ -141,7 +141,8 @@ end
 # ---------------------------------------------------------------------------
 # Events — Waterfront North
 # ---------------------------------------------------------------------------
-
+AnonymousCheckInCount.delete_all
+Event.delete_all # Clear existing events to ensure idempotent seeding of specific event states
 # Weekly recurring events (normal / upcoming board state)
 Event.find_or_create_by!(slug: "waterfront-north-sunday-mass-ecstatic-dance") do |e|
   e.totem         = waterfront
@@ -220,7 +221,7 @@ happening_now = Event.find_or_create_by!(slug: "waterfront-north-ecstatic-dance-
   e.recurrence_type = :one_time
   e.start_time    = 20.minutes.ago
   e.end_time      = 70.minutes.from_now
-  e.chat_url      = "https://join.slack.com/t/ecstaticdancenow"
+  e.chat_url      = "https://your-workspace.slack.com/join/ecstaticdancenow"
   e.chat_platform = :slack
   e.status        = :active
   e.description   = "Move your body freely. Silent first set."
@@ -300,7 +301,7 @@ Event.find_or_create_by!(slug: "riverside-runners-saturday-long-run") do |e|
   e.recurrence_type = :weekly
   e.start_time    = Time.current.next_occurring(:saturday).change(hour: 7, min: 0)
   e.end_time      = Time.current.next_occurring(:saturday).change(hour: 9, min: 0)
-  e.chat_url      = "https://join.slack.com/t/riversidesaturdayrun"
+  e.chat_url      = "https://your-workspace.slack.com/join/riversidesaturdayrun"
   e.chat_platform = :slack
   e.status        = :active
   e.description   = "Our classic weekly long run. All paces welcome. We regroup at every mile marker."
