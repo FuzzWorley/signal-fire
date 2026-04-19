@@ -164,8 +164,8 @@ Event.find_or_create_by!(slug: "waterfront-north-acroyoga-jam") do |e|
   e.recurrence_type = :weekly
   e.start_time    = Time.current.next_occurring(:saturday).change(hour: 16, min: 0)
   e.end_time      = Time.current.next_occurring(:saturday).change(hour: 17, min: 30)
-  e.chat_url      = "https://chat.whatsapp.com/acroyogastpete"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://discord.gg/acroyogastpete"
+  e.chat_platform = :discord
   e.status        = :active
   e.description   = "Partner acrobatics in a mellow circle. Drop in or pair up."
   e.community_norms = "Ask before touching\nCommunicate your comfort level\nSpotters encouraged"
@@ -178,8 +178,8 @@ Event.find_or_create_by!(slug: "waterfront-north-meditation-circle") do |e|
   e.recurrence_type = :weekly
   e.start_time    = Time.current.next_occurring(:monday).change(hour: 7, min: 0)
   e.end_time      = Time.current.next_occurring(:monday).change(hour: 7, min: 30)
-  e.chat_url      = "https://chat.whatsapp.com/meditationstpete"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://t.me/meditationstpete"
+  e.chat_platform = :telegram
   e.status        = :active
   e.description   = "Twenty minutes of silent sit. Mats provided."
   e.community_norms = "Arrive on time\nSilence your phone\nMats are shared — please clean after use"
@@ -192,8 +192,8 @@ Event.find_or_create_by!(slug: "waterfront-north-sand-volleyball") do |e|
   e.recurrence_type = :weekly
   e.start_time    = Time.current.next_occurring(:tuesday).change(hour: 18, min: 0)
   e.end_time      = Time.current.next_occurring(:tuesday).change(hour: 20, min: 0)
-  e.chat_url      = "https://chat.whatsapp.com/sandvolleystpete"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://signal.group/sandvolleystpete"
+  e.chat_platform = :signal
   e.status        = :active
   e.description   = "Co-ed open play. All skill levels — we rotate teams each set."
 end
@@ -206,8 +206,8 @@ Event.find_or_create_by!(slug: "waterfront-north-coffee-circle") do |e|
   e.recurrence_type = :one_time
   e.start_time    = 3.days.from_now.change(hour: 10, min: 0)
   e.end_time      = 3.days.from_now.change(hour: 11, min: 0)
-  e.chat_url      = "https://chat.whatsapp.com/coffeecirclestpete"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://groupme.com/join_group/coffeecirclestpete"
+  e.chat_platform = :groupme
   e.status        = :active
   e.description   = "Casual drop-in coffee hang. Good coffee, good people, no agenda."
 end
@@ -220,8 +220,8 @@ happening_now = Event.find_or_create_by!(slug: "waterfront-north-ecstatic-dance-
   e.recurrence_type = :one_time
   e.start_time    = 20.minutes.ago
   e.end_time      = 70.minutes.from_now
-  e.chat_url      = "https://chat.whatsapp.com/ecstaticdancenow"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://join.slack.com/t/ecstaticdancenow"
+  e.chat_platform = :slack
   e.status        = :active
   e.description   = "Move your body freely. Silent first set."
   e.community_norms = "No phones on the floor\nSilent first set\nLeave judgment at the door"
@@ -235,8 +235,8 @@ Event.find_or_create_by!(slug: "waterfront-north-coffee-circle-soon") do |e|
   e.recurrence_type = :one_time
   e.start_time    = 20.minutes.from_now
   e.end_time      = 80.minutes.from_now
-  e.chat_url      = "https://chat.whatsapp.com/coffeecirclesoon"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://groupme.com/join_group/coffeecirclesoon"
+  e.chat_platform = :groupme
   e.status        = :active
   e.description   = "Quick drop-in coffee hang before the morning gets going."
 end
@@ -249,8 +249,8 @@ Event.find_or_create_by!(slug: "waterfront-north-sunrise-meditation") do |e|
   e.recurrence_type = :one_time
   e.start_time    = 50.minutes.ago
   e.end_time      = 10.minutes.ago
-  e.chat_url      = "https://chat.whatsapp.com/sunrisemeditation"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://t.me/sunrisemeditation"
+  e.chat_platform = :telegram
   e.status        = :active
   e.description   = "Seven AM silent sit on the waterfront."
   e.community_norms = "Arrive quietly\nSilence your phone"
@@ -264,8 +264,8 @@ Event.find_or_create_by!(slug: "waterfront-north-volleyball-tournament") do |e|
   e.recurrence_type = :one_time
   e.start_time    = 2.days.from_now.change(hour: 14, min: 0)
   e.end_time      = 2.days.from_now.change(hour: 18, min: 0)
-  e.chat_url      = "https://chat.whatsapp.com/volleytournament"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://signal.group/volleytournament"
+  e.chat_platform = :signal
   e.status        = :cancelled
   e.description   = "Friendly open bracket. All skill levels."
 end
@@ -283,8 +283,8 @@ north_shore_pickup = Event.find_or_create_by!(slug: "north-shore-courts-thursday
   e.recurrence_type = :weekly
   e.start_time    = Time.current.next_occurring(:thursday).change(hour: 18, min: 0)
   e.end_time      = Time.current.next_occurring(:thursday).change(hour: 20, min: 0)
-  e.chat_url      = "https://chat.whatsapp.com/northshorepickup"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://discord.gg/northshorepickup"
+  e.chat_platform = :discord
   e.status        = :active
   e.description   = "Open pickup volleyball at North Shore. Show up, we'll sort teams."
 end
@@ -300,8 +300,8 @@ Event.find_or_create_by!(slug: "riverside-runners-saturday-long-run") do |e|
   e.recurrence_type = :weekly
   e.start_time    = Time.current.next_occurring(:saturday).change(hour: 7, min: 0)
   e.end_time      = Time.current.next_occurring(:saturday).change(hour: 9, min: 0)
-  e.chat_url      = "https://chat.whatsapp.com/riversidesaturdayrun"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://join.slack.com/t/riversidesaturdayrun"
+  e.chat_platform = :slack
   e.status        = :active
   e.description   = "Our classic weekly long run. All paces welcome. We regroup at every mile marker."
   e.community_norms = "Be kind. Regroup. No one gets left behind."
@@ -327,8 +327,8 @@ active_event = Event.find_or_create_by!(slug: "riverside-runners-morning-shakeou
   e.recurrence_type = :one_time
   e.start_time    = 20.minutes.ago
   e.end_time      = 40.minutes.from_now
-  e.chat_url      = "https://chat.whatsapp.com/riversideshakeout"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://discord.gg/riversideshakeout"
+  e.chat_platform = :discord
   e.status        = :active
   e.description   = "Easy 3-mile shakeout. Perfect for shaking off the week."
 end
@@ -340,8 +340,8 @@ Event.find_or_create_by!(slug: "riverside-runners-cancelled-run") do |e|
   e.recurrence_type = :one_time
   e.start_time    = 2.days.from_now.change(hour: 7)
   e.end_time      = 2.days.from_now.change(hour: 9)
-  e.chat_url      = "https://chat.whatsapp.com/riversidecancelled"
-  e.chat_platform = :whatsapp
+  e.chat_url      = "https://t.me/riversidecancelled"
+  e.chat_platform = :telegram
   e.status        = :cancelled
   e.description   = "This run was cancelled due to weather."
 end
