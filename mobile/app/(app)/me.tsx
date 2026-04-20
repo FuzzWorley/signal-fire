@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Platform,
   Linking,
   ActivityIndicator,
 } from "react-native";
@@ -73,6 +74,10 @@ export default function MeScreen() {
   }
 
   function handleSignOut() {
+    if (Platform.OS === "web") {
+      if (window.confirm("Are you sure you want to sign out?")) signOut();
+      return;
+    }
     Alert.alert("Sign out", "Are you sure you want to sign out?", [
       { text: "Cancel", style: "cancel" },
       { text: "Sign out", style: "destructive", onPress: signOut },
@@ -80,6 +85,10 @@ export default function MeScreen() {
   }
 
   function handleDeleteAccount() {
+    if (Platform.OS === "web") {
+      if (window.confirm("This will permanently delete your account and all your data. This cannot be undone.")) deleteAccount();
+      return;
+    }
     Alert.alert(
       "Delete account",
       "This will permanently delete your account and all your data. This cannot be undone.",
