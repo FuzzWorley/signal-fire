@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,13 +12,14 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
 import { useAuth } from "../../hooks/useAuth";
 
-WebBrowser.maybeCompleteAuthSession();
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+});
 
 export default function SignUpScreen() {
   const [mode, setMode] = useState<"signup" | "signin">("signup");
@@ -28,32 +29,27 @@ export default function SignUpScreen() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signUp, signIn, signInWithGoogle } = useAuth();
 
-  const [, googleResponse, promptGoogleAsync] = Google.useAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-  });
-
-  useEffect(() => {
-    if (googleResponse?.type === "success") {
-      const idToken = googleResponse.authentication?.idToken;
+  async function handleGoogleSignIn() {
+    setGoogleLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      if (response.type === "cancelled") return;
+      const idToken = response.data?.idToken;
       if (!idToken) {
         Alert.alert("Error", "Google sign-in did not return an ID token.");
-        setGoogleLoading(false);
         return;
       }
-      signInWithGoogle(idToken).catch((e: any) => {
-        const msg = e?.body?.error ?? "Something went wrong. Please try again.";
+      await signInWithGoogle(idToken);
+    } catch (e: any) {
+      if (e.code !== statusCodes.SIGN_IN_CANCELLED) {
+        const msg = e?.body?.error ?? e?.message ?? "Google sign-in failed.";
         Alert.alert("Error", msg);
-        setGoogleLoading(false);
-      });
-    } else if (googleResponse?.type === "error") {
-      Alert.alert("Error", googleResponse.error?.message ?? "Google sign-in failed.");
-      setGoogleLoading(false);
-    } else if (googleResponse?.type === "dismiss" || googleResponse?.type === "cancel") {
+      }
+    } finally {
       setGoogleLoading(false);
     }
-  }, [googleResponse, signInWithGoogle]);
+  }
 
   async function handleSubmit() {
     if (!email || !password) {
@@ -155,7 +151,7 @@ export default function SignUpScreen() {
             style={styles.socialButton}
             activeOpacity={0.85}
             disabled={googleLoading}
-            onPress={() => { setGoogleLoading(true); promptGoogleAsync(); }}
+            onPress={handleGoogleSignIn}
           >
             <Text style={styles.socialButtonText}>
               {googleLoading ? "Please wait…" : "Continue with Google"}

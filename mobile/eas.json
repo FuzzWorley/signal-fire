@@ -9,24 +9,21 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "http://192.168.4.24:3000",
-        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "249291180813-rnp7tspitla3sumjrmfbo43bfph6ugdf.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "249291180813-563r508c8af6hejfg47je0ti7nkoat97.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "249291180813-rnp7tspitla3sumjrmfbo43bfph6ugdf.apps.googleusercontent.com"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://signal-fire.onrender.com",
-        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "249291180813-rnp7tspitla3sumjrmfbo43bfph6ugdf.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "249291180813-563r508c8af6hejfg47je0ti7nkoat97.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "249291180813-rnp7tspitla3sumjrmfbo43bfph6ugdf.apps.googleusercontent.com"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://signal-fire.onrender.com",
-        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "249291180813-rnp7tspitla3sumjrmfbo43bfph6ugdf.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "249291180813-563r508c8af6hejfg47je0ti7nkoat97.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "249291180813-rnp7tspitla3sumjrmfbo43bfph6ugdf.apps.googleusercontent.com"
       }
     }
   },
