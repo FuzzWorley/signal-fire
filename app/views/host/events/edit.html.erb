@@ -1,10 +1,12 @@
 <% content_for :title, "Edit Event — Signal Fire" %>
 
-<div class="max-w-2xl">
-  <div class="mb-6">
-    <h1 class="font-serif text-3xl text-ink">Edit event</h1>
-    <p class="text-stone text-sm mt-1 truncate"><%= @event.title %></p>
-  </div>
-
-  <%= render "form", event: @event %>
+<div class="mb-1">
+  <%= link_to "← Events", host_events_path, class: "text-sm text-stone hover:text-ink transition" %>
 </div>
+
+<div class="mb-6">
+  <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">Edit Event</p>
+  <h1 class="font-serif text-3xl text-ink"><%= @event.title %></h1>
+</div>
+
+<%= render "form", event: @event %>

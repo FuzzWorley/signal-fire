@@ -14,14 +14,21 @@ class Host::DashboardControllerTest < ActionDispatch::IntegrationTest
     post host_login_path, params: { email: @host.email, password: "password123" }
     get host_dashboard_path
     assert_response :success
-    assert_select "h1", text: /dashboard/i
   end
 
-  test "GET /host/dashboard shows upcoming events" do
+  test "GET /host/dashboard shows stats, greeting, and all totem events" do
     post host_login_path, params: { email: @host.email, password: "password123" }
     get host_dashboard_path
     assert_response :success
-    assert_select "section", text: /upcoming/i
+    assert_select "h1", text: /morning|afternoon|evening/i
+    assert_select "table"
+    assert_match "Co-host Event", response.body
+  end
+
+  test "GET /host/dashboard filters by totem_id param" do
+    post host_login_path, params: { email: @host.email, password: "password123" }
+    get host_dashboard_path, params: { totem_id: totems(:main_totem).id }
+    assert_response :success
   end
 
   test "GET /host/dashboard is inaccessible to non-host user" do

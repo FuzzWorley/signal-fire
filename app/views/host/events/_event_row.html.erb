@@ -1,43 +1,84 @@
-<div class="bg-white/60 border border-stone/20 rounded-xl px-5 py-4 flex items-start justify-between gap-4">
-  <div class="min-w-0">
-    <div class="flex items-center gap-2 flex-wrap mb-0.5">
-      <span class="font-medium text-ink truncate"><%= event.title %></span>
-      <% if event.cancelled? %>
-        <span class="font-mono text-xs uppercase tracking-wider text-white bg-stone px-2 py-0.5 rounded-full">Cancelled</span>
-      <% elsif event.active_now? %>
-        <span class="font-mono text-xs uppercase tracking-wider text-white bg-ember px-2 py-0.5 rounded-full">Happening now</span>
-      <% end %>
-      <% if event.weekly? %>
-        <span class="font-mono text-xs uppercase tracking-wider text-stone border border-stone/30 px-2 py-0.5 rounded-full">Weekly</span>
-      <% end %>
-    </div>
+<%
+  now = Time.current
+  next_occ = event.next_occurrence
+  past = event.end_time < now
+  days_until = past ? nil : [(next_occ.to_date - now.to_date).to_i, 0].max
+  own_event = event.host_user_id == current_user.id
 
-    <p class="text-sm text-stone">
-      <%= event.totem.name %> ·
+  status_badge = if event.cancelled?
+    { label: "Cancelled", classes: "bg-stone/20 text-stone" }
+  elsif past
+    { label: "Past", classes: "bg-stone/10 text-stone" }
+  elsif event.active_now?
+    { label: "Live now", classes: "bg-ember text-white" }
+  elsif days_until <= 7
+    { label: days_until == 0 ? "Today" : "Live in #{days_until}d", classes: "bg-ink text-white" }
+  else
+    { label: "Upcoming", classes: "bg-stone/10 text-ink" }
+  end
+
+  anon_count = event.anonymous_check_in_count&.count
+  auth_count = event.check_ins.size
+%>
+<tr class="hover:bg-white/30 transition">
+  <%# Title %>
+  <td class="px-4 py-3">
+    <span class="font-medium text-ink"><%= event.title %></span>
+    <% if event.weekly? %>
+      <span class="ml-1.5 font-mono text-[10px] uppercase tracking-wider text-stone/60 border border-stone/20 px-1.5 py-0.5 rounded">Weekly</span>
+    <% end %>
+    <p class="text-xs text-stone mt-0.5 sm:hidden">
       <% if event.weekly? %>
         <%= event.next_occurrence.strftime("%A at %-I:%M %p") %>
       <% else %>
-        <%= event.start_time.strftime("%b %-d at %-I:%M %p") %>
+        <%= event.start_time.strftime("%b %-d · %-I:%M %p") %>
       <% end %>
     </p>
+  </td>
 
-    <p class="text-xs text-stone/70 font-mono mt-1">
-      <%= event.anonymous_check_in_count&.count || 0 %> anonymous check-ins
-    </p>
-  </div>
+  <%# When %>
+  <td class="px-4 py-3 text-stone hidden sm:table-cell whitespace-nowrap">
+    <% if event.weekly? %>
+      <%= event.next_occurrence.strftime("%A at %-I:%M %p") %>
+    <% else %>
+      <%= event.start_time.strftime("%a · %b %-d · %-I:%M %p") %>
+    <% end %>
+  </td>
 
-  <div class="flex items-center gap-2 shrink-0">
-    <%= link_to "Edit", edit_host_event_path(event),
-          class: "text-sm text-stone hover:text-ink transition" %>
+  <%# Anon check-ins %>
+  <td class="px-4 py-3 text-right text-stone hidden md:table-cell">
+    <%= past && anon_count ? anon_count : "—" %>
+  </td>
 
-    <% if event.active? && event.one_time? %>
-      <%= button_to "Cancel", cancel_host_event_path(event), method: :patch,
-            data: { turbo_confirm: "Cancel \"#{event.title}\"? This cannot be undone." },
-            class: "text-sm text-stone hover:text-ember transition cursor-pointer" %>
+  <%# Authenticated check-ins %>
+  <td class="px-4 py-3 text-right text-stone hidden md:table-cell">
+    <%= past ? auth_count : "—" %>
+  </td>
+
+  <%# Status badge %>
+  <td class="px-4 py-3">
+    <span class="font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-full whitespace-nowrap <%= status_badge[:classes] %>">
+      <%= status_badge[:label] %>
+    </span>
+  </td>
+
+  <%# Actions %>
+  <td class="px-4 py-3 text-right whitespace-nowrap">
+    <% if own_event %>
+      <%= link_to "Edit", edit_host_event_path(event), class: "text-sm text-stone hover:text-ink transition" %>
+    <% else %>
+      <%= link_to "View", host_event_path(event), class: "text-sm text-stone hover:text-ink transition" %>
     <% end %>
 
-    <%= button_to "Delete", host_event_path(event), method: :delete,
-          data: { turbo_confirm: "Delete \"#{event.title}\"? This cannot be undone." },
-          class: "text-sm text-stone hover:text-ember transition cursor-pointer" %>
-  </div>
-</div>
+    <% if local_assigns[:management] && own_event %>
+      <% if event.active? && event.one_time? && !past %>
+        <%= button_to "Cancel", cancel_host_event_path(event), method: :patch,
+              data: { turbo_confirm: "Cancel \"#{event.title}\"? This cannot be undone." },
+              class: "ml-3 text-sm text-stone hover:text-ember transition cursor-pointer" %>
+      <% end %>
+      <%= button_to "Delete", host_event_path(event), method: :delete,
+            data: { turbo_confirm: "Delete \"#{event.title}\"? This cannot be undone." },
+            class: "ml-3 text-sm text-stone hover:text-ember transition cursor-pointer" %>
+    <% end %>
+  </td>
+</tr>

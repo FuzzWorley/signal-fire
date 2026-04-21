@@ -4,19 +4,28 @@
   <div class="w-full max-w-sm">
     <div class="mb-8 text-center">
       <h1 class="font-serif text-4xl text-ink mb-1">Signal Fire</h1>
-      <p class="text-stone text-sm font-mono uppercase tracking-widest">Host Portal</p>
+      <p class="text-stone text-xs font-mono uppercase tracking-widest">Host Dashboard</p>
     </div>
 
     <div class="bg-white/60 border border-stone/20 rounded-2xl p-8 shadow-sm">
-      <h2 class="text-ink font-semibold text-lg mb-6">Sign in</h2>
+      <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-3">Hosts Only</p>
+      <h2 class="font-serif text-2xl text-ink mb-1">Sign in.</h2>
+      <p class="text-stone text-sm mb-6">Tend to your events and totems.</p>
 
-      <%= form_with url: host_login_path, class: "space-y-5" do |f| %>
+      <% if flash[:alert] %>
+        <div class="bg-ember/10 border border-ember/30 rounded-lg px-4 py-3 mb-5">
+          <p class="text-ember text-sm"><%= flash[:alert] %></p>
+        </div>
+      <% end %>
+
+      <%= form_with url: host_login_path, class: "space-y-4" do |f| %>
         <div>
           <%= f.label :email, "Email", class: "block text-sm font-medium text-ink mb-1" %>
           <%= f.email_field :email,
                 required: true,
                 autocomplete: "email",
-                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink placeholder-stone/60 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+                placeholder: "you@email.com",
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink placeholder-stone/50 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
         </div>
 
         <div>
@@ -24,17 +33,21 @@
           <%= f.password_field :password,
                 required: true,
                 autocomplete: "current-password",
-                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink placeholder-stone/60 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
+                class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition" %>
         </div>
 
         <%= f.submit "Sign in",
               class: "w-full bg-ember text-white font-semibold py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
       <% end %>
-    </div>
 
-    <p class="text-center mt-4 text-sm text-stone">
-      Forgot your password?
-      <%= link_to "Request a magic link", host_magic_link_path, class: "text-ink underline underline-offset-2 hover:text-ember transition" %>
-    </p>
+      <p class="text-center mt-4 text-sm text-stone">
+        <%= link_to "or email me a magic link", host_magic_link_path, class: "text-ink hover:text-ember transition" %>
+      </p>
+
+      <p class="text-center mt-5 text-xs text-stone/60">
+        New host? V1 is invite-only.
+        <%= mail_to "hosts@signalfire.app", "Email hosts@signalfire.app", class: "underline hover:text-stone transition" %>
+      </p>
+    </div>
   </div>
 </div>

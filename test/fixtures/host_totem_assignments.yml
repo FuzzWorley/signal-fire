@@ -2,3 +2,8 @@ host_main_assignment:
   host_user: host_user
   totem: main_totem
   assigned_at: <%= 7.days.ago %>
+
+co_host_main_assignment:
+  host_user: co_host_user
+  totem: main_totem
+  assigned_at: <%= 7.days.ago %>

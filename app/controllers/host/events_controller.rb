@@ -1,11 +1,15 @@
 class Host::EventsController < Host::ApplicationController
-  before_action :set_event, only: [:edit, :update, :destroy]
+  before_action :set_own_event, only: [:edit, :update, :destroy]
+  before_action :set_totem_event, only: [:show]
 
   def index
     totem_ids = current_user.host_totem_assignments.pluck(:totem_id)
-    @events = Event.where(host_user_id: current_user.id, totem_id: totem_ids)
-                   .includes(:totem, :anonymous_check_in_count)
+    @events = Event.where(totem_id: totem_ids)
+                   .includes(:totem, :host_user, :anonymous_check_in_count, :check_ins)
                    .order(start_time: :desc)
+  end
+
+  def show
   end
 
   def new
@@ -52,9 +56,14 @@ class Host::EventsController < Host::ApplicationController
 
   private
 
-  def set_event
+  def set_own_event
     totem_ids = current_user.host_totem_assignments.pluck(:totem_id)
     @event = Event.find_by!(id: params[:id], host_user_id: current_user.id, totem_id: totem_ids)
+  end
+
+  def set_totem_event
+    totem_ids = current_user.host_totem_assignments.pluck(:totem_id)
+    @event = Event.find_by!(id: params[:id], totem_id: totem_ids)
   end
 
   def host_totems
@@ -64,11 +73,37 @@ class Host::EventsController < Host::ApplicationController
   end
 
   def event_params
-    params.require(:event).permit(
+    raw = params.require(:event).permit(
       :title, :totem_id, :recurrence_type,
-      :start_time, :end_time,
+      :start_day_of_week, :start_date, :start_time_of_day, :end_time_of_day,
       :description, :community_norms,
       :chat_platform, :chat_url
     )
+    assemble_times(raw)
+  end
+
+  def assemble_times(attrs)
+    recurrence_type   = attrs[:recurrence_type]
+    start_time_of_day = attrs.delete(:start_time_of_day)
+    end_time_of_day   = attrs.delete(:end_time_of_day)
+    start_day_of_week = attrs.delete(:start_day_of_week)
+    start_date_raw    = attrs.delete(:start_date)
+
+    return attrs unless start_time_of_day.present? && end_time_of_day.present?
+
+    base_date = if recurrence_type == "weekly"
+      day_of_week = start_day_of_week.to_i
+      today       = Time.zone.today
+      days_ahead  = (day_of_week - today.wday) % 7
+      today + days_ahead.days
+    else
+      start_date_raw.present? ? Date.parse(start_date_raw) : nil
+    end
+
+    return attrs unless base_date
+
+    attrs[:start_time] = Time.zone.parse("#{base_date} #{start_time_of_day}")
+    attrs[:end_time]   = Time.zone.parse("#{base_date} #{end_time_of_day}")
+    attrs
   end
 end

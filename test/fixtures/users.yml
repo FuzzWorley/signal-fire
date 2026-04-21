@@ -51,6 +51,15 @@ google_user:
   is_admin: false
   notification_prefs: '{"new_event": true, "reminder": true}'
 
+co_host_user:
+  email: cohost@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  name: Co Host User
+  auth_method: email
+  is_host: true
+  is_admin: false
+  notification_prefs: '{"new_event": true, "reminder": true}'
+
 # User who follows host_user via HostSubscription
 subscriber_user:
   email: subscriber@example.com

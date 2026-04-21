@@ -22,8 +22,11 @@ Rails.application.routes.draw do
     resources :events do
       member { patch :cancel, to: "events/cancellations#update" }
     end
-    get  "profile", to: "profiles#edit",   as: :profile
-    patch "profile", to: "profiles#update"
+    get   "profile",          to: "profiles#edit",             as: :profile
+    patch "profile",          to: "profiles#update"
+    get   "profile/password", to: "profiles/passwords#edit",   as: :profile_password
+    patch "profile/password", to: "profiles/passwords#update"
+    resources :totems, only: [:index]
   end
 
   # Host auth

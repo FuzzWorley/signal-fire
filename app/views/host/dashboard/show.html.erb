@@ -1,54 +1,87 @@
 <% content_for :title, "Dashboard — Signal Fire" %>
 
-<div class="space-y-8">
-  <%# Header %>
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="font-serif text-3xl text-ink">Dashboard</h1>
-      <p class="text-stone text-sm mt-0.5">
-        <%= @subscriber_count %> <%= "subscriber".pluralize(@subscriber_count) %>
-        <% if @totems.any? %>
-          · <%= @totems.map(&:name).to_sentence %>
-        <% end %>
-      </p>
-    </div>
-    <%= link_to "New event", new_host_event_path,
-          class: "bg-ember text-white font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition text-sm" %>
-  </div>
+<%# Time-based greeting helper %>
+<% hour = Time.current.hour %>
+<% greeting = hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening" %>
+<% host_name = current_user.host_profile&.display_name || current_user.email.split("@").first.capitalize %>
 
-  <%# Upcoming events %>
-  <section>
-    <h2 class="font-mono text-xs uppercase tracking-widest text-stone mb-3">Upcoming</h2>
-
-    <% if @upcoming_events.any? %>
-      <div class="space-y-3">
-        <% @upcoming_events.each do |event| %>
-          <%= render "host/events/event_row", event: event %>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="border border-dashed border-stone/30 rounded-xl p-8 text-center">
-        <p class="text-stone text-sm mb-3">No upcoming events yet.</p>
-        <%= link_to "Create your first event →", new_host_event_path,
-              class: "text-ember font-medium text-sm hover:underline" %>
-      </div>
-    <% end %>
-  </section>
-
-  <%# Past events %>
-  <% if @past_events.any? %>
-    <section>
-      <details>
-        <summary class="font-mono text-xs uppercase tracking-widest text-stone mb-3 cursor-pointer select-none hover:text-ink transition list-none flex items-center gap-2">
-          <span>Past events</span>
-          <span class="text-stone/60">(<%= @past_events.size %>)</span>
-        </summary>
-        <div class="mt-3 space-y-3">
-          <% @past_events.each do |event| %>
-            <%= render "host/events/event_row", event: event %>
-          <% end %>
-        </div>
-      </details>
-    </section>
-  <% end %>
+<%# ── Page header ── %>
+<div class="mb-6">
+  <h1 class="font-serif text-3xl text-ink"><%= greeting %>, <%= host_name %>.</h1>
+  <p class="text-stone text-sm mt-0.5">
+    <%= pluralize(@upcoming_events.size, "upcoming event") %> · <%= @check_ins_this_week %> check-ins this week
+  </p>
 </div>
+
+<%# ── Stats cards ── %>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+  <div class="bg-white/60 border border-stone/20 rounded-xl px-4 py-4">
+    <p class="font-mono text-2xl text-ink font-medium"><%= @check_ins_this_week %></p>
+    <p class="font-mono text-[10px] uppercase tracking-widest text-stone mt-1">Check-ins this week</p>
+  </div>
+  <div class="bg-white/60 border border-stone/20 rounded-xl px-4 py-4">
+    <p class="font-mono text-2xl text-ink font-medium"><%= @subscriber_count %></p>
+    <p class="font-mono text-[10px] uppercase tracking-widest text-stone mt-1">Subscribers</p>
+  </div>
+  <div class="bg-white/60 border border-stone/20 rounded-xl px-4 py-4">
+    <p class="font-mono text-2xl text-ink font-medium"><%= @upcoming_events.size %></p>
+    <p class="font-mono text-[10px] uppercase tracking-widest text-stone mt-1">Events lit upcoming</p>
+  </div>
+  <div class="bg-white/60 border border-stone/20 rounded-xl px-4 py-4">
+    <p class="font-mono text-2xl text-ink font-medium"><%= @totems.size %></p>
+    <p class="font-mono text-[10px] uppercase tracking-widest text-stone mt-1">Assigned totems</p>
+  </div>
+</div>
+
+<%# ── Events section ── %>
+<div class="flex items-center justify-between mb-4">
+  <div class="flex items-center gap-1 flex-wrap">
+    <% if @totems.size > 1 %>
+      <%= link_to "All", host_dashboard_path,
+            class: "font-mono text-[10px] uppercase tracking-widest px-3 py-1 rounded border transition #{params[:totem_id].blank? ? 'border-ink bg-ink text-white' : 'border-stone/30 text-stone hover:border-ink hover:text-ink'}" %>
+      <% @totems.each do |totem| %>
+        <%= link_to totem.name, host_dashboard_path(totem_id: totem.id),
+              class: "font-mono text-[10px] uppercase tracking-widest px-3 py-1 rounded border transition #{params[:totem_id] == totem.id.to_s ? 'border-ink bg-ink text-white' : 'border-stone/30 text-stone hover:border-ink hover:text-ink'}" %>
+      <% end %>
+    <% else %>
+      <% @totems.each do |totem| %>
+        <span class="font-mono text-[10px] uppercase tracking-widest text-stone"><%= totem.name %></span>
+      <% end %>
+    <% end %>
+  </div>
+  <%= link_to "+ Create event", new_host_event_path,
+        class: "bg-ember text-white font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition text-sm shrink-0" %>
+</div>
+
+<% all_events = @upcoming_events.to_a + @past_events.to_a %>
+
+<% if all_events.any? %>
+  <div class="overflow-x-auto rounded-xl border border-stone/20">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-stone/20 bg-white/40">
+          <th class="text-left font-mono text-[10px] uppercase tracking-widest text-stone px-4 py-3">Title</th>
+          <th class="text-left font-mono text-[10px] uppercase tracking-widest text-stone px-4 py-3 hidden sm:table-cell">When</th>
+          <th class="text-right font-mono text-[10px] uppercase tracking-widest text-stone px-4 py-3 hidden md:table-cell">Anon</th>
+          <th class="text-right font-mono text-[10px] uppercase tracking-widest text-stone px-4 py-3 hidden md:table-cell">Checked in</th>
+          <th class="text-left font-mono text-[10px] uppercase tracking-widest text-stone px-4 py-3">Status</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone/10">
+        <% @upcoming_events.each do |event| %>
+          <%= render "host/events/event_row", event: event, management: false %>
+        <% end %>
+        <% @past_events.each do |event| %>
+          <%= render "host/events/event_row", event: event, management: false %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="border border-dashed border-stone/30 rounded-xl p-10 text-center">
+    <p class="text-stone text-sm mb-3">No events yet.</p>
+    <%= link_to "Create your first event →", new_host_event_path,
+          class: "text-ember font-medium text-sm hover:underline" %>
+  </div>
+<% end %>

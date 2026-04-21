@@ -1,0 +1,52 @@
+<% content_for :title, "#{@event.title} — Signal Fire" %>
+
+<div class="mb-1">
+  <%= link_to "← Events", host_events_path, class: "text-sm text-stone hover:text-ink transition" %>
+</div>
+
+<div class="mb-6">
+  <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1"><%= @event.totem.name %></p>
+  <h1 class="font-serif text-3xl text-ink"><%= @event.title %></h1>
+  <p class="text-stone text-sm mt-1">Hosted by <%= @event.host_user.host_profile&.display_name || @event.host_user.name %></p>
+</div>
+
+<div class="max-w-xl space-y-5">
+  <div class="bg-white/60 border border-stone/20 rounded-xl p-5 space-y-4">
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">When</p>
+      <p class="text-ink text-sm">
+        <% if @event.weekly? %>
+          Every <%= @event.next_occurrence.strftime("%A") %> at <%= @event.start_time.strftime("%-I:%M %p") %> – <%= @event.end_time.strftime("%-I:%M %p") %>
+        <% else %>
+          <%= @event.start_time.strftime("%A, %B %-d · %-I:%M %p") %> – <%= @event.end_time.strftime("%-I:%M %p") %>
+        <% end %>
+      </p>
+    </div>
+
+    <% if @event.description.present? %>
+      <div>
+        <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">Description</p>
+        <p class="text-ink text-sm whitespace-pre-line"><%= @event.description %></p>
+      </div>
+    <% end %>
+
+    <% if @event.community_norms.present? %>
+      <div>
+        <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">Community norms</p>
+        <p class="text-ink text-sm whitespace-pre-line"><%= @event.community_norms %></p>
+      </div>
+    <% end %>
+
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">Group chat</p>
+      <p class="text-ink text-sm"><%= @event.chat_platform.humanize %> · <%= @event.chat_url %></p>
+    </div>
+
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">Check-ins</p>
+      <p class="text-ink text-sm">
+        <%= @event.check_ins.size %> authenticated · <%= @event.anonymous_check_in_count&.count || 0 %> anonymous
+      </p>
+    </div>
+  </div>
+</div>

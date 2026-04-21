@@ -50,6 +50,19 @@ weekly_event:
   status: active
   created_by_admin: false
 
+co_host_event:
+  totem: main_totem
+  host_user: co_host_user
+  title: Co-host Event
+  slug: main-totem-co-host-event
+  recurrence_type: one_time
+  start_time: <%= 3.days.from_now.change(hour: 10) %>
+  end_time: <%= 3.days.from_now.change(hour: 12) %>
+  chat_url: https://chat.whatsapp.com/cohost999
+  chat_platform: whatsapp
+  status: active
+  created_by_admin: false
+
 cancelled_event:
   totem: main_totem
   host_user: host_user

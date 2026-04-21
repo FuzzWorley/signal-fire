@@ -1,0 +1,57 @@
+<% content_for :title, "Change Password — Signal Fire" %>
+
+<div class="mb-1">
+  <%= link_to "← Profile", host_profile_path, class: "text-sm text-stone hover:text-ink transition" %>
+</div>
+
+<div class="mb-6">
+  <p class="font-mono text-[10px] uppercase tracking-widest text-stone mb-1">Account</p>
+  <h1 class="font-serif text-3xl text-ink">Change password.</h1>
+</div>
+
+<div class="max-w-sm">
+  <% if flash[:alert] %>
+    <div class="bg-ember/10 border border-ember/30 rounded-lg px-4 py-3 mb-5">
+      <p class="text-ember text-sm"><%= flash[:alert] %></p>
+    </div>
+  <% end %>
+
+  <% if current_user.errors.any? %>
+    <div class="bg-ember/10 border border-ember/30 rounded-lg p-4 mb-5">
+      <ul class="list-disc list-inside text-sm text-ember space-y-0.5">
+        <% current_user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with url: host_profile_password_path, method: :patch, class: "space-y-4" do |f| %>
+    <div>
+      <label class="block text-sm font-medium text-ink mb-1" for="password_current_password">Current password</label>
+      <input type="password" name="password[current_password]" id="password_current_password"
+             autocomplete="current-password"
+             class="w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-ink mb-1" for="password_new_password">New password</label>
+      <input type="password" name="password[new_password]" id="password_new_password"
+             autocomplete="new-password"
+             class="w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-ink mb-1" for="password_new_password_confirmation">Confirm new password</label>
+      <input type="password" name="password[new_password_confirmation]" id="password_new_password_confirmation"
+             autocomplete="new-password"
+             class="w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition">
+    </div>
+
+    <div class="flex items-center gap-3 pt-2">
+      <%= f.submit "Update password",
+            class: "bg-ember text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+      <%= link_to "Cancel", host_profile_path, class: "text-sm text-stone hover:text-ink transition" %>
+    </div>
+  <% end %>
+</div>
