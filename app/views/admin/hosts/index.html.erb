@@ -1,0 +1,98 @@
+<% content_for :title, "Hosts — Signal Fire Admin" %>
+
+<div class="max-w-5xl">
+  <p class="text-xs font-mono text-stone/50 uppercase tracking-widest mb-1">Admin · Internal</p>
+  <h1 class="font-serif text-3xl text-ink mb-1">Hosts.</h1>
+  <p class="text-stone text-sm mb-6">Invite hosts and assign them to totems.</p>
+
+  <div class="flex items-center gap-4 mb-5">
+    <%# Filter tabs %>
+    <div class="flex gap-0.5 border border-stone/20 rounded-lg bg-stone/5 p-0.5 text-sm">
+      <% [["All", nil], ["Active", "active"], ["Invited", "invited"], ["Deactivated", "deactivated"]].each do |label, value| %>
+        <%= link_to label,
+              admin_hosts_path(value ? { status: value } : {}),
+              class: "px-3 py-1.5 rounded-md font-medium transition #{params[:status] == value ? 'bg-white text-ink shadow-sm' : 'text-stone hover:text-ink'}" %>
+      <% end %>
+    </div>
+
+    <%= link_to "+ Invite host", new_admin_host_path,
+          class: "ml-auto bg-ember text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition whitespace-nowrap" %>
+  </div>
+
+  <% if @hosts.any? %>
+    <div class="bg-white border border-stone/20 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-stone/20 text-left">
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Host</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Totems</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Status</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Events</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Joined</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone/10">
+          <% @hosts.each do |host| %>
+            <% profile = host.host_profile %>
+            <tr class="hover:bg-stone/5 transition">
+              <td class="px-4 py-3">
+                <p class="font-medium text-ink"><%= profile&.display_name || host.name %></p>
+                <p class="text-xs text-stone"><%= host.email %></p>
+              </td>
+              <td class="px-4 py-3 text-stone">
+                <% totems = host.host_totem_assignments.map(&:totem).compact %>
+                <% if totems.any? %>
+                  <%= totems.map(&:name).join(", ") %>
+                <% else %>
+                  <span class="text-stone/40">—</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3">
+                <% case profile&.invite_status %>
+                <% when "active" %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Active</span>
+                <% when "invited" %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">Invited</span>
+                <% when "deactivated" %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-stone/15 text-stone">Deactivated</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-stone"><%= @event_counts[host.id] || "—" %></td>
+              <td class="px-4 py-3 text-stone text-xs">
+                <% if profile&.active? && profile.invite_accepted_at %>
+                  <%= profile.invite_accepted_at.strftime("%b %-d") %> · Joined
+                <% elsif profile&.invited? && profile.invited_at %>
+                  <%= profile.invited_at.strftime("%b %-d") %> · Invite sent
+                <% elsif profile&.invited_at %>
+                  <%= profile.invited_at.strftime("%b %-d") %>
+                <% else %>
+                  <span class="text-stone/40">—</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <%= link_to "Edit", edit_admin_host_path(host), class: "text-sm text-stone hover:text-ink transition" %>
+                  <% if profile&.active? || profile&.invited? %>
+                    <%= button_to "Deactivate", deactivate_admin_host_path(host), method: :patch,
+                          class: "text-sm text-stone hover:text-ember transition" %>
+                  <% elsif profile&.deactivated? %>
+                    <%= button_to "Reactivate", activate_admin_host_path(host), method: :patch,
+                          class: "text-sm text-stone hover:text-green-700 transition" %>
+                  <% end %>
+                  <%= button_to "Delete", admin_host_path(host), method: :delete,
+                        class: "text-sm text-stone hover:text-ember transition",
+                        form: { data: { turbo_confirm: "Delete #{profile&.display_name || host.name}? This cannot be undone." } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="bg-white border border-stone/20 rounded-xl px-6 py-12 text-center text-stone">
+      <p class="text-sm"><%= params[:status].present? ? "No #{params[:status]} hosts." : "No hosts yet." %></p>
+    </div>
+  <% end %>
+</div>

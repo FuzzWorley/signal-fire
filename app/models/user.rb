@@ -3,8 +3,8 @@ class User < ApplicationRecord
 
   enum :auth_method, { email: "email", google: "google", apple: "apple" }
 
-  has_one :host_profile
-  has_many :host_totem_assignments, class_name: "HostTotemAssignment", foreign_key: :host_user_id
+  has_one :host_profile, dependent: :destroy
+  has_many :host_totem_assignments, class_name: "HostTotemAssignment", foreign_key: :host_user_id, dependent: :destroy
   has_many :assigned_totems, through: :host_totem_assignments, source: :totem
   has_many :check_ins, dependent: :destroy
   has_many :host_subscriptions, dependent: :destroy

@@ -1,0 +1,41 @@
+<% content_for :title, "Invite Host — Signal Fire Admin" %>
+
+<div class="max-w-lg">
+  <p class="text-xs font-mono text-stone/50 uppercase tracking-widest mb-1">Admin · Internal</p>
+  <h1 class="font-serif text-3xl text-ink mb-6">Invite host.</h1>
+
+  <% if flash[:alert] %>
+    <div class="bg-ember/10 border border-ember/30 rounded-lg p-4 mb-5">
+      <p class="text-ember text-sm"><%= flash[:alert] %></p>
+    </div>
+  <% end %>
+
+  <%
+    field_class = "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition text-sm"
+    label_class = "block text-sm font-medium text-ink mb-1"
+  %>
+
+  <%= form_with url: admin_hosts_path, method: :post, class: "space-y-5" do |f| %>
+    <div>
+      <label for="name" class="<%= label_class %>">Name</label>
+      <input type="text" name="name" id="name" required
+             value="<%= params[:name] %>"
+             placeholder="e.g. Maria"
+             class="<%= field_class %>">
+    </div>
+
+    <div>
+      <label for="email" class="<%= label_class %>">Email</label>
+      <input type="email" name="email" id="email" required
+             value="<%= params[:email] %>"
+             placeholder="maria@example.com"
+             class="<%= field_class %>">
+    </div>
+
+    <div class="flex items-center gap-3 pt-2 border-t border-stone/20">
+      <%= f.submit "Send invite",
+            class: "bg-ember text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-ember/90 active:scale-[0.98] transition cursor-pointer" %>
+      <%= link_to "Cancel", admin_hosts_path, class: "text-sm text-stone hover:text-ink transition" %>
+    </div>
+  <% end %>
+</div>

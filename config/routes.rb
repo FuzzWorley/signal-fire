@@ -53,7 +53,12 @@ Rails.application.routes.draw do
     resources :totems do
       member { get :qr }
     end
-    resources :hosts, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :hosts, only: [:index, :new, :create, :edit, :update, :destroy] do
+      member do
+        patch :deactivate
+        patch :activate
+      end
+    end
     resources :events
   end
 
