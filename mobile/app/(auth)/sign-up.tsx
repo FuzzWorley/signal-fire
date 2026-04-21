@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as WebBrowser from "expo-web-browser";
-import * as AuthSession from "expo-auth-session";
+import * as Google from "expo-auth-session/providers/google";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
 import { useAuth } from "../../hooks/useAuth";
@@ -25,7 +25,35 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signUp, signIn } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signUp, signIn, signInWithGoogle } = useAuth();
+
+  const [, googleResponse, promptGoogleAsync] = Google.useAuthRequest({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    if (googleResponse?.type === "success") {
+      const idToken = googleResponse.authentication?.idToken;
+      if (!idToken) {
+        Alert.alert("Error", "Google sign-in did not return an ID token.");
+        setGoogleLoading(false);
+        return;
+      }
+      signInWithGoogle(idToken).catch((e: any) => {
+        const msg = e?.body?.error ?? "Something went wrong. Please try again.";
+        Alert.alert("Error", msg);
+        setGoogleLoading(false);
+      });
+    } else if (googleResponse?.type === "error") {
+      Alert.alert("Error", googleResponse.error?.message ?? "Google sign-in failed.");
+      setGoogleLoading(false);
+    } else if (googleResponse?.type === "dismiss" || googleResponse?.type === "cancel") {
+      setGoogleLoading(false);
+    }
+  }, [googleResponse, signInWithGoogle]);
 
   async function handleSubmit() {
     if (!email || !password) {
@@ -61,7 +89,10 @@ export default function SignUpScreen() {
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
         >
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.canGoBack() ? router.back() : router.replace("/(auth)/welcome")}
+          >
             <Text style={styles.backText}>‹ Back</Text>
           </TouchableOpacity>
 
@@ -120,8 +151,15 @@ export default function SignUpScreen() {
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity style={styles.socialButton} activeOpacity={0.85}>
-            <Text style={styles.socialButtonText}>Continue with Google</Text>
+          <TouchableOpacity
+            style={styles.socialButton}
+            activeOpacity={0.85}
+            disabled={googleLoading}
+            onPress={() => { setGoogleLoading(true); promptGoogleAsync(); }}
+          >
+            <Text style={styles.socialButtonText}>
+              {googleLoading ? "Please wait…" : "Continue with Google"}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
