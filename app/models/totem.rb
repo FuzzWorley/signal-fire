@@ -1,6 +1,6 @@
 class Totem < ApplicationRecord
   has_many :host_totem_assignments
-  has_many :hosts, through: :host_totem_assignments, source: :host_user
+  has_many :hosts, through: :host_totem_assignments, source: :host_user, dependent: :destroy
   has_many :events
   has_many :totem_follows
   has_many :empty_totem_email_captures
