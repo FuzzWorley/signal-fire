@@ -6,6 +6,7 @@ class Totem < ApplicationRecord
   has_many :empty_totem_email_captures
 
   validates :name, presence: true
+  validates :location, presence: true
   validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9-]+\z/, message: "only lowercase letters, numbers, and hyphens" }
 
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }

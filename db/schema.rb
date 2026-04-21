@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_000012) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_21_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -132,10 +132,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_000012) do
   create_table "totems", force: :cascade do |t|
     t.boolean "active", default: false, null: false
     t.datetime "created_at", null: false
-    t.text "location_description"
+    t.string "location"
     t.string "name", null: false
     t.string "qr_url"
     t.string "slug", null: false
+    t.string "sublocation"
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_totems_on_active"
     t.index ["slug"], name: "index_totems_on_slug", unique: true

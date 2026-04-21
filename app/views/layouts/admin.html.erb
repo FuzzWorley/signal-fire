@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Signal Fire — Admin" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-paper text-ink" data-controller="sidebar">
+    <%# ── Mobile top bar ── %>
+    <div class="md:hidden fixed top-0 inset-x-0 z-50 bg-ink h-14 flex items-center justify-between px-4">
+      <%= link_to admin_totems_path, class: "flex items-baseline gap-2" do %>
+        <span class="font-serif text-lg text-white">Signal Fire</span>
+        <span class="font-mono text-[10px] text-stone/50 uppercase tracking-widest">Admin</span>
+      <% end %>
+      <button data-action="click->sidebar#toggle" aria-label="Toggle navigation" class="text-white/80 hover:text-white p-1 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6" data-sidebar-target="menuIcon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
+
+    <%# ── Mobile drawer ── %>
+    <div class="md:hidden fixed inset-0 z-40 bg-ink pt-14 hidden flex-col"
+         data-sidebar-target="drawer">
+      <nav class="px-3 py-4 space-y-0.5" aria-label="Admin navigation">
+        <p class="px-3 pt-1 pb-2 text-[10px] font-mono text-stone/40 uppercase tracking-widest">Admin · Internal</p>
+        <%= link_to "Totems", admin_totems_path,
+              class: "block px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?('/admin/totems') ? 'text-white bg-white/10' : 'text-stone/70 hover:text-white hover:bg-white/5'}",
+              data: { action: "click->sidebar#close" } %>
+        <%= link_to "Hosts", admin_hosts_path,
+              class: "block px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?('/admin/hosts') ? 'text-white bg-white/10' : 'text-stone/70 hover:text-white hover:bg-white/5'}",
+              data: { action: "click->sidebar#close" } %>
+        <%= link_to "Events", admin_events_path,
+              class: "block px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?('/admin/events') ? 'text-white bg-white/10' : 'text-stone/70 hover:text-white hover:bg-white/5'}",
+              data: { action: "click->sidebar#close" } %>
+      </nav>
+      <div class="px-3 py-4 border-t border-white/10">
+        <%= button_to "Sign out", admin_logout_path, method: :delete,
+              class: "w-full text-left px-3 py-2.5 rounded-lg text-sm text-stone/50 hover:text-white hover:bg-white/5 transition" %>
+      </div>
+    </div>
+
+    <div class="flex min-h-screen">
+      <%# ── Desktop sidebar ── %>
+      <aside class="hidden md:flex flex-col w-52 bg-ink fixed inset-y-0 left-0 z-30">
+        <div class="px-5 pt-7 pb-5 border-b border-white/10">
+          <%= link_to admin_totems_path, class: "block" do %>
+            <p class="font-serif text-xl text-white">Signal Fire</p>
+            <p class="font-mono text-[10px] text-stone/40 uppercase tracking-widest mt-0.5">Admin</p>
+          <% end %>
+        </div>
+
+        <nav class="flex-1 px-3 py-4 space-y-0.5" aria-label="Admin navigation">
+          <%= link_to "Totems", admin_totems_path,
+                class: "block px-3 py-2 rounded-lg text-sm transition #{request.path.start_with?('/admin/totems') ? 'text-white bg-white/10 font-medium' : 'text-stone/60 hover:text-white hover:bg-white/5'}" %>
+          <%= link_to "Hosts", admin_hosts_path,
+                class: "block px-3 py-2 rounded-lg text-sm transition #{request.path.start_with?('/admin/hosts') ? 'text-white bg-white/10 font-medium' : 'text-stone/60 hover:text-white hover:bg-white/5'}" %>
+          <%= link_to "Events", admin_events_path,
+                class: "block px-3 py-2 rounded-lg text-sm transition #{request.path.start_with?('/admin/events') ? 'text-white bg-white/10 font-medium' : 'text-stone/60 hover:text-white hover:bg-white/5'}" %>
+        </nav>
+
+        <div class="px-3 py-4 border-t border-white/10">
+          <%= button_to "Sign out", admin_logout_path, method: :delete,
+                class: "w-full text-left px-3 py-2 rounded-lg text-sm text-stone/50 hover:text-white hover:bg-white/5 transition" %>
+        </div>
+      </aside>
+
+      <%# ── Main content ── %>
+      <main class="flex-1 md:ml-52 pt-14 md:pt-0 min-h-screen flex flex-col">
+        <% if flash[:notice] %>
+          <div class="bg-glen text-ink text-sm font-medium px-6 py-3" role="alert">
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+        <% if flash[:alert] %>
+          <div class="bg-ember text-white text-sm font-medium px-6 py-3" role="alert">
+            <%= flash[:alert] %>
+          </div>
+        <% end %>
+
+        <div class="px-5 md:px-8 py-8 flex-1">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

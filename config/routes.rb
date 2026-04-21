@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   get "/auth/google_oauth2/callback", to: "auth/sessions#google_callback"
 
   root to: redirect("/host/login")
-  get "/admin", to: redirect("/admin/login"), as: :admin_root
+  get "/admin", to: redirect("/admin/totems"), as: :admin_root
 
   # Host dashboard (Chunk 4)
   get "/host", to: redirect("/host/dashboard"), as: :host_root
@@ -46,6 +46,15 @@ Rails.application.routes.draw do
     get    "login",  to: "auth/admin/sessions#new",    as: :login
     post   "login",  to: "auth/admin/sessions#create"
     delete "logout", to: "auth/admin/sessions#destroy", as: :logout
+  end
+
+  # Admin console
+  namespace :admin do
+    resources :totems do
+      member { get :qr }
+    end
+    resources :hosts, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :events
   end
 
   # Mobile API

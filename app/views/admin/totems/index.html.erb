@@ -1,0 +1,73 @@
+<% content_for :title, "Totems — Signal Fire Admin" %>
+
+<div class="max-w-5xl">
+  <p class="text-xs font-mono text-stone/50 uppercase tracking-widest mb-1">Admin · Internal</p>
+  <h1 class="font-serif text-3xl text-ink mb-1">Totems.</h1>
+  <p class="text-stone text-sm mb-6">Provision and manage the physical objects.</p>
+
+  <div class="flex items-center gap-3 mb-5">
+    <%= form_with url: admin_totems_path, method: :get, class: "flex-1 max-w-xs" do |f| %>
+      <%= f.search_field :q,
+            value: params[:q],
+            placeholder: "Search totems…",
+            class: "w-full px-3 py-2 bg-white border border-stone/30 rounded-lg text-sm text-ink placeholder:text-stone/50 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition",
+            aria: { label: "Search totems" } %>
+    <% end %>
+    <%= link_to "+ New totem", new_admin_totem_path,
+          class: "ml-auto bg-ember text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition whitespace-nowrap" %>
+  </div>
+
+  <% if @totems.any? %>
+    <div class="bg-white border border-stone/20 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-stone/20 text-left">
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Name</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Location</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Status</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Hosts</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">QR</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone/10">
+          <% @totems.each do |totem| %>
+            <tr class="hover:bg-stone/5 transition">
+              <td class="px-4 py-3 font-medium text-ink"><%= totem.name %></td>
+              <td class="px-4 py-3 text-stone">
+                <%= totem.location %>
+                <% if totem.sublocation.present? %>
+                  <span class="text-stone/50">·</span> <%= totem.sublocation %>
+                <% end %>
+              </td>
+              <td class="px-4 py-3">
+                <% if totem.active? %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Active</span>
+                <% else %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-stone/15 text-stone">Inactive</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-stone"><%= totem.host_totem_assignments.size %></td>
+              <td class="px-4 py-3">
+                <%= link_to "Download", qr_admin_totem_path(totem),
+                      class: "text-ember text-sm font-medium hover:underline" %>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <%= link_to "Edit", edit_admin_totem_path(totem), class: "text-sm text-stone hover:text-ink transition" %>
+                  <%= button_to "Delete", admin_totem_path(totem), method: :delete,
+                        class: "text-sm text-stone hover:text-ember transition",
+                        form: { data: { turbo_confirm: "Delete #{totem.name}? This cannot be undone." } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="bg-white border border-stone/20 rounded-xl px-6 py-12 text-center text-stone">
+      <p class="text-sm"><%= params[:q].present? ? "No totems match \"#{params[:q]}\"." : "No totems yet." %></p>
+    </div>
+  <% end %>
+</div>
