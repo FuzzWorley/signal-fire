@@ -16,8 +16,8 @@ import { FontFamily, FontSize } from "../../../../constants/typography";
 import { Event } from "../../../../hooks/useTotem";
 import { CheckInButton } from "../../../../components/CheckInButton";
 import { SubscribeToggle } from "../../../../components/SubscribeToggle";
-import { api } from "../../../../services/api";
-import { getToken } from "../../../../services/api";
+import { api, getToken } from "../../../../services/api";
+import { posthog } from "../../../../services/analytics";
 
 const PLATFORM_LABELS: Record<string, string> = {
   whatsapp: "WhatsApp",
@@ -71,6 +71,7 @@ export default function EventDetailScreen() {
 
   async function handleCheckIn() {
     if (!event) return;
+    posthog.capture("check_in_tapped", { event_id: event.id, totem_slug: slug });
     if (!authenticated) {
       Alert.alert(
         "Sign in to check in",
@@ -98,6 +99,10 @@ export default function EventDetailScreen() {
 
   async function handleSubscribeToggle(subscribed: boolean) {
     if (!event) return;
+    posthog.capture("host_subscribe_toggled", {
+      host_user_id: event.host.id,
+      action: subscribed ? "subscribe" : "unsubscribe",
+    });
     try {
       if (subscribed) {
         await api.post("/api/v1/host_subscriptions", { host_user_id: event.host.id });
@@ -219,7 +224,10 @@ export default function EventDetailScreen() {
         {event.chat_url ? (
           <TouchableOpacity
             style={[styles.chatButton, isCancelled && styles.chatButtonOnly]}
-            onPress={() => Linking.openURL(event.chat_url)}
+            onPress={() => {
+              posthog.capture("chat_link_tapped", { event_id: event.id, platform: event.chat_platform });
+              Linking.openURL(event.chat_url);
+            }}
             activeOpacity={0.85}
           >
             <Text style={styles.chatButtonText}>

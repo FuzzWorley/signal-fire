@@ -30,6 +30,7 @@ class Api::V1::Auth::GoogleController < ActionController::API
     end
 
     token = JwtService.encode(user_id: user.id)
+    AnalyticsService.identify(user.id, email: user.email, auth_method: user.auth_method, is_host: user.is_host)
     render json: { token: token, user: user.slice(:id, :name, :email, :is_host, :is_admin) }
   end
 

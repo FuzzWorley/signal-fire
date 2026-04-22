@@ -16,6 +16,7 @@ import { FontFamily, FontSize } from "../../constants/typography";
 import { useSubscriptions, TotemFollow, HostSubscription } from "../../hooks/useSubscriptions";
 import { api } from "../../services/api";
 import { useAuth } from "../../hooks/useAuth";
+import { posthog } from "../../services/analytics";
 
 function FollowRow({
   follow,
@@ -118,11 +119,13 @@ export default function SignalsScreen() {
 
   useFocusEffect(useCallback(() => {
     load();
+    posthog.capture("signals_tab_viewed");
   }, [load]));
 
   const allNotifications = user?.notification_prefs?.all !== false;
 
   async function toggleAllNotifications(value: boolean) {
+    posthog.capture("master_notifications_toggled", { value });
     await api.patch("/api/v1/me", { notification_prefs: { all: value } }).catch(() => {});
     refreshUser();
   }

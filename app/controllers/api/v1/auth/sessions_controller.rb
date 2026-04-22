@@ -4,6 +4,7 @@ class Api::V1::Auth::SessionsController < ActionController::API
 
     if user&.authenticate(params[:password])
       token = JwtService.encode(user_id: user.id)
+      AnalyticsService.identify(user.id, email: user.email, auth_method: user.auth_method, is_host: user.is_host)
       render json: { token: token, user: user_json(user) }
     else
       render json: { error: "Invalid email or password." }, status: :unauthorized

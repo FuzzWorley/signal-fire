@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,15 +6,21 @@ import * as Notifications from "expo-notifications";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
 import { api } from "../../services/api";
+import { posthog } from "../../services/analytics";
 
 export default function PermissionsScreen() {
   const [requesting, setRequesting] = useState(false);
+
+  useEffect(() => {
+    posthog.capture("permissions_shown");
+  }, []);
 
   async function handleAllow() {
     setRequesting(true);
     try {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status === "granted") {
+        posthog.capture("permissions_granted");
         const token = await Notifications.getExpoPushTokenAsync().catch(() => null);
         if (token) {
           await api.post("/api/v1/me/push_token", { push_token: token.data }).catch(() => {});
@@ -27,6 +33,7 @@ export default function PermissionsScreen() {
   }
 
   function handleSkip() {
+    posthog.capture("permissions_skipped");
     router.push("/(auth)/sign-up");
   }
 

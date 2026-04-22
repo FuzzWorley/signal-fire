@@ -8,7 +8,7 @@ class Auth::Host::SessionsController < ApplicationController
 
     if user&.authenticate(params[:password]) && user.is_host? && user.host_profile&.active?
       session[:user_id] = user.id
-      AnalyticsService.track("host_logged_in", host_user_id: user.id)
+      AnalyticsService.track("host_logged_in", user_id: user.id)
       redirect_to host_dashboard_path
     else
       flash.now[:alert] = "Invalid email or password."

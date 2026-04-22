@@ -17,6 +17,7 @@ import { EventCard } from "../../../components/EventCard";
 import { FollowChip } from "../../../components/FollowChip";
 import { YouAreHereBanner } from "../../../components/YouAreHereBanner";
 import { api } from "../../../services/api";
+import { posthog } from "../../../services/analytics";
 
 export default function TotemBoardScreen() {
   const { slug, source } = useLocalSearchParams<{ slug: string; source?: string }>();
@@ -34,7 +35,19 @@ export default function TotemBoardScreen() {
 
   const checkedInEvent = totem?.active_now.find((e) => e.user_checked_in);
 
+  function handleFollowToggle() {
+    posthog.capture("totem_follow_toggled", {
+      totem_slug: slug,
+      action: totem?.following ? "unfollow" : "follow",
+    });
+    toggleFollow();
+  }
+
   async function handleSubscribe(event: Event, subscribed: boolean) {
+    posthog.capture("host_subscribe_toggled", {
+      host_user_id: event.host.id,
+      action: subscribed ? "subscribe" : "unsubscribe",
+    });
     if (subscribed) {
       await api.post("/api/v1/host_subscriptions", { host_user_id: event.host.id }).catch(() => {});
     } else {
@@ -102,7 +115,7 @@ export default function TotemBoardScreen() {
               ) : null}
             </View>
             {totem.following !== null && (
-              <FollowChip following={totem.following} onToggle={toggleFollow} />
+              <FollowChip following={totem.following} onToggle={handleFollowToggle} />
             )}
           </View>
         </View>

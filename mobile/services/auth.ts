@@ -5,6 +5,8 @@ export interface CurrentUser {
   email: string | null;
   name: string | null;
   auth_method: string;
+  is_host: boolean;
+  is_admin: boolean;
   push_token: string | null;
   notification_prefs: Record<string, boolean>;
 }

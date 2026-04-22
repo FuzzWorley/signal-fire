@@ -9,6 +9,7 @@ class Api::V1::Auth::RegistrationsController < ActionController::API
 
     if user.save
       token = JwtService.encode(user_id: user.id)
+      AnalyticsService.identify(user.id, email: user.email, auth_method: user.auth_method, is_host: user.is_host)
       render json: { token: token, user: user_json(user) }, status: :created
     else
       render json: { error: user.errors.full_messages.to_sentence }, status: :unprocessable_entity

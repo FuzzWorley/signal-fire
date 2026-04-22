@@ -25,4 +25,8 @@ class User < ApplicationRecord
   def email_auth?
     auth_method == "email"
   end
+
+  def posthog_distinct_id
+    id.to_s
+  end
 end
