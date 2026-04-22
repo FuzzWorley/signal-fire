@@ -13,7 +13,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useTotem } from "../../hooks/useTotem";
-import TotemBoardScreen from "../../app/totem/[slug]";
+import TotemBoardScreen from "../../app/(app)/totem/[slug]";
 
 const mockUseTotem = useTotem as jest.MockedFunction<typeof useTotem>;
 const mockUseLocalSearchParams = useLocalSearchParams as jest.MockedFunction<typeof useLocalSearchParams>;

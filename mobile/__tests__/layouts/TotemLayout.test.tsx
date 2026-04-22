@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import TotemLayout from "../../app/totem/_layout";
+import TotemLayout from "../../app/(app)/totem/_layout";
 
 describe("TotemLayout", () => {
   it("renders a Stack navigator", () => {

@@ -12,7 +12,7 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react-
 import { Alert, Linking } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { api, getToken } from "../../services/api";
-import EventDetailScreen from "../../app/totem/[slug]/[event_slug]";
+import EventDetailScreen from "../../app/(app)/totem/[slug]/[event_slug]";
 
 const mockApi = api as jest.Mocked<typeof api>;
 const mockGetToken = getToken as jest.MockedFunction<typeof getToken>;
