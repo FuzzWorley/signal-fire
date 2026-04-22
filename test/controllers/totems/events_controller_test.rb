@@ -30,13 +30,13 @@ class Totems::EventsControllerTest < ActionDispatch::IntegrationTest
     event = events(:active_now_event)
     get totem_event_path(event.totem.slug, event.slug)
     assert_response :success
-    assert_select "input[value='Check in anonymously']"
+    assert_select "input[value='Check in']"
   end
 
   test "check-in button hidden for upcoming event" do
     event = events(:upcoming_event)
     get totem_event_path(event.totem.slug, event.slug)
     assert_response :success
-    assert_select "input[value='Check in anonymously']", count: 0
+    assert_select "input[value='Check in']", count: 0
   end
 end

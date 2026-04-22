@@ -2,7 +2,7 @@ require "test_helper"
 
 class TotemTest < ActiveSupport::TestCase
   test "valid totem with name and slug" do
-    totem = Totem.new(name: "My Totem", slug: "my-totem")
+    totem = Totem.new(name: "My Totem", slug: "my-totem", location: "Some Park")
     assert totem.valid?
   end
 

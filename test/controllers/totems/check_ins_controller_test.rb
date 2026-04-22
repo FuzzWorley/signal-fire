@@ -6,6 +6,8 @@ class Totems::CheckInsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "AnonymousCheckInCount.sum(:count)", 1 do
       post totem_event_check_ins_path(event.totem.slug, event.slug)
     end
+    assert_redirected_to totem_event_check_in_success_path(event.totem.slug, event.slug)
+    follow_redirect!
     assert_response :success
     assert_select "h1", text: /checked in/i
   end
@@ -23,7 +25,7 @@ class Totems::CheckInsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "AnonymousCheckInCount.sum(:count)" do
       post totem_event_check_ins_path(event.totem.slug, event.slug)
     end
-    assert_response :success
+    assert_redirected_to totem_event_check_in_success_path(event.totem.slug, event.slug)
   end
 
   test "POST check-in redirects with alert when event is not active" do
