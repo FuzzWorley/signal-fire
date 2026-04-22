@@ -1,0 +1,87 @@
+<% content_for :title, "Events — Signal Fire Admin" %>
+
+<div class="max-w-5xl">
+  <p class="text-xs font-mono text-stone/50 uppercase tracking-widest mb-1">Admin · Internal</p>
+  <h1 class="font-serif text-3xl text-ink mb-1">Events.</h1>
+  <p class="text-stone text-sm mb-6">All events across all totems. Admin can create on behalf of any host and edit any event.</p>
+
+  <div class="flex items-center gap-3 mb-5">
+    <%= form_with url: admin_events_path, method: :get, class: "flex-1 max-w-sm" do |f| %>
+      <%= f.search_field :q,
+            value: params[:q],
+            placeholder: "Filter by host, totem, or title…",
+            class: "w-full px-3 py-2 bg-white border border-stone/30 rounded-lg text-sm text-ink placeholder:text-stone/50 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition",
+            aria: { label: "Filter events" } %>
+    <% end %>
+    <%= link_to "+ Create event (as host)", new_admin_event_path,
+          class: "ml-auto bg-ember text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-ember/90 transition whitespace-nowrap" %>
+  </div>
+
+  <% if @events.any? %>
+    <div class="bg-white border border-stone/20 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-stone/20 text-left">
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Event</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Host · Totem</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">When</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide">Status</th>
+            <th class="px-4 py-3 text-xs font-semibold text-stone uppercase tracking-wide text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone/10">
+          <% @events.each do |event| %>
+            <% status = event_display_status(event) %>
+            <tr class="hover:bg-stone/5 transition">
+              <td class="px-4 py-3">
+                <p class="font-medium text-ink"><%= event.title %></p>
+                <% if event.created_by_admin? %>
+                  <p class="text-xs text-stone/60">Created by admin</p>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-stone">
+                <% host_name = event.host_user.host_profile&.display_name || event.host_user.name %>
+                <%= host_name %>
+                <span class="text-stone/40">·</span>
+                <%= event.totem.name %>
+              </td>
+              <td class="px-4 py-3 text-stone"><%= event_when_label(event) %></td>
+              <td class="px-4 py-3">
+                <% case status %>
+                <% when :live %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Live</span>
+                <% when :upcoming %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-sky-100 text-sky-800">Upcoming</span>
+                <% when :cancelled %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-ember/15 text-ember">Cancelled</span>
+                <% when :past %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-stone/15 text-stone">Past</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <% if status == :live || status == :upcoming %>
+                    <%= link_to "Edit", edit_admin_event_path(event), class: "text-sm text-stone hover:text-ink transition" %>
+                  <% else %>
+                    <%= link_to "View", totem_event_path(event.totem.slug, event.slug), class: "text-sm text-stone hover:text-ink transition" %>
+                  <% end %>
+                  <%= button_to "Delete", admin_event_path(event), method: :delete,
+                        class: "text-sm text-stone hover:text-ember transition",
+                        form: { data: { turbo_confirm: "Delete \"#{event.title}\"? This cannot be undone." } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-4 text-xs text-stone/50 px-1">
+      Admin override: events created by admin show the host name publicly, not "admin." Admin-created flag is stored in DB for reporting only.
+    </p>
+  <% else %>
+    <div class="bg-white border border-stone/20 rounded-xl px-6 py-12 text-center text-stone">
+      <p class="text-sm"><%= params[:q].present? ? "No events match that search." : "No events yet." %></p>
+    </div>
+  <% end %>
+</div>
