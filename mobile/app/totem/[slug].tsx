@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -17,15 +17,20 @@ import { EventCard } from "../../components/EventCard";
 import { FollowChip } from "../../components/FollowChip";
 import { YouAreHereBanner } from "../../components/YouAreHereBanner";
 import { api } from "../../services/api";
-import { getToken } from "../../services/api";
 
 export default function TotemBoardScreen() {
-  const { slug } = useLocalSearchParams<{ slug: string }>();
+  const { slug, source } = useLocalSearchParams<{ slug: string; source?: string }>();
   const { totem, loading, error, load, toggleFollow, setTotem } = useTotem(slug);
 
   useEffect(() => {
     load();
   }, [slug]);
+
+  useEffect(() => {
+    if (source === "scan" && totem && totem.following === false) {
+      toggleFollow();
+    }
+  }, [totem?.id]);
 
   const checkedInEvent = totem?.active_now.find((e) => e.user_checked_in);
 

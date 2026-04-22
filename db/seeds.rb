@@ -79,6 +79,19 @@ User.find_or_create_by!(email: "admin@example.com") do |u|
   u.password_digest = BCrypt::Password.create("password")
 end
 
+# Regular users for testing follow states
+follower = User.find_or_create_by!(email: "follower@example.com") do |u|
+  u.name = "Sam Follower"
+  u.auth_method = "email"
+  u.password_digest = BCrypt::Password.create("password")
+end
+
+User.find_or_create_by!(email: "nofollows@example.com") do |u|
+  u.name = "Casey Nofollows"
+  u.auth_method = "email"
+  u.password_digest = BCrypt::Password.create("password")
+end
+
 # ---------------------------------------------------------------------------
 # Totems
 # ---------------------------------------------------------------------------
@@ -138,6 +151,14 @@ end
       a.assigned_at = 1.month.ago
     end
   end
+end
+
+# ---------------------------------------------------------------------------
+# Totem follows
+# ---------------------------------------------------------------------------
+
+[waterfront, north_shore].each do |totem|
+  TotemFollow.find_or_create_by!(user: follower, totem: totem)
 end
 
 # ---------------------------------------------------------------------------

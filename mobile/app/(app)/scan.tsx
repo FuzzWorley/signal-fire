@@ -29,7 +29,7 @@ export default function ScanScreen() {
     if (match) {
       hasNavigated.current = true;
       setScanned(true);
-      router.push(`/totem/${match[1]}`);
+      router.push({ pathname: `/totem/${match[1]}`, params: { source: "scan" } });
       setTimeout(() => {
         setScanned(false);
         hasNavigated.current = false;

@@ -117,14 +117,6 @@ export default function HomeScreen() {
           <Text style={styles.title}>Your boards</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.scanButton}
-          onPress={() => router.push("/(app)/scan")}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.scanButtonText}>Scan a totem</Text>
-        </TouchableOpacity>
-
         {loading ? (
           <ActivityIndicator color={Colors.ember} style={{ marginTop: 40 }} />
         ) : boards.length === 0 ? (
@@ -144,6 +136,13 @@ export default function HomeScreen() {
           </View>
         ) : (
           <>
+            <TouchableOpacity
+              style={styles.scanButton}
+              onPress={() => router.push("/(app)/scan")}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.scanButtonText}>Scan a totem</Text>
+            </TouchableOpacity>
             <Text style={styles.sectionLabel}>
               FOLLOWING · {boards.length} {boards.length === 1 ? "TOTEM" : "TOTEMS"}
             </Text>
