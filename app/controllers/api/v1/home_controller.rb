@@ -40,7 +40,7 @@ class Api::V1::HomeController < Api::V1::ApplicationController
       totem_id: totem.id,
       totem_name: totem.name,
       totem_slug: totem.slug,
-      totem_location: totem.location_description,
+      totem_location: [totem.location, totem.sublocation].compact.join(" · "),
       active_event: active_event ? build_event_json(active_event) : nil,
       next_event: next_event ? build_event_json(next_event) : nil
     }

@@ -32,7 +32,8 @@ export interface TotemBoard {
   id: number;
   name: string;
   slug: string;
-  location_description: string | null;
+  location: string | null;
+  sublocation: string | null;
   active: boolean;
   empty: boolean;
   following: boolean | null;

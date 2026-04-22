@@ -90,8 +90,10 @@ export default function TotemBoardScreen() {
             <View style={styles.titleBlock}>
               <Text style={styles.eyebrow}>TOTEM</Text>
               <Text style={styles.totemName}>{totem.name}</Text>
-              {totem.location_description ? (
-                <Text style={styles.location}>{totem.location_description}</Text>
+              {(totem.location || totem.sublocation) ? (
+                <Text style={styles.location}>
+                  {[totem.location, totem.sublocation].filter(Boolean).join(" · ")}
+                </Text>
               ) : null}
             </View>
             {totem.following !== null && (

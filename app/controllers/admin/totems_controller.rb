@@ -38,7 +38,7 @@ class Admin::TotemsController < Admin::ApplicationController
   end
 
   def qr
-    url = totem_board_url(@totem)
+    url = totem_board_url(slug: @totem.slug)
     qr = RQRCode::QRCode.new(url)
     png = qr.as_png(size: 300, border_modules: 4)
     send_data png.to_s,

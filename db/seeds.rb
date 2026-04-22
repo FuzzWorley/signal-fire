@@ -87,39 +87,41 @@ end
 waterfront = Totem.find_or_create_by!(slug: "waterfront-north") do |t|
   t.name = "St. Pete Waterfront North"
   t.active = true
-  t.location_description = "St. Petersburg"
+  t.location = "St. Petersburg"
 end
 
 # 2. Williams Park — empty/inactive state (mirrors wireframe 4.1.5)
 williams = Totem.find_or_create_by!(slug: "williams-park") do |t|
   t.name = "Williams Park Lawn"
   t.active = true
-  t.location_description = "St. Petersburg"
+  t.location = "St. Petersburg"
 end
 
 # 3. North Shore Courts — active, single host (mirrors home screen card)
 north_shore = Totem.find_or_create_by!(slug: "north-shore-courts") do |t|
   t.name = "North Shore Courts"
   t.active = true
-  t.location_description = "St. Petersburg"
+  t.location = "St. Petersburg"
 end
 
 # 4. Legacy / dev totems (kept for existing test flows)
 main_totem = Totem.find_or_create_by!(slug: "riverside-runners") do |t|
   t.name = "Riverside Runners"
   t.active = true
-  t.location_description = "Riverside Park, NYC — meet at the 79th St fountain"
+  t.location = "Riverside Park, NYC"
+  t.sublocation = "Meet at the 79th St fountain"
 end
 
 Totem.find_or_create_by!(slug: "brooklyn-hikers") do |t|
   t.name = "Brooklyn Hikers"
   t.active = true
-  t.location_description = "Prospect Park, Brooklyn"
+  t.location = "Prospect Park, Brooklyn"
 end
 
 Totem.find_or_create_by!(slug: "old-group") do |t|
   t.name = "Old Group"
   t.active = false
+  t.location = "Somewhere"
 end
 
 # ---------------------------------------------------------------------------

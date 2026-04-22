@@ -23,7 +23,7 @@
     </p>
 
     <p class="text-sm text-[#867a60] mt-0.5">
-      <%= @totem.name %><% if @totem.location_description.present? %> · <%= @totem.location_description %><% end %>
+      <%= @totem.name %><% if @totem.location.present? %> · <%= @totem.location %><% if @totem.sublocation.present? %> · <%= @totem.sublocation %><% end %><% end %>
     </p>
   </header>
 
