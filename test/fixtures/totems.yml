@@ -2,13 +2,17 @@ main_totem:
   name: Main Totem
   slug: main-totem
   active: true
+  location: Riverside Park
 
 secondary_totem:
   name: Secondary Totem
   slug: secondary-totem
   active: true
+  location: Williams Park
+  sublocation: North lawn
 
 inactive_totem:
   name: Inactive Totem
   slug: inactive-totem
   active: false
+  location: Old Park
