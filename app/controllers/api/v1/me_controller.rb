@@ -4,7 +4,7 @@ class Api::V1::MeController < Api::V1::ApplicationController
   end
 
   def update
-    permitted = params.permit(:name, notification_prefs: [:new_event, :reminder])
+    permitted = params.permit(:name, notification_prefs: [:new_event, :reminder, :all])
     if current_user.update(permitted)
       render json: user_json(current_user)
     else

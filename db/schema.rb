@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_21_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_22_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -150,7 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_21_000002) do
     t.boolean "is_admin", default: false, null: false
     t.boolean "is_host", default: false, null: false
     t.string "name"
-    t.jsonb "notification_prefs", default: {"reminder" => true, "new_event" => true}, null: false
+    t.jsonb "notification_prefs", default: {"all" => true, "reminder" => true, "new_event" => true}, null: false
     t.string "password_digest"
     t.string "push_token"
     t.datetime "updated_at", null: false

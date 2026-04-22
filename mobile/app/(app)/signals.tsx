@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import {
   View,
   Text,
@@ -13,18 +14,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
 import { useSubscriptions, TotemFollow, HostSubscription } from "../../hooks/useSubscriptions";
+import { api } from "../../services/api";
+import { useAuth } from "../../hooks/useAuth";
 
 function FollowRow({
   follow,
+  active,
   onUnfollow,
   onUpdatePref,
 }: {
   follow: TotemFollow;
+  active: boolean;
   onUnfollow: () => void;
   onUpdatePref: (key: "notify_new_event" | "notify_reminder", val: boolean) => void;
 }) {
   return (
-    <View style={styles.itemCard}>
+    <View style={[styles.itemCard, !active && styles.itemCardMuted]}>
       <View style={styles.itemHeader}>
         <View>
           <Text style={styles.itemName}>{follow.totem_name}</Text>
@@ -36,17 +41,19 @@ function FollowRow({
       <View style={styles.toggleRow}>
         <Text style={styles.toggleLabel}>New event</Text>
         <Switch
-          value={follow.notify_new_event}
+          value={active && follow.notify_new_event}
           onValueChange={(v) => onUpdatePref("notify_new_event", v)}
           trackColor={{ false: Colors.border, true: Colors.ember }}
           thumbColor={Colors.white}
+          disabled={!active}
         />
         <Text style={[styles.toggleLabel, { marginLeft: 16 }]}>Reminder</Text>
         <Switch
-          value={follow.notify_reminder}
+          value={active && follow.notify_reminder}
           onValueChange={(v) => onUpdatePref("notify_reminder", v)}
           trackColor={{ false: Colors.border, true: Colors.ember }}
           thumbColor={Colors.white}
+          disabled={!active}
         />
       </View>
     </View>
@@ -55,15 +62,17 @@ function FollowRow({
 
 function SubscriptionRow({
   sub,
+  active,
   onUnsubscribe,
   onUpdatePref,
 }: {
   sub: HostSubscription;
+  active: boolean;
   onUnsubscribe: () => void;
   onUpdatePref: (key: "notify_new_event" | "notify_reminder", val: boolean) => void;
 }) {
   return (
-    <View style={styles.itemCard}>
+    <View style={[styles.itemCard, !active && styles.itemCardMuted]}>
       <View style={styles.itemHeader}>
         <View>
           <Text style={styles.itemName}>{sub.host_name}</Text>
@@ -75,17 +84,19 @@ function SubscriptionRow({
       <View style={styles.toggleRow}>
         <Text style={styles.toggleLabel}>New event</Text>
         <Switch
-          value={sub.notify_new_event}
+          value={active && sub.notify_new_event}
           onValueChange={(v) => onUpdatePref("notify_new_event", v)}
           trackColor={{ false: Colors.border, true: Colors.ember }}
           thumbColor={Colors.white}
+          disabled={!active}
         />
         <Text style={[styles.toggleLabel, { marginLeft: 16 }]}>Reminder</Text>
         <Switch
-          value={sub.notify_reminder}
+          value={active && sub.notify_reminder}
           onValueChange={(v) => onUpdatePref("notify_reminder", v)}
           trackColor={{ false: Colors.border, true: Colors.ember }}
           thumbColor={Colors.white}
+          disabled={!active}
         />
       </View>
     </View>
@@ -103,10 +114,18 @@ export default function SignalsScreen() {
     updateFollow,
     updateSubscription,
   } = useSubscriptions();
+  const { user, refreshUser } = useAuth();
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     load();
-  }, []);
+  }, [load]));
+
+  const allNotifications = user?.notification_prefs?.all !== false;
+
+  async function toggleAllNotifications(value: boolean) {
+    await api.patch("/api/v1/me", { notification_prefs: { all: value } }).catch(() => {});
+    refreshUser();
+  }
 
   const isEmpty = follows.length === 0 && subscriptions.length === 0;
 
@@ -121,6 +140,19 @@ export default function SignalsScreen() {
         <View style={styles.header}>
           <Text style={styles.eyebrow}>SIGNALS</Text>
           <Text style={styles.title}>Subscriptions</Text>
+        </View>
+
+        <View style={styles.masterCard}>
+          <View style={styles.masterText}>
+            <Text style={styles.masterLabel}>All notifications</Text>
+            <Text style={styles.masterSubtitle}>Master toggle — turns everything off</Text>
+          </View>
+          <Switch
+            value={allNotifications}
+            onValueChange={toggleAllNotifications}
+            trackColor={{ false: Colors.border, true: Colors.ember }}
+            thumbColor={Colors.white}
+          />
         </View>
 
         {loading && follows.length === 0 && subscriptions.length === 0 ? (
@@ -142,6 +174,7 @@ export default function SignalsScreen() {
                   <FollowRow
                     key={f.id}
                     follow={f}
+                    active={allNotifications}
                     onUnfollow={() => unfollow(f.totem_id)}
                     onUpdatePref={(key, val) => updateFollow(f.id, { [key]: val })}
                   />
@@ -158,6 +191,7 @@ export default function SignalsScreen() {
                   <SubscriptionRow
                     key={s.id}
                     sub={s}
+                    active={allNotifications}
                     onUnsubscribe={() => unsubscribe(s.host_user_id)}
                     onUpdatePref={(key, val) => updateSubscription(s.id, { [key]: val })}
                   />
@@ -202,6 +236,9 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
   },
+  itemCardMuted: {
+    opacity: 0.45,
+  },
   itemHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -227,6 +264,29 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.sans,
     fontSize: FontSize.sm,
     color: Colors.stone,
+  },
+  masterCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: 14,
+    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  masterText: { flex: 1, marginRight: 12 },
+  masterLabel: {
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: FontSize.base,
+    color: Colors.ink,
+  },
+  masterSubtitle: {
+    fontFamily: FontFamily.sans,
+    fontSize: FontSize.sm,
+    color: Colors.stone,
+    marginTop: 2,
   },
   empty: { paddingTop: 60, alignItems: "center", paddingHorizontal: 20 },
   emptyText: {

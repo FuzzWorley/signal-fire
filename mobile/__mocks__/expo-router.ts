@@ -10,6 +10,8 @@ export const router = {
 
 export const useLocalSearchParams = jest.fn(() => ({}));
 
+export const useFocusEffect = jest.fn((cb: () => void) => cb());
+
 export function Redirect({ href }: { href: string }) {
   return null;
 }
