@@ -164,20 +164,30 @@ export default function MeScreen() {
             </View>
           )}
           <MenuRow
+            label={`Notifications · ${user.notification_prefs?.all !== false ? "On" : "Off"}`}
+            onPress={() => router.push("/(app)/signals")}
+          />
+          <MenuRow
+            label="Data & privacy"
+            onPress={() => Linking.openURL("https://signalfire.app/privacy")}
+          />
+          <MenuRow
             label="Send feedback"
             onPress={() => Linking.openURL("mailto:hosts@signalfire.app?subject=App feedback")}
           />
         </View>
 
-        {/* Account actions */}
+        {/* Sign out */}
         <View style={[styles.menuSection, { marginTop: 24 }]}>
           <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
             <Text style={styles.signOutText}>Sign out</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
-            <Text style={styles.deleteText}>Delete account</Text>
-          </TouchableOpacity>
         </View>
+
+        {/* Delete account */}
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteText}>Delete account</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -309,8 +319,7 @@ const styles = StyleSheet.create({
   signOutButton: {
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    alignItems: "center",
   },
   signOutText: {
     fontFamily: FontFamily.sans,
@@ -318,8 +327,8 @@ const styles = StyleSheet.create({
     color: Colors.ink,
   },
   deleteButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
+    alignItems: "center",
   },
   deleteText: {
     fontFamily: FontFamily.sans,

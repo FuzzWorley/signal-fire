@@ -11,13 +11,13 @@ import {
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from "../../../constants/colors";
-import { FontFamily, FontSize } from "../../../constants/typography";
-import { Event } from "../../../hooks/useTotem";
-import { CheckInButton } from "../../../components/CheckInButton";
-import { SubscribeToggle } from "../../../components/SubscribeToggle";
-import { api } from "../../../services/api";
-import { getToken } from "../../../services/api";
+import { Colors } from "../../../../constants/colors";
+import { FontFamily, FontSize } from "../../../../constants/typography";
+import { Event } from "../../../../hooks/useTotem";
+import { CheckInButton } from "../../../../components/CheckInButton";
+import { SubscribeToggle } from "../../../../components/SubscribeToggle";
+import { api } from "../../../../services/api";
+import { getToken } from "../../../../services/api";
 
 const PLATFORM_LABELS: Record<string, string> = {
   whatsapp: "WhatsApp",

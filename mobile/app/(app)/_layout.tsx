@@ -55,6 +55,10 @@ export default function AppLayout() {
           tabBarIcon: ({ focused }) => <TabIcon label="◉" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="totem"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

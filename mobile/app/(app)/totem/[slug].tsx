@@ -10,13 +10,13 @@ import {
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from "../../constants/colors";
-import { FontFamily, FontSize } from "../../constants/typography";
-import { useTotem, Event } from "../../hooks/useTotem";
-import { EventCard } from "../../components/EventCard";
-import { FollowChip } from "../../components/FollowChip";
-import { YouAreHereBanner } from "../../components/YouAreHereBanner";
-import { api } from "../../services/api";
+import { Colors } from "../../../constants/colors";
+import { FontFamily, FontSize } from "../../../constants/typography";
+import { useTotem, Event } from "../../../hooks/useTotem";
+import { EventCard } from "../../../components/EventCard";
+import { FollowChip } from "../../../components/FollowChip";
+import { YouAreHereBanner } from "../../../components/YouAreHereBanner";
+import { api } from "../../../services/api";
 
 export default function TotemBoardScreen() {
   const { slug, source } = useLocalSearchParams<{ slug: string; source?: string }>();
