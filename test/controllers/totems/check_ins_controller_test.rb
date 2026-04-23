@@ -34,4 +34,26 @@ class Totems::CheckInsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to totem_event_path(event.totem.slug, event.slug)
     assert flash[:alert].present?
   end
+
+  test "tracks check_in_anonymous on first web check-in" do
+    event = events(:active_now_event)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post totem_event_check_ins_path(event.totem.slug, event.slug)
+    end
+    assert_equal 1, tracked.size
+    assert_equal "check_in_anonymous", tracked.first[0]
+    assert_equal event.id,       tracked.first[1][:event_id]
+    assert_equal event.totem_id, tracked.first[1][:totem_id]
+  end
+
+  test "does not track check_in_anonymous when duplicate cookie is present" do
+    event = events(:active_now_event)
+    cookies["checked_in_event_#{event.id}"] = "1"
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post totem_event_check_ins_path(event.totem.slug, event.slug)
+    end
+    assert_empty tracked
+  end
 end

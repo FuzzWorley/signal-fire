@@ -55,4 +55,21 @@ class Api::V1::Auth::RegistrationsControllerTest < ActionDispatch::IntegrationTe
 
     assert_response :unprocessable_entity
   end
+
+  test "POST /api/v1/auth/sign_up identifies user with correct traits" do
+    identified = []
+    AnalyticsService.stub(:identify, ->(id, **traits) { identified << [id, traits] }) do
+      post api_v1_auth_sign_up_path, params: {
+        email: "analytics@example.com",
+        password: "securepassword",
+        name: "Analytics User"
+      }, as: :json
+    end
+    assert_equal 1, identified.size
+    user = User.find_by(email: "analytics@example.com")
+    assert_equal user.id,          identified.first[0]
+    assert_equal user.email,       identified.first[1][:email]
+    assert_equal user.auth_method, identified.first[1][:auth_method]
+    assert_equal user.is_host,     identified.first[1][:is_host]
+  end
 end

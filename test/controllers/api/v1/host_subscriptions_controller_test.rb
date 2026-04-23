@@ -68,4 +68,43 @@ class Api::V1::HostSubscriptionsControllerTest < ActionDispatch::IntegrationTest
          params: { host_user_id: users(:host_user).id }, as: :json
     assert_response :unauthorized
   end
+
+  test "tracks host_subscribed with correct properties on new subscription" do
+    host = users(:host_user)
+    user = users(:regular_user)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post api_v1_host_subscriptions_path,
+           params: { host_user_id: host.id }, as: :json,
+           headers: auth_header(user)
+    end
+    assert_equal 1, tracked.size
+    assert_equal "host_subscribed", tracked.first[0]
+    assert_equal user.id, tracked.first[1][:user_id]
+    assert_equal host.id, tracked.first[1][:host_user_id]
+  end
+
+  test "does not track host_subscribed on duplicate subscription" do
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post api_v1_host_subscriptions_path,
+           params: { host_user_id: users(:host_user).id }, as: :json,
+           headers: auth_header(users(:subscriber_user))
+    end
+    assert_empty tracked
+  end
+
+  test "tracks host_unsubscribed with correct properties on DELETE" do
+    sub  = host_subscriptions(:subscriber_follows_host)
+    user = users(:subscriber_user)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      delete api_v1_host_subscription_path(sub),
+             as: :json, headers: auth_header(user)
+    end
+    assert_equal 1, tracked.size
+    assert_equal "host_unsubscribed", tracked.first[0]
+    assert_equal user.id,            tracked.first[1][:user_id]
+    assert_equal sub.host_user_id,   tracked.first[1][:host_user_id]
+  end
 end

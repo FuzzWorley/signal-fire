@@ -13,6 +13,8 @@ jest.mock("../../services/api", () => ({
   },
 }));
 
+import { posthog } from "../../services/analytics";
+
 import React from "react";
 import { Switch } from "react-native";
 import { render, screen, fireEvent, act } from "@testing-library/react-native";
@@ -211,5 +213,21 @@ describe("master toggle", () => {
     expect(switches[1].props.disabled).toBe(false);
     expect(switches[2].props.value).toBe(false);
     expect(switches[2].props.disabled).toBe(false);
+  });
+});
+
+describe("SignalsScreen — analytics", () => {
+  it("fires signals_tab_viewed on focus", () => {
+    render(<SignalsScreen />);
+    expect(posthog.capture).toHaveBeenCalledWith("signals_tab_viewed");
+  });
+
+  it("fires master_notifications_toggled when master switch toggled", async () => {
+    render(<SignalsScreen />);
+    const switches = screen.UNSAFE_getAllByType(Switch);
+    await act(async () => {
+      fireEvent(switches[0], "valueChange", false);
+    });
+    expect(posthog.capture).toHaveBeenCalledWith("master_notifications_toggled", { value: false });
   });
 });

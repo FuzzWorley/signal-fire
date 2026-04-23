@@ -15,6 +15,8 @@ jest.mock("../../services/auth", () => ({
   signInWithGoogle: jest.fn(),
 }));
 
+import { posthog } from "../../services/analytics";
+
 import { renderHook, act, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
 import { api, getToken, clearToken } from "../../services/api";
@@ -50,6 +52,11 @@ describe("on mount", () => {
     const { result } = renderHook(() => useAuth());
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.user).toEqual(fakeUser);
+    // app_opened fires once per module load; this is the first test to run so the flag is false
+    expect(posthog.capture).toHaveBeenCalledWith("app_opened", { authenticated: true });
+    expect(posthog.identify).toHaveBeenCalledWith(String(fakeUser.id), expect.objectContaining({
+      email: fakeUser.email,
+    }));
   });
 
   it("sets user null and loading false when no token", async () => {
@@ -152,3 +159,85 @@ describe("deleteAccount", () => {
     expect(mockRouter.replace).toHaveBeenCalledWith("/(auth)/welcome");
   });
 });
+
+describe("useAuth — analytics", () => {
+  it("identifies user on signUp", async () => {
+    mockGetToken.mockResolvedValueOnce(null);
+    mockSignUp.mockResolvedValueOnce({ token: "jwt", user: fakeUser });
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.signUp("test@example.com", "password");
+    });
+
+    expect(posthog.identify).toHaveBeenCalledWith(String(fakeUser.id), {
+      email: fakeUser.email,
+      auth_method: fakeUser.auth_method,
+      is_host: fakeUser.is_host,
+    });
+  });
+
+  it("identifies user on signIn", async () => {
+    mockGetToken.mockResolvedValueOnce(null);
+    mockSignIn.mockResolvedValueOnce({ token: "jwt", user: fakeUser });
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.signIn("test@example.com", "password");
+    });
+
+    expect(posthog.identify).toHaveBeenCalledWith(String(fakeUser.id), {
+      email: fakeUser.email,
+      auth_method: fakeUser.auth_method,
+      is_host: fakeUser.is_host,
+    });
+  });
+
+  it("identifies user on signInWithGoogle", async () => {
+    mockGetToken.mockResolvedValueOnce(null);
+    mockSignInWithGoogle.mockResolvedValueOnce({ token: "jwt", user: fakeUser });
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.signInWithGoogle("google-id-token");
+    });
+
+    expect(posthog.identify).toHaveBeenCalledWith(String(fakeUser.id), {
+      email: fakeUser.email,
+      auth_method: fakeUser.auth_method,
+      is_host: fakeUser.is_host,
+    });
+  });
+
+  it("calls posthog.reset on signOut", async () => {
+    mockGetToken.mockResolvedValueOnce("token");
+    mockApi.get.mockResolvedValueOnce(fakeUser);
+    mockSignOut.mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    expect(posthog.reset).toHaveBeenCalled();
+  });
+
+  it("calls posthog.reset on deleteAccount", async () => {
+    mockGetToken.mockResolvedValueOnce("token");
+    mockApi.get.mockResolvedValueOnce(fakeUser);
+    mockApi.delete.mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.deleteAccount();
+    });
+
+    expect(posthog.reset).toHaveBeenCalled();
+  });
+});
+

@@ -39,4 +39,17 @@ class Totems::EventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "input[value='Check in']", count: 0
   end
+
+  test "tracks event_detail_viewed with event_id, totem_id and auth_state" do
+    event = events(:upcoming_event)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      get totem_event_path(event.totem.slug, event.slug)
+    end
+    assert_equal 1, tracked.size
+    assert_equal "event_detail_viewed", tracked.first[0]
+    assert_equal event.id,        tracked.first[1][:event_id]
+    assert_equal event.totem_id,  tracked.first[1][:totem_id]
+    assert_equal :anonymous,      tracked.first[1][:auth_state]
+  end
 end

@@ -7,6 +7,8 @@ jest.mock("../../services/api", () => ({
   getToken: jest.fn(),
 }));
 
+import { posthog } from "../../services/analytics";
+
 import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react-native";
 import { Alert, Linking } from "react-native";
@@ -166,6 +168,49 @@ describe("EventDetailScreen — check-in", () => {
     render(<EventDetailScreen />);
     await waitFor(() => expect(screen.getByText("Ecstatic Dance")).toBeTruthy());
     expect(screen.queryByText("Check in")).toBeNull();
+  });
+});
+
+describe("EventDetailScreen — analytics", () => {
+  beforeEach(() => {
+    mockApi.get.mockResolvedValueOnce({ event: activeEvent });
+  });
+
+  it("fires check_in_tapped when check-in button pressed", async () => {
+    mockApi.post.mockResolvedValueOnce({ checked_in: true, checked_in_at: "2026-04-22T10:00:00Z" });
+    render(<EventDetailScreen />);
+    await waitFor(() => screen.getByText("Check in"));
+    await act(async () => {
+      fireEvent.press(screen.getByText("Check in"));
+    });
+    expect(posthog.capture).toHaveBeenCalledWith("check_in_tapped", {
+      event_id: activeEvent.id,
+      totem_slug: "waterfront-north",
+    });
+  });
+
+  it("fires chat_link_tapped when join button pressed", async () => {
+    render(<EventDetailScreen />);
+    await waitFor(() => screen.getByText("Join on WhatsApp"));
+    fireEvent.press(screen.getByText("Join on WhatsApp"));
+    expect(posthog.capture).toHaveBeenCalledWith("chat_link_tapped", {
+      event_id: activeEvent.id,
+      platform: activeEvent.chat_platform,
+    });
+  });
+
+  it("fires host_subscribe_toggled when subscribe switch toggled", async () => {
+    const { Switch } = require("react-native");
+    render(<EventDetailScreen />);
+    await waitFor(() => screen.getByText("Maria Santos"));
+    const switches = screen.UNSAFE_getAllByType(Switch);
+    await act(async () => {
+      fireEvent(switches[0], "valueChange", true);
+    });
+    expect(posthog.capture).toHaveBeenCalledWith("host_subscribe_toggled", {
+      host_user_id: activeEvent.host.id,
+      action: "subscribe",
+    });
   });
 });
 

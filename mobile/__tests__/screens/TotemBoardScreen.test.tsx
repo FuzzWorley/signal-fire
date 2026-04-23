@@ -9,15 +9,19 @@ jest.mock("../../services/api", () => ({
   },
 }));
 
+import { posthog } from "../../services/analytics";
+
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { render, screen, waitFor, fireEvent, act } from "@testing-library/react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useTotem } from "../../hooks/useTotem";
+import { api } from "../../services/api";
 import TotemBoardScreen from "../../app/(app)/totem/[slug]";
 
 const mockUseTotem = useTotem as jest.MockedFunction<typeof useTotem>;
 const mockUseLocalSearchParams = useLocalSearchParams as jest.MockedFunction<typeof useLocalSearchParams>;
 const mockRouter = router as jest.Mocked<typeof router>;
+const mockApi = api as jest.Mocked<typeof api>;
 
 const baseTotem = {
   id: 1,
@@ -137,6 +141,70 @@ describe("auto-follow on scan", () => {
     render(<TotemBoardScreen />);
     await waitFor(() => expect(screen.getByText("Waterfront North")).toBeTruthy());
     expect(toggleFollow).not.toHaveBeenCalled();
+  });
+});
+
+describe("TotemBoardScreen — analytics", () => {
+  it("fires totem_follow_toggled when follow chip pressed", async () => {
+    render(<TotemBoardScreen />);
+    await waitFor(() => screen.getByText("Follow"));
+    fireEvent.press(screen.getByText("Follow"));
+    expect(posthog.capture).toHaveBeenCalledWith("totem_follow_toggled", {
+      totem_slug: "waterfront-north",
+      action: "follow",
+    });
+  });
+
+  it("fires totem_follow_toggled:unfollow when already following", async () => {
+    mockUseTotem.mockReturnValueOnce({
+      ...defaultHook,
+      totem: { ...baseTotem, following: true },
+    });
+    render(<TotemBoardScreen />);
+    await waitFor(() => screen.getByText("● Following"));
+    fireEvent.press(screen.getByText("● Following"));
+    expect(posthog.capture).toHaveBeenCalledWith("totem_follow_toggled", {
+      totem_slug: "waterfront-north",
+      action: "unfollow",
+    });
+  });
+
+  it("fires host_subscribe_toggled when subscribe switch toggled", async () => {
+    const { Switch } = require("react-native");
+    const event = {
+      id: 1,
+      title: "Morning Run",
+      slug: "morning-run",
+      recurrence_type: "weekly" as const,
+      start_time: new Date().toISOString(),
+      end_time: new Date().toISOString(),
+      next_occurrence: new Date().toISOString(),
+      chat_url: null,
+      chat_platform: "whatsapp",
+      status: "active",
+      description: null,
+      community_norms: null,
+      window_state: "happening_now" as const,
+      host: { id: 42, name: "Host Name", blurb: null },
+      user_checked_in: false,
+      checked_in_at: null,
+      subscribed_to_host: false,
+    };
+    mockApi.post.mockResolvedValueOnce({});
+    mockUseTotem.mockReturnValueOnce({
+      ...defaultHook,
+      totem: { ...baseTotem, active_now: [event] },
+    });
+    render(<TotemBoardScreen />);
+    await waitFor(() => screen.getByText("Morning Run"));
+    const switches = screen.UNSAFE_getAllByType(Switch);
+    await act(async () => {
+      fireEvent(switches[0], "valueChange", true);
+    });
+    expect(posthog.capture).toHaveBeenCalledWith("host_subscribe_toggled", {
+      host_user_id: event.host.id,
+      action: "subscribe",
+    });
   });
 });
 

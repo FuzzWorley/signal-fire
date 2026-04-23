@@ -58,4 +58,31 @@ class Api::V1::Auth::SessionsControllerTest < ActionDispatch::IntegrationTest
     payload = JwtService.decode(token)
     assert_equal users(:host_user).id, payload[:user_id]
   end
+
+  test "POST /api/v1/auth/sign_in identifies user with correct traits" do
+    user = users(:host_user)
+    identified = []
+    AnalyticsService.stub(:identify, ->(id, **traits) { identified << [id, traits] }) do
+      post api_v1_auth_sign_in_path, params: {
+        email: user.email,
+        password: "password123"
+      }, as: :json
+    end
+    assert_equal 1, identified.size
+    assert_equal user.id,          identified.first[0]
+    assert_equal user.email,       identified.first[1][:email]
+    assert_equal user.auth_method, identified.first[1][:auth_method]
+    assert_equal user.is_host,     identified.first[1][:is_host]
+  end
+
+  test "POST /api/v1/auth/sign_in does not identify on failed sign-in" do
+    identified = []
+    AnalyticsService.stub(:identify, ->(id, **traits) { identified << [id, traits] }) do
+      post api_v1_auth_sign_in_path, params: {
+        email: "host@example.com",
+        password: "wrongpassword"
+      }, as: :json
+    end
+    assert_empty identified
+  end
 end

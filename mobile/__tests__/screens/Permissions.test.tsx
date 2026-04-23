@@ -4,6 +4,8 @@ jest.mock("../../services/api", () => ({
   },
 }));
 
+import { posthog } from "../../services/analytics";
+
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
@@ -74,5 +76,40 @@ describe("PermissionsScreen", () => {
       expect(mockRouter.push).toHaveBeenCalledWith("/(auth)/sign-up");
     });
     expect(mockApi.post).not.toHaveBeenCalled();
+  });
+});
+
+describe("PermissionsScreen — analytics", () => {
+  it("fires permissions_shown on mount", () => {
+    render(<PermissionsScreen />);
+    expect(posthog.capture).toHaveBeenCalledWith("permissions_shown");
+  });
+
+  it("fires permissions_granted when permission granted", async () => {
+    mockNotifications.requestPermissionsAsync.mockResolvedValueOnce({ status: "granted" } as any);
+    mockNotifications.getExpoPushTokenAsync.mockResolvedValueOnce({ data: "ExponentPushToken[abc]" } as any);
+    mockApi.post.mockResolvedValueOnce(undefined);
+
+    render(<PermissionsScreen />);
+    fireEvent.press(screen.getByText("Allow notifications"));
+
+    await waitFor(() => expect(mockRouter.push).toHaveBeenCalled());
+    expect(posthog.capture).toHaveBeenCalledWith("permissions_granted");
+  });
+
+  it("fires permissions_skipped when skip pressed", () => {
+    render(<PermissionsScreen />);
+    fireEvent.press(screen.getByText("Skip for now"));
+    expect(posthog.capture).toHaveBeenCalledWith("permissions_skipped");
+  });
+
+  it("does NOT fire permissions_granted when permission denied", async () => {
+    mockNotifications.requestPermissionsAsync.mockResolvedValueOnce({ status: "denied" } as any);
+
+    render(<PermissionsScreen />);
+    fireEvent.press(screen.getByText("Allow notifications"));
+
+    await waitFor(() => expect(mockRouter.push).toHaveBeenCalled());
+    expect(posthog.capture).not.toHaveBeenCalledWith("permissions_granted");
   });
 });

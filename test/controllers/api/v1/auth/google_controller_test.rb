@@ -82,4 +82,18 @@ class Api::V1::Auth::GoogleControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert User.exists?(google_uid: "brand_new_uid")
   end
+
+  test "POST /api/v1/auth/google identifies user with correct traits" do
+    user = users(:google_user)
+    identified = []
+    AnalyticsService.stub(:identify, ->(id, **traits) { identified << [id, traits] }) do
+      with_valid_google_token(uid: user.google_uid, email: user.email, name: user.name) do
+        post api_v1_auth_google_path, params: { id_token: "token" }, as: :json
+      end
+    end
+    assert_equal 1, identified.size
+    assert_equal user.id,          identified.first[0]
+    assert_equal user.email,       identified.first[1][:email]
+    assert_equal user.is_host,     identified.first[1][:is_host]
+  end
 end

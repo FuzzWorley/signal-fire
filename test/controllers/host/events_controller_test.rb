@@ -123,4 +123,29 @@ class Host::EventsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :not_found
   end
+
+  test "POST /host/events tracks host_event_created with correct properties" do
+    date = 2.days.from_now.to_date
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post host_events_path, params: {
+        event: {
+          title: "Analytics Test Event",
+          totem_id: @totem.id,
+          recurrence_type: "one_time",
+          start_date: date.iso8601,
+          start_time_of_day: "09:00",
+          end_time_of_day: "11:00",
+          chat_platform: "whatsapp",
+          chat_url: "https://chat.whatsapp.com/analyticstest"
+        }
+      }
+    end
+    assert_equal 1, tracked.size
+    assert_equal "host_event_created", tracked.first[0]
+    event = Event.find_by(title: "Analytics Test Event")
+    assert_equal @host.id,  tracked.first[1][:host_user_id]
+    assert_equal event.id,  tracked.first[1][:event_id]
+    assert_equal @totem.id, tracked.first[1][:totem_id]
+  end
 end

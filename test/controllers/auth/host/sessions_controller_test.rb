@@ -46,4 +46,23 @@ class Auth::Host::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_nil session[:user_id]
     assert_redirected_to host_login_path
   end
+
+  test "POST /host/login tracks host_logged_in with user_id on success" do
+    user = users(:host_user)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post host_login_path, params: { email: user.email, password: "password123" }
+    end
+    assert_equal 1, tracked.size
+    assert_equal "host_logged_in", tracked.first[0]
+    assert_equal user.id,          tracked.first[1][:user_id]
+  end
+
+  test "POST /host/login does not track on failed sign-in" do
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post host_login_path, params: { email: "host@example.com", password: "wrongpassword" }
+    end
+    assert_empty tracked
+  end
 end

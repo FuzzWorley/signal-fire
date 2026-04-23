@@ -41,4 +41,29 @@ class Api::V1::CheckInsControllerTest < ActionDispatch::IntegrationTest
          as: :json, headers: auth_header(users(:regular_user))
     assert_response :not_found
   end
+
+  test "tracks check_in_authenticated with correct properties on new check-in" do
+    event = events(:active_now_event)
+    user  = users(:subscriber_user)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post api_v1_event_check_ins_path(event_id: event.id),
+           as: :json, headers: auth_header(user)
+    end
+    assert_equal 1, tracked.size
+    assert_equal "check_in_authenticated", tracked.first[0]
+    assert_equal user.id,    tracked.first[1][:user_id]
+    assert_equal event.id,   tracked.first[1][:event_id]
+    assert_equal event.totem_id, tracked.first[1][:totem_id]
+  end
+
+  test "does not track check_in_authenticated on duplicate check-in" do
+    event = events(:active_now_event)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      post api_v1_event_check_ins_path(event_id: event.id),
+           as: :json, headers: auth_header(users(:regular_user))
+    end
+    assert_empty tracked
+  end
 end

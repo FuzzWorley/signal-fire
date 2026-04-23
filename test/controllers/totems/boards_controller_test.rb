@@ -35,4 +35,16 @@ class Totems::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[aria-label='Get app']", count: 0
   end
+
+  test "tracks totem_board_viewed with totem_id and auth_state" do
+    totem = totems(:main_totem)
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      get totem_board_path(totem.slug)
+    end
+    assert_equal 1, tracked.size
+    assert_equal "totem_board_viewed", tracked.first[0]
+    assert_equal totem.id,   tracked.first[1][:totem_id]
+    assert_equal :anonymous, tracked.first[1][:auth_state]
+  end
 end
