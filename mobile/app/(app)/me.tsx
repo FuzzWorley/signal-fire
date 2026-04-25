@@ -169,7 +169,7 @@ export default function MeScreen() {
           />
           <MenuRow
             label="Data & privacy"
-            onPress={() => Linking.openURL("https://signalfire.app/privacy")}
+            onPress={() => Linking.openURL("https://signalfire.live/privacy")}
           />
           <MenuRow
             label="Send feedback"
