@@ -173,7 +173,7 @@ export default function MeScreen() {
           />
           <MenuRow
             label="Send feedback"
-            onPress={() => Linking.openURL("mailto:hosts@signalfire.app?subject=App feedback")}
+            onPress={() => Linking.openURL("mailto:hello@signalfire.live?subject=App feedback")}
           />
         </View>
 

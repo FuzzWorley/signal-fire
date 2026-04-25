@@ -42,7 +42,7 @@ describe("ScanScreen — QR scanning", () => {
     const camera = screen.UNSAFE_getByType(require("expo-camera").CameraView);
 
     act(() => {
-      camera.props.onBarcodeScanned({ data: "https://signalfire.app/t/waterfront-north" });
+      camera.props.onBarcodeScanned({ data: "https://signalfire.live/t/waterfront-north" });
     });
 
     expect(mockRouter.push).toHaveBeenCalledWith({
@@ -71,8 +71,8 @@ describe("ScanScreen — QR scanning", () => {
     const camera = screen.UNSAFE_getByType(require("expo-camera").CameraView);
 
     act(() => {
-      camera.props.onBarcodeScanned({ data: "https://signalfire.app/t/waterfront-north" });
-      camera.props.onBarcodeScanned({ data: "https://signalfire.app/t/waterfront-north" });
+      camera.props.onBarcodeScanned({ data: "https://signalfire.live/t/waterfront-north" });
+      camera.props.onBarcodeScanned({ data: "https://signalfire.live/t/waterfront-north" });
     });
 
     expect(mockRouter.push).toHaveBeenCalledTimes(1);

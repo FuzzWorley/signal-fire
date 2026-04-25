@@ -6,7 +6,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
         "http://localhost:19006", # Expo web (older versions)
         /\Aexp:\/\//              # Expo Go on device
       ] : [
-        ENV.fetch("MOBILE_APP_ORIGIN", "https://signalfire.app")
+        ENV.fetch("MOBILE_APP_ORIGIN", "https://signalfire.live")
       ]
     )
 
