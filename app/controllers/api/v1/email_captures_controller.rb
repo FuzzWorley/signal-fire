@@ -15,6 +15,7 @@ class Api::V1::EmailCapturesController < ActionController::API
     if capture.save
       AnalyticsService.track("empty_totem_email_captured",
         totem_id: totem.id, email: email)
+      TotemMailer.capture_confirmation_email(capture).deliver_later
       render json: { captured: true }, status: :created
     else
       render json: { error: capture.errors.full_messages.first }, status: :unprocessable_entity

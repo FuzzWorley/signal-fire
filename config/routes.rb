@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
+
   # Public web — Totem Board (Chunk 3)
   get  "/about",                                      to: "pages#about",                       as: :about
   get  "/t/:slug",                                    to: "totems/boards#show",                as: :totem_board

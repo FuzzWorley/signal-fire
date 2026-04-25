@@ -1,0 +1,4 @@
+fan_one:
+  totem: main_totem
+  email: fan@example.com
+  captured_at: <%= Time.current %>
