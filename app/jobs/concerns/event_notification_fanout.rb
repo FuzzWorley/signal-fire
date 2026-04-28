@@ -83,8 +83,15 @@ module EventNotificationFanout
       push_token: user.push_token,
       title: title,
       body: body,
-      data: { event_id: event.id, notification_type: notification_type }
+      data: {
+        event_id: event.id,
+        event_slug: event.slug,
+        totem_slug: event.totem.slug,
+        notification_type: notification_type
+      }
     )
+
+    user.update_column(:push_token, nil) if result.error == "DeviceNotRegistered"
 
     AnalyticsService.track(
       "notification_sent",

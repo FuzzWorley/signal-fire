@@ -1,8 +1,25 @@
 import { useState, useEffect, useCallback } from "react";
+import { Platform } from "react-native";
 import { router } from "expo-router";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 import { api, clearToken, getToken } from "../services/api";
 import { signIn, signUp, signOut, signInWithGoogle, CurrentUser } from "../services/auth";
 import { posthog } from "../services/analytics";
+
+async function syncPushToken(user: CurrentUser) {
+  if (Platform.OS === "web") return;
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== "granted") return;
+    const token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig?.extra?.eas?.projectId,
+    });
+    if (token.data !== user.push_token) {
+      await api.post("/api/v1/me/push_token", { push_token: token.data });
+    }
+  } catch {}
+}
 
 const TOKEN_KEY = "signal_fire_jwt";
 
@@ -30,6 +47,7 @@ export function useAuth() {
     try {
       const user = await api.get<CurrentUser>("/api/v1/me");
       setState({ user, loading: false });
+      syncPushToken(user);
       if (!_appOpenedFired) {
         _appOpenedFired = true;
         posthog.capture("app_opened", { authenticated: true });

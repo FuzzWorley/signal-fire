@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
 import { api } from "../../services/api";
@@ -18,12 +19,16 @@ export default function PermissionsScreen() {
   async function handleAllow() {
     setRequesting(true);
     try {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status === "granted") {
-        posthog.capture("permissions_granted");
-        const token = await Notifications.getExpoPushTokenAsync().catch(() => null);
-        if (token) {
-          await api.post("/api/v1/me/push_token", { push_token: token.data }).catch(() => {});
+      if (Platform.OS !== "web") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status === "granted") {
+          posthog.capture("permissions_granted");
+          const token = await Notifications.getExpoPushTokenAsync({
+            projectId: Constants.expoConfig?.extra?.eas?.projectId,
+          }).catch(() => null);
+          if (token) {
+            await api.post("/api/v1/me/push_token", { push_token: token.data }).catch(() => {});
+          }
         }
       }
     } finally {

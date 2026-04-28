@@ -133,4 +133,40 @@ describe("MeScreen", () => {
       expect.any(Array)
     );
   });
+
+  describe("notifications row", () => {
+    it("shows On when notification_prefs.all is true", () => {
+      mockUseAuth.mockReturnValueOnce({
+        ...defaultAuth,
+        user: { ...fakeUser, notification_prefs: { all: true } },
+      });
+      render(<MeScreen />);
+      expect(screen.getByText("Notifications · On")).toBeTruthy();
+    });
+
+    it("shows On when notification_prefs has no all key", () => {
+      mockUseAuth.mockReturnValueOnce({
+        ...defaultAuth,
+        user: { ...fakeUser, notification_prefs: {} },
+      });
+      render(<MeScreen />);
+      expect(screen.getByText("Notifications · On")).toBeTruthy();
+    });
+
+    it("shows Off when notification_prefs.all is false", () => {
+      mockUseAuth.mockReturnValueOnce({
+        ...defaultAuth,
+        user: { ...fakeUser, notification_prefs: { all: false } },
+      });
+      render(<MeScreen />);
+      expect(screen.getByText("Notifications · Off")).toBeTruthy();
+    });
+
+    it("calls refreshUser on focus", () => {
+      const refreshUser = jest.fn();
+      mockUseAuth.mockReturnValueOnce({ ...defaultAuth, refreshUser });
+      render(<MeScreen />);
+      expect(refreshUser).toHaveBeenCalled();
+    });
+  });
 });

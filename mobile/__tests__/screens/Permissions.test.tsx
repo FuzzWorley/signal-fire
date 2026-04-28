@@ -66,6 +66,21 @@ describe("PermissionsScreen", () => {
     });
   });
 
+  it("passes Expo project ID when fetching push token", async () => {
+    mockNotifications.requestPermissionsAsync.mockResolvedValueOnce({ status: "granted" } as any);
+    mockNotifications.getExpoPushTokenAsync.mockResolvedValueOnce({ data: "ExponentPushToken[xyz]" } as any);
+    mockApi.post.mockResolvedValueOnce(undefined);
+
+    render(<PermissionsScreen />);
+    fireEvent.press(screen.getByText("Allow notifications"));
+
+    await waitFor(() => {
+      expect(mockNotifications.getExpoPushTokenAsync).toHaveBeenCalledWith({
+        projectId: "test-project-id",
+      });
+    });
+  });
+
   it("navigates to sign-up even when permission is denied", async () => {
     mockNotifications.requestPermissionsAsync.mockResolvedValueOnce({ status: "denied" } as any);
 

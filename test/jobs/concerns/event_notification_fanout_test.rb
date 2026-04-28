@@ -1,0 +1,83 @@
+require "test_helper"
+
+class EventNotificationFanoutTest < ActiveSupport::TestCase
+  # Use a minimal host class rather than testing through a specific job
+  class FanoutHost
+    include EventNotificationFanout
+  end
+
+  setup do
+    @fanout = FanoutHost.new
+    @event = events(:upcoming_event)
+    @user = users(:subscriber_user)
+    @user.update_column(:push_token, "ExponentPushToken[original]")
+  end
+
+  # --- data payload ---
+
+  test "deliver_to sends event_slug and totem_slug in data payload" do
+    captured_data = nil
+    capture_deliver = ->(push_token:, title:, body:, data:) {
+      captured_data = data
+      PushNotificationService::Result.new(ok: true, error: nil)
+    }
+    PushNotificationService.stub(:deliver, capture_deliver) do
+      @fanout.deliver_to(
+        user: @user, event: @event, notification_type: :new_event,
+        source_type: :totem_follow, title: "T", body: "B"
+      )
+    end
+    assert_equal @event.slug, captured_data[:event_slug]
+    assert_equal @event.totem.slug, captured_data[:totem_slug]
+    assert_equal @event.id, captured_data[:event_id]
+  end
+
+  # --- DeviceNotRegistered ---
+
+  test "deliver_to clears push_token when Expo returns DeviceNotRegistered" do
+    dead_result = PushNotificationService::Result.new(ok: false, error: "DeviceNotRegistered")
+    PushNotificationService.stub(:deliver, dead_result) do
+      @fanout.deliver_to(
+        user: @user, event: @event, notification_type: :new_event,
+        source_type: :totem_follow, title: "T", body: "B"
+      )
+    end
+    assert_nil @user.reload.push_token
+  end
+
+  test "deliver_to does not clear push_token on other Expo errors" do
+    other_error = PushNotificationService::Result.new(ok: false, error: "MessageTooBig")
+    PushNotificationService.stub(:deliver, other_error) do
+      @fanout.deliver_to(
+        user: @user, event: @event, notification_type: :new_event,
+        source_type: :totem_follow, title: "T", body: "B"
+      )
+    end
+    assert_equal "ExponentPushToken[original]", @user.reload.push_token
+  end
+
+  test "deliver_to does not clear push_token on successful delivery" do
+    ok_result = PushNotificationService::Result.new(ok: true, error: nil)
+    PushNotificationService.stub(:deliver, ok_result) do
+      @fanout.deliver_to(
+        user: @user, event: @event, notification_type: :new_event,
+        source_type: :totem_follow, title: "T", body: "B"
+      )
+    end
+    assert_equal "ExponentPushToken[original]", @user.reload.push_token
+  end
+
+  # --- no push token ---
+
+  test "deliver_to does not call PushNotificationService when user has no push_token" do
+    @user.update_column(:push_token, nil)
+    delivered = false
+    PushNotificationService.stub(:deliver, ->(**) { delivered = true }) do
+      @fanout.deliver_to(
+        user: @user, event: @event, notification_type: :new_event,
+        source_type: :totem_follow, title: "T", body: "B"
+      )
+    end
+    assert_not delivered
+  end
+end

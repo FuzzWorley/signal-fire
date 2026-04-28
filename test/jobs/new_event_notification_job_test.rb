@@ -60,7 +60,8 @@ class NewEventNotificationJobTest < ActiveSupport::TestCase
     [ users(:subscriber_user), users(:follower_user), users(:both_user) ].each do |u|
       u.update_column(:push_token, "ExponentPushToken[test_#{u.id}]")
     end
-    PushNotificationService.stub(:deliver, true) do
+    ok_result = PushNotificationService::Result.new(ok: true, error: nil)
+    PushNotificationService.stub(:deliver, ok_result) do
       tracked = []
       AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
         NewEventNotificationJob.new.perform(@event.id)

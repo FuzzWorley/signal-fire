@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   Linking,
   ActivityIndicator,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
@@ -50,8 +50,10 @@ function MenuRow({ label, value, onPress, destructive }: {
 }
 
 export default function MeScreen() {
-  const { user, signOut, deleteAccount } = useAuth();
+  const { user, signOut, deleteAccount, refreshUser } = useAuth();
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
+
+  useFocusEffect(useCallback(() => { refreshUser(); }, [refreshUser]));
   const [showCheckIns, setShowCheckIns] = useState(false);
   const [checkInsLoading, setCheckInsLoading] = useState(false);
 

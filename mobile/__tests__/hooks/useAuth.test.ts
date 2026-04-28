@@ -1,6 +1,7 @@
 jest.mock("../../services/api", () => ({
   api: {
     get: jest.fn(),
+    post: jest.fn(),
     delete: jest.fn(),
   },
   getToken: jest.fn(),
@@ -19,6 +20,7 @@ import { posthog } from "../../services/analytics";
 
 import { renderHook, act, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
+import * as Notifications from "expo-notifications";
 import { api, getToken, clearToken } from "../../services/api";
 import { signIn, signUp, signOut, signInWithGoogle } from "../../services/auth";
 import { useAuth } from "../../hooks/useAuth";
@@ -31,6 +33,7 @@ const mockSignUp = signUp as jest.MockedFunction<typeof signUp>;
 const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
 const mockSignInWithGoogle = signInWithGoogle as jest.MockedFunction<typeof signInWithGoogle>;
 const mockRouter = router as jest.Mocked<typeof router>;
+const mockNotifications = Notifications as jest.Mocked<typeof Notifications>;
 
 const fakeUser = {
   id: 1,
@@ -241,3 +244,85 @@ describe("useAuth — analytics", () => {
   });
 });
 
+describe("useAuth — syncPushToken", () => {
+  const fakeUserWithToken = {
+    id: 2,
+    email: "tokenuser@example.com",
+    name: "Token User",
+    auth_method: "email",
+    push_token: "ExponentPushToken[old-token]",
+    notification_prefs: {},
+    is_host: false,
+  };
+
+  it("posts new token to API when device token differs from stored token", async () => {
+    mockGetToken.mockResolvedValueOnce("valid-token");
+    mockApi.get.mockResolvedValueOnce(fakeUserWithToken);
+    mockNotifications.getPermissionsAsync.mockResolvedValueOnce({ status: "granted" } as any);
+    mockNotifications.getExpoPushTokenAsync.mockResolvedValueOnce({
+      data: "ExponentPushToken[new-token]",
+    } as any);
+    mockApi.post.mockResolvedValueOnce(undefined);
+
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await waitFor(() => {
+      expect(mockApi.post).toHaveBeenCalledWith("/api/v1/me/push_token", {
+        push_token: "ExponentPushToken[new-token]",
+      });
+    });
+  });
+
+  it("does not post when device token matches stored token", async () => {
+    mockGetToken.mockResolvedValueOnce("valid-token");
+    mockApi.get.mockResolvedValueOnce(fakeUserWithToken);
+    mockNotifications.getPermissionsAsync.mockResolvedValueOnce({ status: "granted" } as any);
+    mockNotifications.getExpoPushTokenAsync.mockResolvedValueOnce({
+      data: "ExponentPushToken[old-token]",
+    } as any);
+
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    // give syncPushToken time to settle
+    await waitFor(() => {
+      expect(mockNotifications.getExpoPushTokenAsync).toHaveBeenCalled();
+    });
+    expect(mockApi.post).not.toHaveBeenCalled();
+  });
+
+  it("does not post when notification permission is not granted", async () => {
+    mockGetToken.mockResolvedValueOnce("valid-token");
+    mockApi.get.mockResolvedValueOnce(fakeUserWithToken);
+    mockNotifications.getPermissionsAsync.mockResolvedValueOnce({ status: "denied" } as any);
+
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await waitFor(() => {
+      expect(mockNotifications.getPermissionsAsync).toHaveBeenCalled();
+    });
+    expect(mockNotifications.getExpoPushTokenAsync).not.toHaveBeenCalled();
+    expect(mockApi.post).not.toHaveBeenCalled();
+  });
+
+  it("passes Expo project ID when fetching device token", async () => {
+    mockGetToken.mockResolvedValueOnce("valid-token");
+    mockApi.get.mockResolvedValueOnce(fakeUserWithToken);
+    mockNotifications.getPermissionsAsync.mockResolvedValueOnce({ status: "granted" } as any);
+    mockNotifications.getExpoPushTokenAsync.mockResolvedValueOnce({
+      data: "ExponentPushToken[new-token]",
+    } as any);
+    mockApi.post.mockResolvedValueOnce(undefined);
+
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await waitFor(() => {
+      expect(mockNotifications.getExpoPushTokenAsync).toHaveBeenCalledWith({
+        projectId: "test-project-id",
+      });
+    });
+  });
+});
