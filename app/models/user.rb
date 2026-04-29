@@ -26,6 +26,21 @@ class User < ApplicationRecord
     auth_method == "email"
   end
 
+  def generate_magic_link_token!
+    update!(
+      magic_link_token: SecureRandom.urlsafe_base64(32),
+      magic_link_token_expires_at: 30.minutes.from_now
+    )
+  end
+
+  def magic_link_token_valid?
+    magic_link_token.present? && magic_link_token_expires_at&.future?
+  end
+
+  def consume_magic_link_token!
+    update!(magic_link_token: nil, magic_link_token_expires_at: nil)
+  end
+
   def posthog_distinct_id
     id.to_s
   end

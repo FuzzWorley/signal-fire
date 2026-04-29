@@ -1,6 +1,6 @@
 <% content_for :title, @totem.name %>
 
-<div class="min-h-screen bg-[#f2f0d9]" data-controller="app-nudge">
+<div class="min-h-screen bg-[#f2f0d9]" data-controller="app-nudge<%= ' account-signup' unless app_nudges_enabled? || signed_in? %>">
   <header class="px-4 pt-8 pb-6">
     <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-1">Totem</p>
     <h1 class="font-serif text-3xl text-[#1a1a12]"><%= @totem.name %></h1>
@@ -33,5 +33,10 @@
 
   <% if app_nudges_enabled? %>
     <%= render "shared/app_download_nudge" %>
+  <% end %>
+
+  <% unless app_nudges_enabled? || signed_in? %>
+    <%= render "shared/account_signup_modal" %>
+    <%= render "shared/account_signup_banner" %>
   <% end %>
 </div>

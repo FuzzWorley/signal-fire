@@ -1,0 +1,9 @@
+Hi<% if @user.name.present? %> <%= @user.name %><% end %>,
+
+Here's your Signal Fire sign-in link:
+
+<%= @magic_link %>
+
+This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.
+
+— Signal Fire

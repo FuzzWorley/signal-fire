@@ -13,6 +13,15 @@ Rails.application.routes.draw do
   get  "/t/:slug/e/:event_slug/check_ins/success",   to: "totems/check_ins#success",          as: :totem_event_check_in_success
   post "/empty_totem_email_captures",                 to: "empty_totem_email_captures#create", as: :empty_totem_email_captures
 
+  # Regular user auth (web, magic link)
+  get    "/sign_up",           to: "auth/user_registrations#new",    as: :sign_up
+  post   "/sign_up",           to: "auth/user_registrations#create"
+  get    "/sign_in",               to: "auth/user_sessions#new",            as: :sign_in
+  post   "/sign_in",               to: "auth/user_sessions#create"
+  get    "/sign_in/magic_link",    to: "auth/user_sessions#new_magic_link", as: :sign_in_magic_link
+  delete "/sign_out",          to: "auth/user_sessions#destroy",     as: :sign_out
+  get    "/magic_link/verify", to: "auth/user_magic_links#verify",   as: :verify_magic_link
+
   # Google OAuth (GET /auth/google_oauth2 is handled by OmniAuth middleware)
   get "/auth/google_oauth2/callback", to: "auth/sessions#google_callback"
 

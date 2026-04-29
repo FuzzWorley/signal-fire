@@ -1,0 +1,30 @@
+<%# Account signup modal — shown after 5s delay by account-signup Stimulus controller %>
+<div data-account-signup-target="modal"
+     class="hidden fixed inset-0 z-50 flex flex-col justify-end"
+     data-action="click->account-signup#closeOnBackdrop">
+  <%# Backdrop %>
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  <%# Sheet %>
+  <div class="relative bg-white rounded-t-2xl px-6 pt-4 pb-8 max-w-lg w-full mx-auto">
+    <%# Drag handle %>
+    <div class="w-10 h-1 bg-[#867a60]/30 rounded-full mx-auto mb-4"></div>
+
+    <button data-action="click->account-signup#dismiss"
+            class="absolute top-4 right-6 text-[#867a60] text-2xl leading-none"
+            aria-label="Dismiss">&#215;</button>
+
+    <div id="account-signup-modal-content">
+      <h2 class="font-semibold text-[#1a1a12] text-lg mb-1">Join Signal Fire</h2>
+      <p class="text-sm text-[#867a60] mb-5">We'll email you when our native app launches in the coming weeks.</p>
+
+      <div id="account-signup-form-container">
+        <%= render "shared/account_signup_form", user: User.new %>
+      </div>
+
+      <p class="text-center text-xs text-[#867a60] mt-4">
+        Already have an account? <%= link_to "Sign in", sign_in_path, class: "underline hover:text-[#1a1a12]" %>
+      </p>
+    </div>
+  </div>
+</div>

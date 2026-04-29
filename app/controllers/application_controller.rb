@@ -14,6 +14,10 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
+  def after_auth_path
+    session.delete(:return_to) || about_path
+  end
+
   def require_host!
     unless current_user&.is_host? && current_user&.host_profile&.active?
       redirect_to host_login_path, alert: "Please sign in to access the host dashboard."

@@ -7,6 +7,8 @@ class Totems::BoardsController < ApplicationController
       return redirect_to totem_board_path(@totem.slug)
     end
 
+    session[:return_to] = request.path unless signed_in?
+
     AnalyticsService.track(
       "totem_board_viewed",
       totem_id: @totem.id,

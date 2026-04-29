@@ -1,0 +1,81 @@
+<%# Password sign-up (primary) %>
+<div data-account-signup-target="passwordSection">
+  <%= form_with url: sign_up_path do |f| %>
+    <% if user.errors.any? %>
+      <p class="text-red-600 text-sm mb-3" role="alert"><%= user.errors.full_messages.to_sentence %></p>
+    <% end %>
+
+    <div class="space-y-3 mb-4">
+      <div>
+        <%= label_tag :name, "Name", class: "sr-only" %>
+        <%= text_field_tag :name, user.name,
+              placeholder: "Your name",
+              required: true,
+              autocomplete: "name",
+              class: "w-full border border-[#867a60]/40 bg-white rounded-lg px-4 py-3 text-[#1a1a12] placeholder-[#867a60]/60 focus:outline-none focus:ring-2 focus:ring-[#e24820] focus:border-transparent" %>
+      </div>
+      <div>
+        <%= label_tag :email, "Email address", class: "sr-only" %>
+        <%= email_field_tag :email, user.email,
+              placeholder: "you@email.com",
+              required: true,
+              autocomplete: "email",
+              class: "w-full border border-[#867a60]/40 bg-white rounded-lg px-4 py-3 text-[#1a1a12] placeholder-[#867a60]/60 focus:outline-none focus:ring-2 focus:ring-[#e24820] focus:border-transparent" %>
+      </div>
+      <div>
+        <%= label_tag :password, "Password", class: "sr-only" %>
+        <%= password_field_tag :password, nil,
+              placeholder: "Password (8+ characters)",
+              required: true,
+              autocomplete: "new-password",
+              class: "w-full border border-[#867a60]/40 bg-white rounded-lg px-4 py-3 text-[#1a1a12] placeholder-[#867a60]/60 focus:outline-none focus:ring-2 focus:ring-[#e24820] focus:border-transparent" %>
+      </div>
+    </div>
+
+    <%= submit_tag "Create account",
+          class: "w-full bg-[#e24820] hover:bg-[#c43a18] text-white font-medium rounded-lg px-4 py-3 cursor-pointer transition-colors" %>
+  <% end %>
+
+  <p class="text-center text-xs text-[#867a60] mt-3">
+    <button type="button"
+            data-action="click->account-signup#showMagicLink"
+            class="underline hover:text-[#1a1a12] transition-colors">
+      or email me a magic link instead
+    </button>
+  </p>
+</div>
+
+<%# Magic link sign-up (secondary, hidden by default) %>
+<div data-account-signup-target="magicLinkSection" class="hidden">
+  <%= form_with url: sign_up_path do |f| %>
+    <div class="space-y-3 mb-4">
+      <div>
+        <%= label_tag :name, "Name", class: "sr-only" %>
+        <%= text_field_tag :name, user.name,
+              placeholder: "Your name",
+              required: true,
+              autocomplete: "name",
+              class: "w-full border border-[#867a60]/40 bg-white rounded-lg px-4 py-3 text-[#1a1a12] placeholder-[#867a60]/60 focus:outline-none focus:ring-2 focus:ring-[#e24820] focus:border-transparent" %>
+      </div>
+      <div>
+        <%= label_tag :email, "Email address", class: "sr-only" %>
+        <%= email_field_tag :email, user.email,
+              placeholder: "you@email.com",
+              required: true,
+              autocomplete: "email",
+              class: "w-full border border-[#867a60]/40 bg-white rounded-lg px-4 py-3 text-[#1a1a12] placeholder-[#867a60]/60 focus:outline-none focus:ring-2 focus:ring-[#e24820] focus:border-transparent" %>
+      </div>
+    </div>
+
+    <%= submit_tag "Email me a sign-in link",
+          class: "w-full bg-[#e24820] hover:bg-[#c43a18] text-white font-medium rounded-lg px-4 py-3 cursor-pointer transition-colors" %>
+  <% end %>
+
+  <p class="text-center text-xs text-[#867a60] mt-3">
+    <button type="button"
+            data-action="click->account-signup#showPassword"
+            class="underline hover:text-[#1a1a12] transition-colors">
+      &larr; sign up with a password instead
+    </button>
+  </p>
+</div>

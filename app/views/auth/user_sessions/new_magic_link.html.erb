@@ -1,0 +1,32 @@
+<% content_for :title, "Sign in with magic link — Signal Fire" %>
+
+<div class="min-h-screen bg-[#f2f0d9] flex flex-col items-center justify-center px-4">
+  <div class="w-full max-w-sm bg-white rounded-2xl px-6 py-8">
+    <h1 class="font-serif text-2xl text-[#1a1a12] mb-1">Email me a link</h1>
+    <p class="text-sm text-[#867a60] mb-6">Enter your email and we'll send you a one-click sign-in link.</p>
+
+    <% if flash[:notice] %>
+      <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm mb-4" role="status">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: sign_in_path do |f| %>
+      <div class="mb-4">
+        <%= label_tag :email, "Email address", class: "sr-only" %>
+        <%= email_field_tag :email, nil,
+              placeholder: "you@email.com",
+              required: true,
+              autocomplete: "email",
+              class: "w-full border border-[#867a60]/40 bg-white rounded-lg px-4 py-3 text-[#1a1a12] placeholder-[#867a60]/60 focus:outline-none focus:ring-2 focus:ring-[#e24820] focus:border-transparent" %>
+      </div>
+
+      <%= submit_tag "Send sign-in link",
+            class: "w-full bg-[#e24820] hover:bg-[#c43a18] text-white font-medium rounded-lg px-4 py-3 cursor-pointer transition-colors" %>
+    <% end %>
+
+    <p class="text-center text-xs text-[#867a60] mt-3">
+      <%= link_to "&larr; sign in with a password instead".html_safe, sign_in_path, class: "underline hover:text-[#1a1a12]" %>
+    </p>
+  </div>
+</div>

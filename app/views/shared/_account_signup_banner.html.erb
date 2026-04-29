@@ -1,0 +1,16 @@
+<div id="account-signup-banner" data-account-signup-target="banner"
+     class="hidden fixed bottom-0 inset-x-0 bg-[#1a1a12] text-[#f2f0d9] px-4 py-3 flex items-center justify-between gap-3">
+  <div class="flex-1 min-w-0">
+    <p class="text-sm font-medium leading-tight">Join Signal Fire</p>
+    <p class="text-xs text-[#867a60] leading-tight">Get notified when the app launches</p>
+  </div>
+  <div class="flex items-center gap-3 shrink-0">
+    <button data-action="click->account-signup#openModal"
+            class="bg-[#e24820] text-white font-medium rounded px-4 py-2 text-sm">
+      Sign up
+    </button>
+    <button data-action="click->account-signup#dismissBanner"
+            class="text-[#867a60] text-sm"
+            aria-label="Dismiss">&#215;</button>
+  </div>
+</div>
