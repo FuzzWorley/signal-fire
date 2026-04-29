@@ -57,7 +57,7 @@
 
     <%= render "join_chat_button", event: @event %>
 
-    <% unless @event.cancelled? %>
+    <% if app_nudges_enabled? && !@event.cancelled? %>
       <button data-action="click->app-nudge#open"
               class="block w-full text-center border border-[#867a60]/40 text-[#1a1a12] font-medium rounded-lg px-4 py-3 bg-transparent hover:border-[#867a60] transition-colors">
         Get notified about this group
@@ -65,9 +65,7 @@
     <% end %>
   </div>
 
-  <div class="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+8rem)] inset-x-0 flex justify-center pointer-events-none">
-    <%# spacer for app nudge sheet clearance %>
-  </div>
-
-  <%= render "shared/app_download_nudge" %>
+  <% if app_nudges_enabled? %>
+    <%= render "shared/app_download_nudge" %>
+  <% end %>
 </div>

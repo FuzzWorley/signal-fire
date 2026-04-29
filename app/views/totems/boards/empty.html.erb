@@ -51,5 +51,7 @@
     <%= link_to "Send feedback", "mailto:ryan@communityplaytools.com", class: "underline hover:text-[#1a1a12]" %>
   </footer>
 
-  <%= render "shared/app_download_nudge" %>
+  <% if app_nudges_enabled? %>
+    <%= render "shared/app_download_nudge" %>
+  <% end %>
 </div>

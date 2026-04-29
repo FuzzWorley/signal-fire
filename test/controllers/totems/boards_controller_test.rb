@@ -36,6 +36,43 @@ class Totems::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[aria-label='Get app']", count: 0
   end
 
+  test "app nudges are hidden by default (APP_NUDGES_ENABLED unset)" do
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button", text: /Install/, count: 0
+    assert_select "h2", text: /works better in the app/, count: 0
+  end
+
+  test "app nudges are hidden on empty board by default" do
+    get totem_board_path(totems(:secondary_totem).slug)
+    assert_select "h2", text: /works better in the app/, count: 0
+  end
+
+  test "app nudges are shown when APP_NUDGES_ENABLED=true" do
+    ENV["APP_NUDGES_ENABLED"] = "true"
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button", text: /Install/
+    assert_select "h2", text: /works better in the app/
+  ensure
+    ENV.delete("APP_NUDGES_ENABLED")
+  end
+
+  test "app nudges are shown on empty board when APP_NUDGES_ENABLED=true" do
+    ENV["APP_NUDGES_ENABLED"] = "true"
+    get totem_board_path(totems(:secondary_totem).slug)
+    assert_select "h2", text: /works better in the app/
+  ensure
+    ENV.delete("APP_NUDGES_ENABLED")
+  end
+
+  test "footer nudge hidden by cookie even when APP_NUDGES_ENABLED=true" do
+    ENV["APP_NUDGES_ENABLED"] = "true"
+    cookies[:footer_dismissed] = "1"
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button", text: /Install/, count: 0
+  ensure
+    ENV.delete("APP_NUDGES_ENABLED")
+  end
+
   test "tracks totem_board_viewed with totem_id and auth_state" do
     totem = totems(:main_totem)
     tracked = []
