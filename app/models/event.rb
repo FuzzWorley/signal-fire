@@ -4,9 +4,9 @@ class Event < ApplicationRecord
 
   belongs_to :totem
   belongs_to :host_user, class_name: "User"
-  has_many :check_ins
-  has_one :anonymous_check_in_count
-  has_many :notification_deliveries
+  has_many :check_ins, dependent: :destroy
+  has_one :anonymous_check_in_count, dependent: :destroy
+  has_many :notification_deliveries, dependent: :destroy
 
   enum :recurrence_type, { one_time: "one_time", weekly: "weekly" }
   enum :chat_platform, {
