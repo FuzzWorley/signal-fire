@@ -37,35 +37,35 @@ class HostMailerTest < ActionMailer::TestCase
 
   test "magic_link_email delivers to host's email address" do
     profile = host_profiles(:active_profile)
-    profile.update_columns(invitation_token: "test_magic_token_xyz")
+    profile.update_columns(magic_link_token: "test_magic_token_xyz")
     mail = HostMailer.magic_link_email(profile)
     assert_equal [ profile.user.email ], mail.to
   end
 
   test "magic_link_email has correct subject" do
     profile = host_profiles(:active_profile)
-    profile.update_columns(invitation_token: "test_magic_token_xyz")
+    profile.update_columns(magic_link_token: "test_magic_token_xyz")
     mail = HostMailer.magic_link_email(profile)
     assert_equal "Your Signal Fire login link", mail.subject
   end
 
   test "magic_link_email text part contains the magic link token" do
     profile = host_profiles(:active_profile)
-    profile.update_columns(invitation_token: "test_magic_token_xyz")
+    profile.update_columns(magic_link_token: "test_magic_token_xyz")
     mail = HostMailer.magic_link_email(profile)
     assert_match "test_magic_token_xyz", mail.text_part.body.to_s
   end
 
   test "magic_link_email HTML part contains the magic link token" do
     profile = host_profiles(:active_profile)
-    profile.update_columns(invitation_token: "test_magic_token_xyz")
+    profile.update_columns(magic_link_token: "test_magic_token_xyz")
     mail = HostMailer.magic_link_email(profile)
     assert_match "test_magic_token_xyz", mail.html_part.body.to_s
   end
 
   test "magic_link_email HTML part mentions 30 minutes expiry" do
     profile = host_profiles(:active_profile)
-    profile.update_columns(invitation_token: "test_magic_token_xyz")
+    profile.update_columns(magic_link_token: "test_magic_token_xyz")
     mail = HostMailer.magic_link_email(profile)
     assert_match "30 minutes", mail.html_part.body.to_s
   end

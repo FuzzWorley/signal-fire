@@ -49,9 +49,10 @@ Rails.application.routes.draw do
     delete "logout",         to: "auth/host/sessions#destroy",      as: :logout
     get    "accept_invite",  to: "auth/host/invitations#edit",      as: :accept_invite
     patch  "accept_invite",  to: "auth/host/invitations#update"
-    get    "magic_link",     to: "auth/host/magic_links#new",       as: :magic_link
-    post   "magic_link",     to: "auth/host/magic_links#create"
-    get    "magic_link/sent", to: "auth/host/magic_links#sent",     as: :magic_link_sent
+    get    "magic_link",        to: "auth/host/magic_links#new",    as: :magic_link
+    post   "magic_link",        to: "auth/host/magic_links#create"
+    get    "magic_link/sent",   to: "auth/host/magic_links#sent",   as: :magic_link_sent
+    get    "magic_link/verify", to: "auth/host/magic_links#verify", as: :magic_link_verify
   end
 
   # Admin auth

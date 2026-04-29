@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_29_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_29_191009) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_000001) do
     t.datetime "invite_accepted_at"
     t.string "invite_status", default: "invited", null: false
     t.datetime "invited_at"
+    t.string "magic_link_token"
+    t.datetime "magic_link_token_expires_at"
     t.string "timezone"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
