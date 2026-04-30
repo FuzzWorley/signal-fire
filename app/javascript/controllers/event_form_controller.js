@@ -29,6 +29,9 @@ export default class extends Controller {
 
     this.weeklyDayFieldTarget.classList.toggle("hidden", !weekly)
     this.oneDateFieldTarget.classList.toggle("hidden", weekly)
+
+    const dateInput = this.oneDateFieldTarget.querySelector("input[type='date']")
+    if (dateInput) dateInput.required = !weekly
   }
 
   setActive(btn, active) {
