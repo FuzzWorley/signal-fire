@@ -69,8 +69,25 @@ class EventTest < ActiveSupport::TestCase
     assert event.errors[:end_time].any?
   end
 
-  test "chat_url is required" do
-    event = build_event(chat_url: nil)
+  test "chat_platform is optional" do
+    event = build_event(chat_platform: nil, chat_url: nil)
+    assert event.valid?
+  end
+
+  test "chat_url not required when chat_platform is blank" do
+    event = build_event(chat_platform: nil, chat_url: nil)
+    event.valid?
+    assert_not event.errors[:chat_url].any?
+  end
+
+  test "chat_url required when chat_platform is set" do
+    event = build_event(chat_platform: :whatsapp, chat_url: nil)
+    assert_not event.valid?
+    assert event.errors[:chat_url].any?
+  end
+
+  test "chat_url format validated against selected platform" do
+    event = build_event(chat_platform: :discord, chat_url: "https://chat.whatsapp.com/abc")
     assert_not event.valid?
     assert event.errors[:chat_url].any?
   end
@@ -81,5 +98,26 @@ class EventTest < ActiveSupport::TestCase
     event = build_event(title: "Morning Run", totem: totem)
     event.valid?
     assert_match(/my-totem-morning-run/, event.slug)
+  end
+
+  # timezone
+  test "active_now? true for event happening now in Eastern time" do
+    travel_to Time.zone.local(2026, 5, 4, 21, 16, 0) do
+      event = build_event(
+        start_time: Time.zone.local(2026, 5, 4, 21, 15, 0),
+        end_time:   Time.zone.local(2026, 5, 4, 22, 15, 0)
+      )
+      assert event.active_now?
+    end
+  end
+
+  test "active_now? false for event that ended hours ago in Eastern time" do
+    travel_to Time.zone.local(2026, 5, 4, 21, 16, 0) do
+      event = build_event(
+        start_time: Time.zone.local(2026, 5, 4, 17, 15, 0),
+        end_time:   Time.zone.local(2026, 5, 4, 19, 15, 0)
+      )
+      assert_not event.active_now?
+    end
   end
 end

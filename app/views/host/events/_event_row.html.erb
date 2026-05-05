@@ -2,15 +2,15 @@
   now = Time.current
   next_occ = event.next_occurrence
   past = event.end_time < now
-  days_until = past ? nil : [(next_occ.to_date - now.to_date).to_i, 0].max
+  days_until = past ? nil : [(next_occ.to_date - Time.zone.today).to_i, 0].max
   own_event = event.host_user_id == current_user.id
 
   status_badge = if event.cancelled?
     { label: "Cancelled", classes: "bg-stone/20 text-stone" }
-  elsif past
-    { label: "Past", classes: "bg-stone/10 text-stone" }
   elsif event.active_now?
     { label: "Live now", classes: "bg-ember text-white" }
+  elsif past
+    { label: "Past", classes: "bg-stone/10 text-stone" }
   elsif days_until <= 7
     { label: days_until == 0 ? "Today" : "Live in #{days_until}d", classes: "bg-ink text-white" }
   else
