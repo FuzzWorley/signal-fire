@@ -24,8 +24,7 @@ class Event < ApplicationRecord
   validates :recurrence_type, presence: true
   validates :start_time, presence: true
   validates :end_time, presence: true
-  validates :chat_url, presence: true
-  validates :chat_platform, presence: true
+  validates :chat_url, presence: true, if: -> { chat_platform.present? }
   validate :chat_url_matches_platform
   validates :status, presence: true
   validate :end_time_after_start_time

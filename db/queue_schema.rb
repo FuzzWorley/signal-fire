@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_29_191009) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,8 +43,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_191009) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.string "chat_platform", null: false
-    t.string "chat_url", null: false
+    t.string "chat_platform"
+    t.string "chat_url"
     t.text "community_norms"
     t.datetime "created_at", null: false
     t.boolean "created_by_admin", default: false, null: false
