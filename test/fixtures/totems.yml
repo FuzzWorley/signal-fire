@@ -3,6 +3,7 @@ main_totem:
   slug: main-totem
   active: true
   location: Riverside Park
+  city_slug: stpete
 
 secondary_totem:
   name: Secondary Totem
@@ -10,9 +11,20 @@ secondary_totem:
   active: true
   location: Williams Park
   sublocation: North lawn
+  city_slug: stpete
 
 inactive_totem:
   name: Inactive Totem
   slug: inactive-totem
   active: false
   location: Old Park
+  city_slug: stpete
+
+city_board_totem:
+  name: City Board Totem
+  slug: city-board-totem
+  active: true
+  location: Downtown
+  character_description: A great spot for community events.
+  neighborhood: Downtown
+  city_slug: stpete

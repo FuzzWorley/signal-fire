@@ -4,9 +4,8 @@ class EventTest < ActiveSupport::TestCase
   def build_event(overrides = {})
     Event.new({
       title: "Test Event",
-      totem: Totem.new(name: "Test Totem"),
+      totem: Totem.new(name: "Test Totem", city_slug: "stpete"),
       host_user: users(:host_user),
-      recurrence_type: :one_time,
       start_time: 1.hour.from_now,
       end_time: 2.hours.from_now,
       chat_url: "https://chat.whatsapp.com/abc123",
@@ -41,25 +40,84 @@ class EventTest < ActiveSupport::TestCase
     assert_not event.active_now?
   end
 
+  # one_time? / recurring? / weekly?
+  test "one_time? true when recurrence_rule is nil" do
+    assert build_event(recurrence_rule: nil).one_time?
+  end
+
+  test "recurring? true when recurrence_rule is present" do
+    assert build_event(recurrence_rule: "FREQ=WEEKLY;BYDAY=MO").recurring?
+  end
+
+  test "weekly? true for simple weekly RRULE" do
+    assert build_event(recurrence_rule: "FREQ=WEEKLY;BYDAY=MO").weekly?
+  end
+
+  test "weekly? false for biweekly RRULE" do
+    assert_not build_event(recurrence_rule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=MO").weekly?
+  end
+
+  test "weekly? false for monthly RRULE" do
+    assert_not build_event(recurrence_rule: "FREQ=MONTHLY;BYDAY=1MO").weekly?
+  end
+
+  # recurrence_rule validation
+  test "valid RRULE string passes validation" do
+    event = build_event(recurrence_rule: "FREQ=WEEKLY;BYDAY=SU")
+    assert event.valid?
+  end
+
+  test "invalid RRULE string fails validation" do
+    event = build_event(recurrence_rule: "notanrrule")
+    assert_not event.valid?
+    assert event.errors[:recurrence_rule].any?
+  end
+
+  test "nil recurrence_rule is valid (one-time event)" do
+    event = build_event(recurrence_rule: nil)
+    assert event.valid?
+  end
+
   # next_occurrence
-  test "next_occurrence returns start_time for one_time events" do
+  test "next_occurrence returns start_time for one-time events" do
     start = 1.hour.from_now
-    event = build_event(recurrence_type: :one_time, start_time: start, end_time: start + 1.hour)
+    event = build_event(recurrence_rule: nil, start_time: start, end_time: start + 1.hour)
     assert_equal start, event.next_occurrence
   end
 
-  test "next_occurrence returns start_time for future weekly events" do
-    start = 1.day.from_now
-    event = build_event(recurrence_type: :weekly, start_time: start, end_time: start + 1.hour)
-    assert_equal start, event.next_occurrence
+  test "next_occurrence returns a future time for a weekly event with past start" do
+    start = 3.weeks.ago.change(hour: 9, min: 0)
+    day_abbr = %w[SU MO TU WE TH FR SA][start.wday]
+    event = build_event(
+      recurrence_rule: "FREQ=WEEKLY;BYDAY=#{day_abbr}",
+      start_time: start,
+      end_time: start + 1.hour
+    )
+    assert event.next_occurrence > Time.current
   end
 
-  test "next_occurrence projects weekly event forward from past anchor" do
-    start = 3.weeks.ago
-    event = build_event(recurrence_type: :weekly, start_time: start, end_time: start + 1.hour)
-    next_occ = event.next_occurrence
-    assert next_occ > Time.current
-    assert_in_delta 0, (next_occ - start).to_i % 1.week.to_i, 60
+  test "next_occurrence returns start_time for a weekly event with future start" do
+    start = 1.week.from_now.change(hour: 9, min: 0)
+    day_abbr = %w[SU MO TU WE TH FR SA][start.wday]
+    event = build_event(
+      recurrence_rule: "FREQ=WEEKLY;BYDAY=#{day_abbr}",
+      start_time: start,
+      end_time: start + 1.hour
+    )
+    assert_in_delta start.to_i, event.next_occurrence.to_i, 5
+  end
+
+  # recurrence_label
+  test "recurrence_label returns nil for one-time event" do
+    assert_nil build_event(recurrence_rule: nil).recurrence_label
+  end
+
+  test "recurrence_label returns a human-readable string for weekly event" do
+    start = Time.current.next_occurring(:monday).change(hour: 9, min: 0)
+    event = build_event(recurrence_rule: "FREQ=WEEKLY;BYDAY=MO", start_time: start, end_time: start + 1.hour)
+    label = event.recurrence_label
+    assert label.is_a?(String)
+    assert label.present?
   end
 
   # validations
@@ -93,8 +151,8 @@ class EventTest < ActiveSupport::TestCase
   end
 
   test "slug auto-generated from totem slug and title" do
-    totem = Totem.new(name: "My Totem")
-    totem.valid? # triggers before_validation slug generation
+    totem = Totem.new(name: "My Totem", city_slug: "stpete")
+    totem.valid?
     event = build_event(title: "Morning Run", totem: totem)
     event.valid?
     assert_match(/my-totem-morning-run/, event.slug)

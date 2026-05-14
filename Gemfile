@@ -56,6 +56,9 @@ gem "resend"
 # QR code generation
 gem "rqrcode"
 
+# iCalendar RRULE parsing, generation, and human labels
+gem "ice_cube"
+
 # Analytics
 gem "posthog-ruby"
 gem "posthog-rails"

@@ -4,7 +4,7 @@ class EventWindowStateTest < ActiveSupport::TestCase
   def build_event(start_offset:, end_offset:, status: :active)
     Event.new(
       title: "Test", totem: totems(:main_totem), host_user: users(:host_user),
-      recurrence_type: :one_time,
+      recurrence_rule: nil,
       start_time: Time.current + start_offset,
       end_time:   Time.current + end_offset,
       chat_url: "https://chat.whatsapp.com/x", chat_platform: :whatsapp,
@@ -60,7 +60,7 @@ class EventWindowStateTest < ActiveSupport::TestCase
     travel_to Time.zone.local(2026, 5, 4, 21, 16, 0) do
       event = Event.new(
         title: "Test", totem: totems(:main_totem), host_user: users(:host_user),
-        recurrence_type: :one_time,
+        recurrence_rule: nil,
         start_time: Time.zone.local(2026, 5, 4, 21, 15, 0),
         end_time:   Time.zone.local(2026, 5, 4, 22, 15, 0),
         chat_url: "https://chat.whatsapp.com/x", chat_platform: :whatsapp,
@@ -77,7 +77,7 @@ class EventWindowStateTest < ActiveSupport::TestCase
     travel_to Time.zone.local(2026, 5, 4, 21, 16, 0) do
       event = Event.new(
         title: "Test", totem: totems(:main_totem), host_user: users(:host_user),
-        recurrence_type: :one_time,
+        recurrence_rule: nil,
         start_time: Time.zone.local(2026, 5, 4, 17, 0, 0),
         end_time:   Time.zone.local(2026, 5, 4, 19, 0, 0),
         chat_url: "https://chat.whatsapp.com/x", chat_platform: :whatsapp,

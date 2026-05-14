@@ -24,7 +24,7 @@ class AnalyticsServiceTest < ActiveSupport::TestCase
   test "track accepts arbitrary keyword properties" do
     assert_nothing_raised do
       AnalyticsService.track("notification_sent",
-        user_id: 1, event_id: 2, type: "new_event", source_type: "host_subscription")
+        user_id: 1, event_id: 2, type: "new_event", source_type: "host_follow")
     end
   end
 

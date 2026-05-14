@@ -23,7 +23,7 @@ class Host::DashboardController < Host::ApplicationController
                         .order(end_time: :desc)
                         .limit(20)
 
-    @subscriber_count = HostSubscription.where(host_user_id: current_user.id).count
+    @follower_count = HostFollow.where(host_user_id: current_user.id).count
 
     week_start = now.beginning_of_week
     week_end   = now.end_of_week

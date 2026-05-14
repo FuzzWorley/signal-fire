@@ -1,18 +1,18 @@
-class Api::V1::TotemFollowsController < Api::V1::ApplicationController
+class Api::V1::HostFollowsController < Api::V1::ApplicationController
   before_action :set_follow, only: [:destroy, :update]
 
   def create
-    totem = Totem.find_by(id: params[:totem_id])
-    return render json: { error: "Totem not found" }, status: :not_found unless totem
+    host_user = User.find_by(id: params[:host_user_id])
+    return render json: { error: "Host not found" }, status: :not_found unless host_user&.is_host?
 
-    follow = current_user.totem_follows.find_or_initialize_by(totem: totem)
+    follow = current_user.host_follows.find_or_initialize_by(host_user: host_user)
     if follow.persisted?
       return render json: follow_json(follow)
     end
 
     if follow.save
-      AnalyticsService.track("totem_followed",
-        user_id: current_user.id, totem_id: totem.id)
+      AnalyticsService.track("host_followed",
+        user_id: current_user.id, host_user_id: host_user.id)
       render json: follow_json(follow), status: :created
     else
       render json: { error: follow.errors.full_messages.first }, status: :unprocessable_entity
@@ -29,15 +29,15 @@ class Api::V1::TotemFollowsController < Api::V1::ApplicationController
 
   def destroy
     @follow.destroy
-    AnalyticsService.track("totem_unfollowed",
-      user_id: current_user.id, totem_id: @follow.totem_id)
+    AnalyticsService.track("host_unfollowed",
+      user_id: current_user.id, host_user_id: @follow.host_user_id)
     head :no_content
   end
 
   private
 
   def set_follow
-    @follow = current_user.totem_follows.find_by(id: params[:id])
+    @follow = current_user.host_follows.find_by(id: params[:id])
     render json: { error: "Not found" }, status: :not_found unless @follow
   end
 
@@ -48,7 +48,7 @@ class Api::V1::TotemFollowsController < Api::V1::ApplicationController
   def follow_json(follow)
     {
       id: follow.id,
-      totem_id: follow.totem_id,
+      host_user_id: follow.host_user_id,
       notify_new_event: follow.notify_new_event,
       notify_reminder: follow.notify_reminder
     }

@@ -19,7 +19,7 @@ class NewEventNotificationJobTest < ActiveSupport::TestCase
     delivery = NotificationDelivery.find_by(user: users(:subscriber_user), event: @event)
     assert_not_nil delivery
     assert delivery.new_event?
-    assert delivery.host_subscription?
+    assert delivery.host_follow?
   end
 
   test "follower_user gets new_event delivery attributed to totem_follow" do
@@ -27,14 +27,14 @@ class NewEventNotificationJobTest < ActiveSupport::TestCase
     delivery = NotificationDelivery.find_by(user: users(:follower_user), event: @event)
     assert_not_nil delivery
     assert delivery.new_event?
-    assert delivery.totem_follow?
+    assert delivery.totem_favorite?
   end
 
   test "both_user gets only one delivery attributed to host_subscription" do
     NewEventNotificationJob.new.perform(@event.id)
     deliveries = NotificationDelivery.where(user: users(:both_user), event: @event)
     assert_equal 1, deliveries.count
-    assert deliveries.first.host_subscription?
+    assert deliveries.first.host_follow?
   end
 
   test "does not create duplicate deliveries on retry" do

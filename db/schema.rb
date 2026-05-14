@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_14_020147) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,7 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
     t.text "description"
     t.datetime "end_time", null: false
     t.bigint "host_user_id", null: false
-    t.string "recurrence_type", null: false
+    t.string "recurrence_rule"
     t.string "slug", null: false
     t.datetime "start_time", null: false
     t.string "status", default: "active", null: false
@@ -65,10 +65,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
     t.index ["totem_id"], name: "index_events_on_totem_id"
   end
 
+  create_table "host_follows", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "host_user_id", null: false
+    t.boolean "notify_new_event", default: true, null: false
+    t.boolean "notify_reminder", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "host_user_id"], name: "index_host_follows_on_user_id_and_host_user_id", unique: true
+  end
+
   create_table "host_profiles", force: :cascade do |t|
     t.text "blurb"
     t.datetime "created_at", null: false
     t.string "display_name"
+    t.text "host_story"
     t.string "invitation_token"
     t.datetime "invitation_token_expires_at"
     t.datetime "invite_accepted_at"
@@ -76,21 +87,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
     t.datetime "invited_at"
     t.string "magic_link_token"
     t.datetime "magic_link_token_expires_at"
+    t.string "slug"
     t.string "timezone"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["invitation_token"], name: "index_host_profiles_on_invitation_token", unique: true
+    t.index ["slug"], name: "index_host_profiles_on_slug", unique: true
     t.index ["user_id"], name: "index_host_profiles_on_user_id", unique: true
-  end
-
-  create_table "host_subscriptions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "host_user_id", null: false
-    t.boolean "notify_new_event", default: true, null: false
-    t.boolean "notify_reminder", default: true, null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id", "host_user_id"], name: "index_host_subscriptions_on_user_id_and_host_user_id", unique: true
   end
 
   create_table "host_totem_assignments", force: :cascade do |t|
@@ -108,6 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
   create_table "notification_deliveries", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "event_id", null: false
+    t.string "notification_subtype"
     t.string "notification_type", null: false
     t.datetime "opened_at"
     t.datetime "sent_at"
@@ -240,29 +244,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
-  create_table "totem_follows", force: :cascade do |t|
+  create_table "totem_favorites", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "notify_new_event", default: true, null: false
     t.boolean "notify_reminder", default: true, null: false
     t.bigint "totem_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["totem_id"], name: "index_totem_follows_on_totem_id"
-    t.index ["user_id", "totem_id"], name: "index_totem_follows_on_user_id_and_totem_id", unique: true
-    t.index ["user_id"], name: "index_totem_follows_on_user_id"
+    t.index ["totem_id"], name: "index_totem_favorites_on_totem_id"
+    t.index ["user_id", "totem_id"], name: "index_totem_favorites_on_user_id_and_totem_id", unique: true
+    t.index ["user_id"], name: "index_totem_favorites_on_user_id"
   end
 
   create_table "totems", force: :cascade do |t|
     t.boolean "active", default: false, null: false
+    t.string "character_description", limit: 140
+    t.string "city_slug", default: "stpete", null: false
     t.datetime "created_at", null: false
     t.string "location"
     t.string "name", null: false
+    t.string "neighborhood"
     t.string "qr_url"
     t.string "slug", null: false
     t.string "sublocation"
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_totems_on_active"
+    t.index ["city_slug"], name: "index_totems_on_city_slug"
     t.index ["slug"], name: "index_totems_on_slug", unique: true
+  end
+
+  create_table "user_host_first_seens", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "first_seen_at", null: false
+    t.bigint "host_user_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "host_user_id"], name: "index_user_host_first_seens_on_user_id_and_host_user_id", unique: true
+    t.index ["user_id"], name: "index_user_host_first_seens_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -290,9 +308,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
   add_foreign_key "empty_totem_email_captures", "totems"
   add_foreign_key "events", "totems"
   add_foreign_key "events", "users", column: "host_user_id"
+  add_foreign_key "host_follows", "users"
+  add_foreign_key "host_follows", "users", column: "host_user_id"
   add_foreign_key "host_profiles", "users"
-  add_foreign_key "host_subscriptions", "users"
-  add_foreign_key "host_subscriptions", "users", column: "host_user_id"
   add_foreign_key "host_totem_assignments", "totems"
   add_foreign_key "host_totem_assignments", "users", column: "assigned_by_admin_id"
   add_foreign_key "host_totem_assignments", "users", column: "host_user_id"
@@ -304,6 +322,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_05_011153) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "totem_follows", "totems"
-  add_foreign_key "totem_follows", "users"
+  add_foreign_key "totem_favorites", "totems"
+  add_foreign_key "totem_favorites", "users"
+  add_foreign_key "user_host_first_seens", "users"
+  add_foreign_key "user_host_first_seens", "users", column: "host_user_id"
 end

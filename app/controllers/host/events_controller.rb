@@ -80,6 +80,7 @@ class Host::EventsController < Host::ApplicationController
       :description, :community_norms,
       :chat_platform, :chat_url
     )
+    # recurrence_type is a form UX field; assemble_times converts it to recurrence_rule
     assemble_times(raw)
   end
 

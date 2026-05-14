@@ -1,7 +1,7 @@
 <%
   field_class = "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition text-sm"
   label_class = "block text-sm font-medium text-ink mb-1"
-  existing_recurrence = event.recurrence_type || "one_time"
+  existing_recurrence = event.recurring? ? "weekly" : "one_time"
   existing_day        = event.start_time&.wday || Time.current.wday
   existing_date       = event.start_time&.to_date&.iso8601 || ""
   existing_start_time = event.start_time&.strftime("%H:%M") || ""

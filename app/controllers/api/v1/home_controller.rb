@@ -2,7 +2,7 @@ class Api::V1::HomeController < Api::V1::ApplicationController
   include Api::V1::Concerns::EventSerializer
 
   def index
-    follows = current_user.totem_follows
+    follows = current_user.totem_favorites
       .includes(totem: { events: { host_user: :host_profile } })
 
     boards = follows.map { |follow| build_board(follow.totem) }

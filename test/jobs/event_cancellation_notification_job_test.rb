@@ -21,7 +21,7 @@ class EventCancellationNotificationJobTest < ActiveSupport::TestCase
       user: users(:both_user), event: @event, notification_type: "cancelled"
     )
     assert_not_nil delivery
-    assert delivery.host_subscription?
+    assert delivery.host_follow?
   end
 
   test "does not create duplicate deliveries on retry" do

@@ -24,7 +24,7 @@ class EventNotificationFanoutTest < ActiveSupport::TestCase
     PushNotificationService.stub(:deliver, capture_deliver) do
       @fanout.deliver_to(
         user: @user, event: @event, notification_type: :new_event,
-        source_type: :totem_follow, title: "T", body: "B"
+        source_type: :totem_favorite, title: "T", body: "B"
       )
     end
     assert_equal @event.slug, captured_data[:event_slug]
@@ -39,7 +39,7 @@ class EventNotificationFanoutTest < ActiveSupport::TestCase
     PushNotificationService.stub(:deliver, dead_result) do
       @fanout.deliver_to(
         user: @user, event: @event, notification_type: :new_event,
-        source_type: :totem_follow, title: "T", body: "B"
+        source_type: :totem_favorite, title: "T", body: "B"
       )
     end
     assert_nil @user.reload.push_token
@@ -50,7 +50,7 @@ class EventNotificationFanoutTest < ActiveSupport::TestCase
     PushNotificationService.stub(:deliver, other_error) do
       @fanout.deliver_to(
         user: @user, event: @event, notification_type: :new_event,
-        source_type: :totem_follow, title: "T", body: "B"
+        source_type: :totem_favorite, title: "T", body: "B"
       )
     end
     assert_equal "ExponentPushToken[original]", @user.reload.push_token
@@ -61,7 +61,7 @@ class EventNotificationFanoutTest < ActiveSupport::TestCase
     PushNotificationService.stub(:deliver, ok_result) do
       @fanout.deliver_to(
         user: @user, event: @event, notification_type: :new_event,
-        source_type: :totem_follow, title: "T", body: "B"
+        source_type: :totem_favorite, title: "T", body: "B"
       )
     end
     assert_equal "ExponentPushToken[original]", @user.reload.push_token
@@ -75,7 +75,7 @@ class EventNotificationFanoutTest < ActiveSupport::TestCase
     PushNotificationService.stub(:deliver, ->(**) { delivered = true }) do
       @fanout.deliver_to(
         user: @user, event: @event, notification_type: :new_event,
-        source_type: :totem_follow, title: "T", body: "B"
+        source_type: :totem_favorite, title: "T", body: "B"
       )
     end
     assert_not delivered

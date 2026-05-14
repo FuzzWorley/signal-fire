@@ -1,4 +1,4 @@
-class TotemFollow < ApplicationRecord
+class TotemFavorite < ApplicationRecord
   belongs_to :user
   belongs_to :totem
 

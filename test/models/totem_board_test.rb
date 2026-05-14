@@ -15,7 +15,7 @@ class TotemBoardTest < ActiveSupport::TestCase
     totem = totems(:secondary_totem)
     Event.create!(
       totem: totem, host_user: users(:host_user),
-      title: "Weekly Walk", recurrence_type: :weekly,
+      title: "Weekly Walk", recurrence_rule: "FREQ=WEEKLY;BYDAY=MO",
       start_time: 2.weeks.ago, end_time: 2.weeks.ago + 1.hour,
       chat_url: "https://chat.whatsapp.com/x", chat_platform: :whatsapp, status: :active
     )
@@ -31,7 +31,7 @@ class TotemBoardTest < ActiveSupport::TestCase
     totem = totems(:secondary_totem)
     Event.create!(
       totem: totem, host_user: users(:host_user),
-      title: "Recent Event", recurrence_type: :one_time,
+      title: "Recent Event", recurrence_rule: nil,
       start_time: 2.days.ago, end_time: 2.days.ago + 1.hour,
       chat_url: "https://chat.whatsapp.com/r", chat_platform: :whatsapp, status: :active
     )
@@ -55,15 +55,15 @@ class TotemBoardTest < ActiveSupport::TestCase
   test "active_now_events sorts: happening_now before starting_soon before just_ended" do
     totem = totems(:secondary_totem)
     just_ended  = Event.create!(totem: totem, host_user: users(:host_user), title: "A",
-                    recurrence_type: :one_time,
+                    recurrence_rule: nil,
                     start_time: 90.minutes.ago, end_time: 20.minutes.ago,
                     chat_url: "https://chat.whatsapp.com/a", chat_platform: :whatsapp, status: :active)
     happening   = Event.create!(totem: totem, host_user: users(:host_user), title: "B",
-                    recurrence_type: :one_time,
+                    recurrence_rule: nil,
                     start_time: 10.minutes.ago, end_time: 50.minutes.from_now,
                     chat_url: "https://chat.whatsapp.com/b", chat_platform: :whatsapp, status: :active)
     starting    = Event.create!(totem: totem, host_user: users(:host_user), title: "C",
-                    recurrence_type: :one_time,
+                    recurrence_rule: nil,
                     start_time: 20.minutes.from_now, end_time: 80.minutes.from_now,
                     chat_url: "https://chat.whatsapp.com/c", chat_platform: :whatsapp, status: :active)
 

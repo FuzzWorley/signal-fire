@@ -36,4 +36,36 @@ class HostProfileTest < ActiveSupport::TestCase
   test "deactivated? returns true for deactivated status" do
     assert host_profiles(:deactivated_profile).deactivated?
   end
+
+  # slug generation
+  test "slug auto-generated from display_name on save" do
+    profile = build_profile(display_name: "Jane Doe")
+    profile.valid?
+    assert_equal "jane-doe", profile.slug
+  end
+
+  test "slug with collision appends incrementing suffix" do
+    HostProfile.create!(user: users(:regular_user), display_name: "Jane Doe", invite_status: :invited)
+    profile = build_profile(display_name: "Jane Doe", user: users(:google_user))
+    profile.valid?
+    assert_equal "jane-doe-2", profile.slug
+  end
+
+  test "slug rejects invalid characters" do
+    profile = build_profile(slug: "Bad Slug!")
+    assert_not profile.valid?
+    assert profile.errors[:slug].any?
+  end
+
+  test "slug allows lowercase letters, numbers, and hyphens" do
+    profile = build_profile(slug: "good-slug-123")
+    assert profile.valid?
+  end
+
+  test "slug must be unique" do
+    HostProfile.create!(user: users(:regular_user), display_name: "Jane Doe", slug: "taken-slug", invite_status: :invited)
+    profile = build_profile(slug: "taken-slug", user: users(:google_user))
+    assert_not profile.valid?
+    assert profile.errors[:slug].any?
+  end
 end

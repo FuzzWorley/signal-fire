@@ -7,8 +7,8 @@ class User < ApplicationRecord
   has_many :host_totem_assignments, class_name: "HostTotemAssignment", foreign_key: :host_user_id, dependent: :destroy
   has_many :assigned_totems, through: :host_totem_assignments, source: :totem
   has_many :check_ins, dependent: :destroy
-  has_many :host_subscriptions, dependent: :destroy
-  has_many :totem_follows, dependent: :destroy
+  has_many :host_follows, dependent: :destroy
+  has_many :totem_favorites, dependent: :destroy
   has_many :notification_deliveries, dependent: :destroy
 
   validates :email, presence: true,

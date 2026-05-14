@@ -41,11 +41,11 @@ class Api::V1::MeController < Api::V1::ApplicationController
   end
 
   def subscriptions
-    follows = current_user.totem_follows.includes(:totem)
-    subs    = current_user.host_subscriptions.includes(:host_user)
+    favorites = current_user.totem_favorites.includes(:totem)
+    follows   = current_user.host_follows.includes(:host_user)
 
     render json: {
-      totem_follows: follows.map { |f|
+      totem_favorites: favorites.map { |f|
         {
           id: f.id,
           totem_id: f.totem_id,
@@ -55,13 +55,13 @@ class Api::V1::MeController < Api::V1::ApplicationController
           notify_reminder: f.notify_reminder
         }
       },
-      host_subscriptions: subs.map { |s|
+      host_follows: follows.map { |f|
         {
-          id: s.id,
-          host_user_id: s.host_user_id,
-          host_name: s.host_user.name,
-          notify_new_event: s.notify_new_event,
-          notify_reminder: s.notify_reminder
+          id: f.id,
+          host_user_id: f.host_user_id,
+          host_name: f.host_user.name,
+          notify_new_event: f.notify_new_event,
+          notify_reminder: f.notify_reminder
         }
       }
     }

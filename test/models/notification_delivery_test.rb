@@ -6,7 +6,7 @@ class NotificationDeliveryTest < ActiveSupport::TestCase
       user: users(:regular_user),
       event: events(:upcoming_event),
       notification_type: :new_event,
-      source_type: :totem_follow
+      source_type: :totem_favorite
     }.merge(overrides))
   end
 
@@ -31,7 +31,7 @@ class NotificationDeliveryTest < ActiveSupport::TestCase
       user: users(:regular_user),
       event: events(:upcoming_event),
       notification_type: :new_event,
-      source_type: :totem_follow
+      source_type: :totem_favorite
     )
     duplicate = build_delivery
     assert_not duplicate.valid?
@@ -43,7 +43,7 @@ class NotificationDeliveryTest < ActiveSupport::TestCase
       user: users(:regular_user),
       event: events(:upcoming_event),
       notification_type: :new_event,
-      source_type: :totem_follow
+      source_type: :totem_favorite
     )
     other = build_delivery(notification_type: :reminder)
     assert other.valid?

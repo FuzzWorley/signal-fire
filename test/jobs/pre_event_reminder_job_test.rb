@@ -14,13 +14,13 @@ class PreEventReminderJobTest < ActiveSupport::TestCase
     end
   end
 
-  test "subscriber_user reminder attributed to host_subscription" do
+  test "subscriber_user reminder attributed to host_follow" do
     PreEventReminderJob.new.perform(@event.id)
     delivery = NotificationDelivery.find_by(
       user: users(:subscriber_user), event: @event, notification_type: "reminder"
     )
     assert_not_nil delivery
-    assert delivery.host_subscription?
+    assert delivery.host_follow?
   end
 
   test "does not create duplicate deliveries on retry" do

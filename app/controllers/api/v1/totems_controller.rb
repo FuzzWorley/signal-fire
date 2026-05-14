@@ -15,7 +15,7 @@ class Api::V1::TotemsController < Api::V1::ApplicationController
     preload_user_event_data(active_events)
 
     active_now, upcoming = partition_events(active_events)
-    following = current_user ? current_user.totem_follows.exists?(totem: totem) : nil
+    following = current_user ? current_user.totem_favorites.exists?(totem: totem) : nil
 
     render json: {
       totem: {

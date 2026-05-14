@@ -21,7 +21,7 @@ module Api::V1::Concerns::EventSerializer
       id: event.id,
       title: event.title,
       slug: event.slug,
-      recurrence_type: event.recurrence_type,
+      recurrence_rule: event.recurrence_rule,
       start_time: event.start_time.iso8601,
       end_time: event.end_time.iso8601,
       next_occurrence: event.next_occurrence.iso8601,
@@ -73,7 +73,7 @@ module Api::V1::Concerns::EventSerializer
     @check_ins_by_event = current_user.check_ins
       .where(event_id: event_ids)
       .index_by(&:event_id)
-    @subscribed_host_ids = current_user.host_subscriptions
+    @subscribed_host_ids = current_user.host_follows
       .pluck(:host_user_id)
       .to_set
   end

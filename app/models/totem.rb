@@ -2,24 +2,36 @@ class Totem < ApplicationRecord
   has_many :host_totem_assignments, dependent: :destroy
   has_many :hosts, through: :host_totem_assignments, source: :host_user
   has_many :events
-  has_many :totem_follows
+  has_many :totem_favorites
   has_many :empty_totem_email_captures
 
   validates :name, presence: true
   validates :location, presence: true
   validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9-]+\z/, message: "only lowercase letters, numbers, and hyphens" }
+  validates :character_description, length: { maximum: 140 }, allow_blank: true
+  validates :city_slug, presence: true
+
+  scope :active,             ->       { where(active: true) }
+  scope :for_city,           ->(slug) { where(city_slug: slug) }
+  scope :city_board_visible, ->       { active.where.not(character_description: [ nil, "" ]) }
 
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
 
   def board_empty?
     return true unless active
 
-    has_upcoming = events.active.where(recurrence_type: "weekly").exists? ||
-                   events.active.where(recurrence_type: "one_time").where("start_time > ?", Time.current).exists?
+    has_upcoming = events.active.where.not(recurrence_rule: nil).exists? ||
+                   events.active.where(recurrence_rule: nil).where("start_time > ?", Time.current).exists?
 
     has_recent = events.active.where("end_time > ? AND end_time < ?", 30.days.ago, Time.current).exists?
 
     !has_upcoming && !has_recent
+  end
+
+  def primary_host
+    hosts.joins(:host_profile)
+         .where.not(host_profiles: { host_story: nil })
+         .first || hosts.first
   end
 
   def active_now_events

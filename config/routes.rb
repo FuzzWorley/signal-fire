@@ -100,9 +100,9 @@ Rails.application.routes.draw do
         resources :check_ins, only: [:create]
       end
 
-      # Authenticated subscription management
-      resources :host_subscriptions, only: [:create, :destroy, :update]
-      resources :totem_follows, only: [:create, :destroy, :update]
+      # Authenticated follow management
+      resources :host_follows, only: [:create, :destroy, :update]
+      resources :totem_favorites, only: [:create, :destroy, :update]
 
       # Authenticated home feed
       get "home", to: "home#index"

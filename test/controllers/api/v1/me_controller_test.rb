@@ -62,18 +62,18 @@ class Api::V1::MeControllerTest < ActionDispatch::IntegrationTest
   end
 
   # GET /api/v1/me/subscriptions
-  test "GET /api/v1/me/subscriptions returns follows and subscriptions" do
+  test "GET /api/v1/me/subscriptions returns favorites and follows" do
     get subscriptions_api_v1_me_path, as: :json,
         headers: auth_header(users(:both_user))
 
     assert_response :success
     body = response.parsed_body
-    assert body.key?("totem_follows")
-    assert body.key?("host_subscriptions")
-    assert_equal 1, body["totem_follows"].length
-    assert_equal 1, body["host_subscriptions"].length
-    assert body["totem_follows"].first["totem_name"].present?
-    assert body["host_subscriptions"].first["host_name"].present?
+    assert body.key?("totem_favorites")
+    assert body.key?("host_follows")
+    assert_equal 1, body["totem_favorites"].length
+    assert_equal 1, body["host_follows"].length
+    assert body["totem_favorites"].first["totem_name"].present?
+    assert body["host_follows"].first["host_name"].present?
   end
 
   # POST /api/v1/me/push_token

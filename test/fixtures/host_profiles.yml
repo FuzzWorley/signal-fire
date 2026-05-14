@@ -1,6 +1,7 @@
 active_profile:
   user: host_user
   display_name: Host User
+  slug: host-user
   invite_status: active
   invited_at: <%= 7.days.ago %>
   invite_accepted_at: <%= 6.days.ago %>
@@ -8,12 +9,14 @@ active_profile:
 deactivated_profile:
   user: deactivated_host_user
   display_name: Deactivated Host
+  slug: deactivated-host
   invite_status: deactivated
   invited_at: <%= 14.days.ago %>
 
 co_host_profile:
   user: co_host_user
   display_name: Co Host User
+  slug: co-host-user
   invite_status: active
   invited_at: <%= 7.days.ago %>
   invite_accepted_at: <%= 6.days.ago %>

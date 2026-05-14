@@ -147,6 +147,7 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
+    ice_cube (0.17.0)
     image_processing (1.14.0)
       mini_magick (>= 4.9.5, < 6)
       ruby-vips (>= 2.0.17, < 3)
@@ -489,6 +490,7 @@ DEPENDENCIES
   capybara
   debug
   dotenv-rails
+  ice_cube
   image_processing (~> 1.2)
   importmap-rails
   jbuilder

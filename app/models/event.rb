@@ -8,7 +8,6 @@ class Event < ApplicationRecord
   has_one :anonymous_check_in_count, dependent: :destroy
   has_many :notification_deliveries, dependent: :destroy
 
-  enum :recurrence_type, { one_time: "one_time", weekly: "weekly" }
   enum :chat_platform, {
     whatsapp: "whatsapp",
     discord: "discord",
@@ -21,7 +20,10 @@ class Event < ApplicationRecord
 
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :recurrence_type, presence: true
+  validates :recurrence_rule, format: {
+    with: /\AFREQ=(WEEKLY|MONTHLY|DAILY|YEARLY)/,
+    message: "must be a valid RRULE string"
+  }, allow_nil: true
   validates :start_time, presence: true
   validates :end_time, presence: true
   validates :chat_url, presence: true, if: -> { chat_platform.present? }
@@ -54,14 +56,31 @@ class Event < ApplicationRecord
     end
   end
 
-  def next_occurrence
-    return start_time unless weekly?
+  def one_time?  = recurrence_rule.blank?
+  def recurring? = recurrence_rule.present?
 
-    now = Time.current
-    return start_time if start_time > now
+  def weekly?
+    recurring? &&
+      recurrence_rule.include?("FREQ=WEEKLY") &&
+      !recurrence_rule.match?(/INTERVAL=[2-9]/)
+  end
 
-    weeks_ahead = ((now - start_time) / 1.week).ceil
-    start_time + weeks_ahead.weeks
+  def next_occurrence(after: Time.current)
+    return start_time if one_time?
+
+    schedule = IceCube::Schedule.new(start_time)
+    schedule.add_recurrence_rule(IceCube::Rule.from_ical(recurrence_rule))
+    schedule.next_occurrence(after - 1.second)&.to_time || start_time
+  end
+
+  def recurrence_label
+    return nil if one_time?
+
+    schedule = IceCube::Schedule.new(start_time)
+    schedule.add_recurrence_rule(IceCube::Rule.from_ical(recurrence_rule))
+    schedule.to_s
+  rescue StandardError
+    "Recurring"
   end
 
   private
