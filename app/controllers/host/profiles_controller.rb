@@ -16,6 +16,6 @@ class Host::ProfilesController < Host::ApplicationController
   private
 
   def profile_params
-    params.require(:profile).permit(:display_name, :blurb)
+    params.require(:profile).permit(:display_name, :blurb, :host_story)
   end
 end

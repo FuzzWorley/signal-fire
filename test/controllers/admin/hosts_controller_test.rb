@@ -122,6 +122,23 @@ class Admin::HostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated Name", @host.host_profile.reload.display_name
   end
 
+  test "PATCH /admin/hosts/:id saves host_story on host_profile" do
+    sign_in_as_admin
+    patch admin_host_path(@host), params: {
+      host: { name: @host.name, email: @host.email,
+              host_story: "Been running Sunday jams since 2021.", totem_ids: [] }
+    }
+    assert_redirected_to admin_hosts_path
+    assert_equal "Been running Sunday jams since 2021.", @host.host_profile.reload.host_story
+  end
+
+  test "GET /admin/hosts/:id/edit form includes host_story textarea" do
+    sign_in_as_admin
+    get edit_admin_host_path(@host)
+    assert_response :success
+    assert_select "textarea[name='host[host_story]']"
+  end
+
   test "PATCH /admin/hosts/:id assigns totems" do
     sign_in_as_admin
     patch admin_host_path(@host), params: {

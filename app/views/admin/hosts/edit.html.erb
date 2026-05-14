@@ -24,6 +24,14 @@
              class="<%= field_class %>">
     </div>
 
+    <div>
+      <label for="host_host_story" class="<%= label_class %>">Host story</label>
+      <textarea name="host[host_story]" id="host_host_story" rows="4"
+                placeholder="Written by admin at invite time. Host can edit from their profile."
+                class="<%= field_class %> resize-y"><%= @host.host_profile&.host_story %></textarea>
+      <p class="text-xs text-stone/50 mt-1">Written by admin at invite time. Host can edit from their profile.</p>
+    </div>
+
     <fieldset>
       <legend class="<%= label_class %> mb-2">Assigned totems</legend>
       <% if @all_totems.any? %>

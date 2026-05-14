@@ -59,6 +59,10 @@ export default function AppLayout() {
         name="totem"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="host"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

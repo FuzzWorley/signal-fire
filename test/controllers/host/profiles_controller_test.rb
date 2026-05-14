@@ -22,6 +22,20 @@ class Host::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "New bio", @host.host_profile.blurb
   end
 
+  test "PATCH /host/profile saves host_story" do
+    patch host_profile_path, params: {
+      profile: { host_story: "Started Sunday jams three years ago." }
+    }
+    assert_redirected_to host_profile_path
+    assert_equal "Started Sunday jams three years ago.", @host.host_profile.reload.host_story
+  end
+
+  test "GET /host/profile edit form includes host_story field" do
+    get host_profile_path
+    assert_response :success
+    assert_select "textarea[name='profile[host_story]']"
+  end
+
   test "GET /host/profile redirects unauthenticated user" do
     delete host_logout_path
     get host_profile_path

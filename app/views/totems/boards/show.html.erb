@@ -4,10 +4,29 @@
   <header class="px-4 pt-8 pb-6">
     <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-1">Totem</p>
     <h1 class="font-serif text-3xl text-[#1a1a12]"><%= @totem.name %></h1>
-    <p class="mt-1 text-sm text-[#867a60]">Community board</p>
+    <% if @totem.character_description.present? %>
+      <p class="mt-2 text-sm text-[#867a60] leading-relaxed"><%= @totem.character_description %></p>
+    <% end %>
   </header>
 
   <main class="px-4 pb-24 space-y-8">
+    <%# Host story panel — taps through to host page %>
+    <% if @host&.host_profile&.host_story.present? %>
+      <%= link_to host_page_path(@host.host_profile.slug) do %>
+        <div class="bg-[#fdf6f0] border border-[#e8d5c4] rounded-xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <p class="font-mono text-xs tracking-widest text-[#da5520] uppercase">Meet your host</p>
+            <p class="font-mono text-xs tracking-widest text-[#da5520] uppercase">See all events →</p>
+          </div>
+          <p class="text-sm text-[#1a1a12] leading-relaxed"><%= @host.host_profile.host_story %></p>
+        </div>
+      <% end %>
+    <% elsif @host.present? %>
+      <div class="bg-[#f7f5ee] border border-[#d6d0c4] rounded-xl p-5">
+        <p class="text-sm text-[#867a60]">Meet your host — coming soon</p>
+      </div>
+    <% end %>
+
     <% if @active_now.any? %>
       <%= render "active_now_section", events: @active_now %>
     <% end %>

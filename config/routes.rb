@@ -5,7 +5,8 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
-  # Public web — Totem Board (Chunk 3)
+  # Public web — Totem Board + Host Page
+  get  "/h/:host_slug",                               to: "hosts#show",                        as: :host_page
   get  "/about",                                      to: "pages#about",                       as: :about
   get  "/t/:slug",                                    to: "totems/boards#show",                as: :totem_board
   get  "/t/:slug/e/:event_slug",                      to: "totems/events#show",                as: :totem_event
@@ -99,6 +100,9 @@ Rails.application.routes.draw do
       resources :events, only: [] do
         resources :check_ins, only: [:create]
       end
+
+      # Public host page — optional auth
+      get "hosts/:host_slug", to: "hosts#show"
 
       # Authenticated follow management
       resources :host_follows, only: [:create, :destroy, :update]

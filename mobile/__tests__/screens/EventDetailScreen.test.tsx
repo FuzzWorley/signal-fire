@@ -36,7 +36,7 @@ const activeEvent = {
   description: "Move your body freely.",
   community_norms: "No phones on the floor",
   window_state: "happening_now",
-  host: { id: 10, name: "Maria Santos", blurb: "Welcomes newcomers every week." },
+  host: { id: 10, slug: "maria-santos", name: "Maria Santos", blurb: "Welcomes newcomers every week." },
   user_checked_in: false,
   checked_in_at: null,
   following: false,
@@ -199,18 +199,11 @@ describe("EventDetailScreen — analytics", () => {
     });
   });
 
-  it("fires host_follow_toggled when follow switch toggled", async () => {
-    const { Switch } = require("react-native");
+  it("tapping host name navigates to HostPage", async () => {
     render(<EventDetailScreen />);
     await waitFor(() => screen.getByText("Maria Santos"));
-    const switches = screen.UNSAFE_getAllByType(Switch);
-    await act(async () => {
-      fireEvent(switches[0], "valueChange", true);
-    });
-    expect(posthog.capture).toHaveBeenCalledWith("host_follow_toggled", {
-      host_user_id: activeEvent.host.id,
-      action: "follow",
-    });
+    fireEvent.press(screen.getByText("Maria Santos"));
+    expect(mockRouter.push).toHaveBeenCalledWith("/(app)/host/maria-santos");
   });
 });
 

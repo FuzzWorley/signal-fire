@@ -4,6 +4,7 @@ import { getToken } from "../services/api";
 
 export interface EventHost {
   id: number;
+  slug: string | null;
   name: string;
   blurb: string | null;
 }

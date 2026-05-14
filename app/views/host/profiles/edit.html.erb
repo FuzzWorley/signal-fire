@@ -36,6 +36,16 @@
     </div>
 
     <div>
+      <%= label_tag "profile_host_story", "Your story", class: "block text-sm font-medium text-ink mb-1" %>
+      <%= text_area_tag "profile[host_story]", @host_profile.host_story,
+            id: "profile_host_story",
+            rows: 4,
+            placeholder: "Two sentences works best.",
+            class: "w-full px-3 py-2 bg-white border border-stone/40 rounded-lg text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition text-sm resize-y" %>
+      <p class="text-xs text-stone/60 mt-1">Shown on your host page and the totem board. Two sentences works best.</p>
+    </div>
+
+    <div>
       <label class="block text-sm font-medium text-ink mb-1">Email</label>
       <p class="px-3 py-2 bg-stone/10 border border-stone/20 rounded-lg text-stone text-sm"><%= current_user.email %></p>
       <p class="text-xs text-stone/60 mt-1">Email is tied to your account and can't be changed here.</p>

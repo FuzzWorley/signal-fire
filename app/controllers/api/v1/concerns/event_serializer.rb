@@ -33,6 +33,7 @@ module Api::V1::Concerns::EventSerializer
       window_state: event.window_state,
       host: {
         id: event.host_user_id,
+        slug: host_profile&.slug,
         name: host_profile&.display_name || event.host_user.name,
         blurb: host_profile&.blurb
       },

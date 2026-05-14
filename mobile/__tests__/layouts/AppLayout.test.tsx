@@ -16,24 +16,24 @@ describe("AppLayout", () => {
     expect(() => render(<AppLayout />)).not.toThrow();
   });
 
-  it("defines five tab screens", () => {
+  it("defines six tab screens", () => {
     const { UNSAFE_getAllByType } = render(<AppLayout />);
     const screens = UNSAFE_getAllByType(require("expo-router").Tabs.Screen);
-    expect(screens).toHaveLength(5);
+    expect(screens).toHaveLength(6);
   });
 
   it("tab screens have correct names", () => {
     const { UNSAFE_getAllByType } = render(<AppLayout />);
     const screens = UNSAFE_getAllByType(require("expo-router").Tabs.Screen);
     const names = screens.map((s: any) => s.props.name);
-    expect(names).toEqual(["index", "scan", "signals", "me", "totem"]);
+    expect(names).toEqual(["index", "scan", "signals", "me", "totem", "host"]);
   });
 
   it("tab screens have correct titles", () => {
     const { UNSAFE_getAllByType } = render(<AppLayout />);
     const screens = UNSAFE_getAllByType(require("expo-router").Tabs.Screen);
     const titles = screens.map((s: any) => s.props.options?.title);
-    expect(titles).toEqual(["Home", "Scan", "Signals", "Me", undefined]);
+    expect(titles).toEqual(["Home", "Scan", "Signals", "Me", undefined, undefined]);
   });
 
   it("totem screen is hidden from the tab bar via href: null", () => {
@@ -41,6 +41,13 @@ describe("AppLayout", () => {
     const screens = UNSAFE_getAllByType(require("expo-router").Tabs.Screen);
     const totemScreen = screens.find((s: any) => s.props.name === "totem");
     expect(totemScreen?.props.options?.href).toBeNull();
+  });
+
+  it("host screen is hidden from the tab bar via href: null", () => {
+    const { UNSAFE_getAllByType } = render(<AppLayout />);
+    const screens = UNSAFE_getAllByType(require("expo-router").Tabs.Screen);
+    const hostScreen = screens.find((s: any) => s.props.name === "host");
+    expect(hostScreen?.props.options?.href).toBeNull();
   });
 
   it("TabIcon renders the correct label", () => {

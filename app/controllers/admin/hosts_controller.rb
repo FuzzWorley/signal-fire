@@ -32,6 +32,7 @@ class Admin::HostsController < Admin::ApplicationController
     @host.name = host_params[:name]
     @host.email = host_params[:email]
     @host.host_profile.display_name = host_params[:name]
+    @host.host_profile.host_story = host_params[:host_story] if host_params.key?(:host_story)
 
     selected_ids = Array(host_params[:totem_ids]).map(&:to_i).reject(&:zero?)
 
@@ -78,7 +79,7 @@ class Admin::HostsController < Admin::ApplicationController
   end
 
   def host_params
-    params.require(:host).permit(:name, :email, totem_ids: [])
+    params.require(:host).permit(:name, :email, :host_story, totem_ids: [])
   end
 
   def sync_totem_assignments(totem_ids)

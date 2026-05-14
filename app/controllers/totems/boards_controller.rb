@@ -21,6 +21,7 @@ class Totems::BoardsController < ApplicationController
     else
       @active_now = @totem.active_now_events
       @upcoming   = @totem.upcoming_events
+      @host       = @totem.primary_host
       @footer_dismissed = cookies[:footer_dismissed]
     end
   end

@@ -15,7 +15,6 @@ import { Colors } from "../../../../constants/colors";
 import { FontFamily, FontSize } from "../../../../constants/typography";
 import { Event } from "../../../../hooks/useTotem";
 import { CheckInButton } from "../../../../components/CheckInButton";
-import { SubscribeToggle } from "../../../../components/SubscribeToggle";
 import { api, getToken } from "../../../../services/api";
 import { posthog } from "../../../../services/analytics";
 
@@ -97,22 +96,6 @@ export default function EventDetailScreen() {
     }
   }
 
-  async function handleFollowToggle(following: boolean) {
-    if (!event) return;
-    posthog.capture("host_follow_toggled", {
-      host_user_id: event.host.id,
-      action: following ? "follow" : "unfollow",
-    });
-    try {
-      if (following) {
-        await api.post("/api/v1/host_follows", { host_user_id: event.host.id });
-      } else {
-        await api.delete(`/api/v1/host_follows/${event.host.id}`);
-      }
-      setEvent((e) => e && { ...e, following });
-    } catch {}
-  }
-
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -174,24 +157,28 @@ export default function EventDetailScreen() {
           {formatTimeRange(event.start_time, event.end_time)}
         </Text>
 
-        {/* Host */}
+        {/* Host — tap name to open HostPage */}
         <View style={styles.hostSection}>
           <Text style={styles.sectionLabel}>ABOUT THE HOST</Text>
-          <View style={styles.hostRow}>
+          <TouchableOpacity
+            style={styles.hostRow}
+            onPress={() => {
+              if (event.host.slug) {
+                router.push(`/(app)/host/${event.host.slug}` as any);
+              }
+            }}
+            activeOpacity={event.host.slug ? 0.7 : 1}
+          >
             <View style={styles.hostInfo}>
               <Text style={styles.hostName}>{event.host.name}</Text>
               {event.host.blurb ? (
                 <Text style={styles.hostBlurb}>{event.host.blurb}</Text>
               ) : null}
             </View>
-            {authenticated && event.following !== null && (
-              <SubscribeToggle
-                label="Follow"
-                following={event.following}
-                onToggle={handleFollowToggle}
-              />
-            )}
-          </View>
+            {event.host.slug ? (
+              <Text style={styles.hostChevron}>›</Text>
+            ) : null}
+          </TouchableOpacity>
         </View>
 
         {/* Description */}
@@ -338,6 +325,12 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     color: Colors.stone,
     lineHeight: 20,
+  },
+  hostChevron: {
+    fontFamily: FontFamily.sans,
+    fontSize: FontSize.xl,
+    color: Colors.muted,
+    alignSelf: "center",
   },
   section: { marginTop: 20 },
   sectionLabel: {

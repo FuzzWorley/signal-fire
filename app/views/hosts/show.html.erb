@@ -1,0 +1,104 @@
+<% content_for :title, "#{@host_profile.display_name} — Signal Fire" %>
+
+<div class="min-h-screen bg-[#f2f0d9]" data-controller="app-nudge">
+  <header class="px-4 pt-8 pb-6">
+    <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-3">Host · St. Petersburg</p>
+
+    <%# Display name: first word(s) plain, last word italic with period %>
+    <% name_parts = @host_profile.display_name.split(" ") %>
+    <h1 class="font-serif text-4xl text-[#1a1a12] leading-tight">
+      <% if name_parts.length > 1 %>
+        <%= name_parts[0..-2].join(" ") %><br><em><%= name_parts.last %>.</em>
+      <% else %>
+        <em><%= name_parts.first %>.</em>
+      <% end %>
+    </h1>
+
+    <% if @totems.any? %>
+      <p class="mt-2 text-sm text-[#867a60]"><%= @totems.map(&:name).join(" · ") %></p>
+    <% end %>
+  </header>
+
+  <main class="px-4 pb-24 space-y-8">
+    <%# Host story panel %>
+    <% if @host_profile.host_story.present? %>
+      <div class="bg-[#fdf6f0] border border-[#e8d5c4] rounded-xl p-5">
+        <p class="font-mono text-xs tracking-widest text-[#da5520] uppercase mb-3">Meet your host</p>
+        <p class="text-sm text-[#1a1a12] leading-relaxed"><%= @host_profile.host_story %></p>
+      </div>
+    <% end %>
+
+    <%# Primary CTA — opens app nudge sheet %>
+    <div>
+      <button
+        data-action="click->app-nudge#open"
+        class="w-full bg-[#e24820] text-white font-semibold py-4 rounded-xl text-base">
+        + Follow <%= name_parts.first %>
+      </button>
+      <p class="text-xs text-[#867a60] text-center mt-2">You'll hear about new events in the weekly digest.</p>
+    </div>
+
+    <%# Upcoming events grouped by totem %>
+    <% if @upcoming_events.any? %>
+      <section>
+        <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-4">Upcoming Events</p>
+        <% @upcoming_events.group_by(&:totem).each do |totem, events| %>
+          <div class="mb-4">
+            <p class="font-mono text-[10px] tracking-widest text-[#867a60] uppercase mb-2">
+              <%= totem.name %> · <%= events.first.start_time.strftime("%A") %>
+            </p>
+            <% events.each do |event| %>
+              <div class="bg-white/70 rounded-xl border border-[#d6d0c4] p-4 mb-2">
+                <%= link_to totem_event_path(totem.slug, event.slug), class: "block" do %>
+                  <p class="font-semibold text-[#1a1a12] text-base"><%= event.title %></p>
+                  <p class="text-sm text-[#867a60] mt-0.5">
+                    <%= event.start_time.strftime("%a, %b %-d · %-I:%M %p") %>
+                    <% if event.recurring? %>
+                      · <%= event.recurrence_label %>
+                    <% end %>
+                  </p>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <%# Where to find host %>
+    <% if @totems.any? %>
+      <section>
+        <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-4">
+          Where to Find <%= name_parts.first %>
+        </p>
+        <% @totems.each do |totem| %>
+          <div class="mb-4">
+            <%= link_to totem_board_path(totem.slug), class: "block bg-white/70 rounded-xl border border-[#d6d0c4] p-4 hover:bg-white/90 transition" do %>
+              <p class="font-semibold text-[#1a1a12]"><%= totem.name %></p>
+              <% if totem.neighborhood.present? %>
+                <p class="text-xs text-[#867a60] mt-0.5"><%= totem.neighborhood %></p>
+              <% end %>
+              <% totem_events = @upcoming_events.select { |e| e.totem_id == totem.id } %>
+              <% if totem_events.any? %>
+                <p class="text-sm text-[#867a60] mt-1.5"><%= totem_events.map(&:title).join(" · ") %></p>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+  </main>
+
+  <%# Persistent app footer %>
+  <div class="fixed bottom-0 inset-x-0 bg-[#1a1a12] text-[#f2f0d9] px-4 py-3 flex items-center justify-between gap-3">
+    <p class="text-sm flex-1 leading-tight">
+      Follow <%= @host_profile.display_name %> in the app — one weekly digest, no spam.
+    </p>
+    <button data-action="click->app-nudge#open"
+            class="bg-[#e24820] text-white font-medium rounded px-4 py-2 text-sm shrink-0">
+      Get
+    </button>
+  </div>
+
+  <%= render "shared/app_download_nudge" %>
+</div>
