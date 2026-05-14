@@ -42,7 +42,7 @@
         <%= link_to "Totems", host_totems_path,
               class: "block px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?('/host/totems') ? 'text-white bg-white/10' : 'text-stone/70 hover:text-white hover:bg-white/5'}",
               data: { action: "click->sidebar#close" } %>
-        <%= link_to "Profile", host_profile_path,
+        <%= link_to "Settings", host_profile_path,
               class: "block px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?('/host/profile') ? 'text-white bg-white/10' : 'text-stone/70 hover:text-white hover:bg-white/5'}",
               data: { action: "click->sidebar#close" } %>
       </nav>
@@ -65,7 +65,7 @@
                 class: "block px-3 py-2 rounded-lg text-sm transition #{request.path.start_with?('/host/events') ? 'text-white bg-white/10 font-medium' : 'text-stone/60 hover:text-white hover:bg-white/5'}" %>
           <%= link_to "Totems", host_totems_path,
                 class: "block px-3 py-2 rounded-lg text-sm transition #{request.path.start_with?('/host/totems') ? 'text-white bg-white/10 font-medium' : 'text-stone/60 hover:text-white hover:bg-white/5'}" %>
-          <%= link_to "Profile", host_profile_path,
+          <%= link_to "Settings", host_profile_path,
                 class: "block px-3 py-2 rounded-lg text-sm transition #{request.path.start_with?('/host/profile') ? 'text-white bg-white/10 font-medium' : 'text-stone/60 hover:text-white hover:bg-white/5'}" %>
         </nav>
       </aside>
