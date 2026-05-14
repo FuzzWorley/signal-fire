@@ -43,17 +43,17 @@ beforeEach(() => {
 });
 
 describe("load", () => {
-  it("fetches and sets follows and subscriptions", async () => {
+  it("fetches and sets follows and hostFollows", async () => {
     mockApi.get.mockResolvedValueOnce({
-      totem_follows: [follow1, follow2],
-      host_subscriptions: [sub1],
+      totem_favorites: [follow1, follow2],
+      host_follows: [sub1],
     });
     const { result } = renderHook(() => useSubscriptions());
     await act(async () => {
       await result.current.load();
     });
     expect(result.current.follows).toEqual([follow1, follow2]);
-    expect(result.current.subscriptions).toEqual([sub1]);
+    expect(result.current.hostFollows).toEqual([sub1]);
     expect(result.current.loading).toBe(false);
   });
 
@@ -64,7 +64,7 @@ describe("load", () => {
       await result.current.load();
     });
     expect(result.current.follows).toEqual([]);
-    expect(result.current.subscriptions).toEqual([]);
+    expect(result.current.hostFollows).toEqual([]);
     expect(result.current.loading).toBe(false);
   });
 });
@@ -72,8 +72,8 @@ describe("load", () => {
 describe("unfollow", () => {
   it("DELETEs by totem_id and removes from state", async () => {
     mockApi.get.mockResolvedValueOnce({
-      totem_follows: [follow1, follow2],
-      host_subscriptions: [],
+      totem_favorites: [follow1, follow2],
+      host_follows: [],
     });
     mockApi.delete.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useSubscriptions());
@@ -83,16 +83,16 @@ describe("unfollow", () => {
     await act(async () => {
       await result.current.unfollow(follow1.totem_id);
     });
-    expect(mockApi.delete).toHaveBeenCalledWith("/api/v1/totem_follows/10");
+    expect(mockApi.delete).toHaveBeenCalledWith("/api/v1/totem_favorites/10");
     expect(result.current.follows).toEqual([follow2]);
   });
 });
 
-describe("unsubscribe", () => {
+describe("unfollowHost", () => {
   it("DELETEs by host_user_id and removes from state", async () => {
     mockApi.get.mockResolvedValueOnce({
-      totem_follows: [],
-      host_subscriptions: [sub1],
+      totem_favorites: [],
+      host_follows: [sub1],
     });
     mockApi.delete.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useSubscriptions());
@@ -100,18 +100,18 @@ describe("unsubscribe", () => {
       await result.current.load();
     });
     await act(async () => {
-      await result.current.unsubscribe(sub1.host_user_id);
+      await result.current.unfollowHost(sub1.host_user_id);
     });
-    expect(mockApi.delete).toHaveBeenCalledWith("/api/v1/host_subscriptions/100");
-    expect(result.current.subscriptions).toEqual([]);
+    expect(mockApi.delete).toHaveBeenCalledWith("/api/v1/host_follows/100");
+    expect(result.current.hostFollows).toEqual([]);
   });
 });
 
 describe("updateFollow", () => {
   it("PATCHes and updates the follow in state", async () => {
     mockApi.get.mockResolvedValueOnce({
-      totem_follows: [follow1],
-      host_subscriptions: [],
+      totem_favorites: [follow1],
+      host_follows: [],
     });
     mockApi.patch.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useSubscriptions());
@@ -122,18 +122,18 @@ describe("updateFollow", () => {
       await result.current.updateFollow(1, { notify_new_event: false });
     });
     expect(mockApi.patch).toHaveBeenCalledWith(
-      "/api/v1/totem_follows/1",
+      "/api/v1/totem_favorites/1",
       { notify_new_event: false }
     );
     expect(result.current.follows[0].notify_new_event).toBe(false);
   });
 });
 
-describe("updateSubscription", () => {
-  it("PATCHes and updates the subscription in state", async () => {
+describe("updateHostFollow", () => {
+  it("PATCHes and updates the host follow in state", async () => {
     mockApi.get.mockResolvedValueOnce({
-      totem_follows: [],
-      host_subscriptions: [sub1],
+      totem_favorites: [],
+      host_follows: [sub1],
     });
     mockApi.patch.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useSubscriptions());
@@ -141,12 +141,12 @@ describe("updateSubscription", () => {
       await result.current.load();
     });
     await act(async () => {
-      await result.current.updateSubscription(1, { notify_reminder: false });
+      await result.current.updateHostFollow(1, { notify_reminder: false });
     });
     expect(mockApi.patch).toHaveBeenCalledWith(
-      "/api/v1/host_subscriptions/1",
+      "/api/v1/host_follows/1",
       { notify_reminder: false }
     );
-    expect(result.current.subscriptions[0].notify_reminder).toBe(false);
+    expect(result.current.hostFollows[0].notify_reminder).toBe(false);
   });
 });

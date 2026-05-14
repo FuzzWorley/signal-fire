@@ -43,21 +43,21 @@ export default function TotemBoardScreen() {
     toggleFollow();
   }
 
-  async function handleSubscribe(event: Event, subscribed: boolean) {
-    posthog.capture("host_subscribe_toggled", {
+  async function handleFollowHost(event: Event, following: boolean) {
+    posthog.capture("host_follow_toggled", {
       host_user_id: event.host.id,
-      action: subscribed ? "subscribe" : "unsubscribe",
+      action: following ? "follow" : "unfollow",
     });
-    if (subscribed) {
-      await api.post("/api/v1/host_subscriptions", { host_user_id: event.host.id }).catch(() => {});
+    if (following) {
+      await api.post("/api/v1/host_follows", { host_user_id: event.host.id }).catch(() => {});
     } else {
-      await api.delete(`/api/v1/host_subscriptions/${event.host.id}`).catch(() => {});
+      await api.delete(`/api/v1/host_follows/${event.host.id}`).catch(() => {});
     }
     setTotem((t) => {
       if (!t) return t;
       const updateEvents = (events: Event[]) =>
         events.map((e) =>
-          e.host.id === event.host.id ? { ...e, subscribed_to_host: subscribed } : e
+          e.host.id === event.host.id ? { ...e, following } : e
         );
       return {
         ...t,
@@ -130,15 +130,15 @@ export default function TotemBoardScreen() {
           <>
             <Text style={styles.sectionLabel}>● ACTIVE NOW</Text>
             {totem.active_now.map((event) => {
-              const showSubscribe = !seenHostIds.has(event.host.id);
-              if (showSubscribe) seenHostIds.add(event.host.id);
+              const showFollow = !seenHostIds.has(event.host.id);
+              if (showFollow) seenHostIds.add(event.host.id);
               return (
                 <EventCard
                   key={event.id}
                   event={event}
                   onPress={() => router.push(`/totem/${slug}/${event.slug}`)}
-                  showSubscribeToggle={showSubscribe && event.subscribed_to_host !== null}
-                  onSubscribeChange={(v) => handleSubscribe(event, v)}
+                  showFollowToggle={showFollow && event.following !== null}
+                  onFollowChange={(v) => handleFollowHost(event, v)}
                 />
               );
             })}
@@ -152,15 +152,15 @@ export default function TotemBoardScreen() {
               UPCOMING
             </Text>
             {totem.upcoming.map((event) => {
-              const showSubscribe = !seenHostIds.has(event.host.id);
-              if (showSubscribe) seenHostIds.add(event.host.id);
+              const showFollow = !seenHostIds.has(event.host.id);
+              if (showFollow) seenHostIds.add(event.host.id);
               return (
                 <EventCard
                   key={event.id}
                   event={event}
                   onPress={() => router.push(`/totem/${slug}/${event.slug}`)}
-                  showSubscribeToggle={showSubscribe && event.subscribed_to_host !== null}
-                  onSubscribeChange={(v) => handleSubscribe(event, v)}
+                  showFollowToggle={showFollow && event.following !== null}
+                  onFollowChange={(v) => handleFollowHost(event, v)}
                 />
               );
             })}

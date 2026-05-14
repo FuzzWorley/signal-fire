@@ -24,7 +24,7 @@ const baseEvent: Event = {
   host: { id: 10, name: "Maria Santos", blurb: "Welcomes newcomers every week." },
   user_checked_in: false,
   checked_in_at: null,
-  subscribed_to_host: false,
+  following: false,
 };
 
 describe("EventCard", () => {
@@ -70,21 +70,21 @@ describe("EventCard", () => {
     expect(screen.queryByText("JUST ENDED")).toBeNull();
   });
 
-  it("renders SubscribeToggle when showSubscribeToggle is true", () => {
+  it("renders follow toggle when showFollowToggle is true", () => {
     render(
       <EventCard
         event={baseEvent}
         onPress={jest.fn()}
-        showSubscribeToggle={true}
-        onSubscribeChange={jest.fn()}
+        showFollowToggle={true}
+        onFollowChange={jest.fn()}
       />
     );
-    expect(screen.getByText("Subscribe to Maria Santos")).toBeTruthy();
+    expect(screen.getByText("Follow Maria Santos")).toBeTruthy();
   });
 
-  it("does not render SubscribeToggle when showSubscribeToggle is false", () => {
-    render(<EventCard event={baseEvent} onPress={jest.fn()} showSubscribeToggle={false} />);
-    expect(screen.queryByText("Subscribe to Maria Santos")).toBeNull();
+  it("does not render follow toggle when showFollowToggle is false", () => {
+    render(<EventCard event={baseEvent} onPress={jest.fn()} showFollowToggle={false} />);
+    expect(screen.queryByText("Follow Maria Santos")).toBeNull();
   });
 
   it("calls onPress when the card is tapped", () => {

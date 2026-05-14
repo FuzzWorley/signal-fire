@@ -70,7 +70,7 @@ describe("load", () => {
 });
 
 describe("toggleFollow", () => {
-  it("POSTs to totem_follows when not following", async () => {
+  it("POSTs to totem_favorites when not following", async () => {
     mockApi.get.mockResolvedValueOnce({ totem: { ...baseTotem, following: false } });
     mockApi.post.mockResolvedValueOnce({ id: 10, totem_id: 1 });
     const { result } = renderHook(() => useTotem("waterfront-north"));
@@ -80,11 +80,11 @@ describe("toggleFollow", () => {
     await act(async () => {
       await result.current.toggleFollow();
     });
-    expect(mockApi.post).toHaveBeenCalledWith("/api/v1/totem_follows", { totem_id: 1 });
+    expect(mockApi.post).toHaveBeenCalledWith("/api/v1/totem_favorites", { totem_id: 1 });
     expect(result.current.totem?.following).toBe(true);
   });
 
-  it("DELETEs from totem_follows when already following", async () => {
+  it("DELETEs from totem_favorites when already following", async () => {
     mockApi.get.mockResolvedValueOnce({ totem: { ...baseTotem, following: true } });
     mockApi.delete.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useTotem("waterfront-north"));
@@ -94,7 +94,7 @@ describe("toggleFollow", () => {
     await act(async () => {
       await result.current.toggleFollow();
     });
-    expect(mockApi.delete).toHaveBeenCalledWith("/api/v1/totem_follows/1");
+    expect(mockApi.delete).toHaveBeenCalledWith("/api/v1/totem_favorites/1");
     expect(result.current.totem?.following).toBe(false);
   });
 

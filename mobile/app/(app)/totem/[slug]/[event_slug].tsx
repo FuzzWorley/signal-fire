@@ -97,19 +97,19 @@ export default function EventDetailScreen() {
     }
   }
 
-  async function handleSubscribeToggle(subscribed: boolean) {
+  async function handleFollowToggle(following: boolean) {
     if (!event) return;
-    posthog.capture("host_subscribe_toggled", {
+    posthog.capture("host_follow_toggled", {
       host_user_id: event.host.id,
-      action: subscribed ? "subscribe" : "unsubscribe",
+      action: following ? "follow" : "unfollow",
     });
     try {
-      if (subscribed) {
-        await api.post("/api/v1/host_subscriptions", { host_user_id: event.host.id });
+      if (following) {
+        await api.post("/api/v1/host_follows", { host_user_id: event.host.id });
       } else {
-        await api.delete(`/api/v1/host_subscriptions/${event.host.id}`);
+        await api.delete(`/api/v1/host_follows/${event.host.id}`);
       }
-      setEvent((e) => e && { ...e, subscribed_to_host: subscribed });
+      setEvent((e) => e && { ...e, following });
     } catch {}
   }
 
@@ -184,11 +184,11 @@ export default function EventDetailScreen() {
                 <Text style={styles.hostBlurb}>{event.host.blurb}</Text>
               ) : null}
             </View>
-            {authenticated && event.subscribed_to_host !== null && (
+            {authenticated && event.following !== null && (
               <SubscribeToggle
-                label="Subscribe"
-                subscribed={event.subscribed_to_host}
-                onToggle={handleSubscribeToggle}
+                label="Follow"
+                following={event.following}
+                onToggle={handleFollowToggle}
               />
             )}
           </View>

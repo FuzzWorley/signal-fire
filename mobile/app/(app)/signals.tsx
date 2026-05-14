@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../constants/colors";
 import { FontFamily, FontSize } from "../../constants/typography";
-import { useSubscriptions, TotemFollow, HostSubscription } from "../../hooks/useSubscriptions";
+import { useSubscriptions, TotemFollow, HostFollow } from "../../hooks/useSubscriptions";
 import { api } from "../../services/api";
 import { useAuth } from "../../hooks/useAuth";
 import { posthog } from "../../services/analytics";
@@ -61,31 +61,31 @@ function FollowRow({
   );
 }
 
-function SubscriptionRow({
-  sub,
+function HostFollowRow({
+  host,
   active,
-  onUnsubscribe,
+  onUnfollow,
   onUpdatePref,
 }: {
-  sub: HostSubscription;
+  host: HostFollow;
   active: boolean;
-  onUnsubscribe: () => void;
+  onUnfollow: () => void;
   onUpdatePref: (key: "notify_new_event" | "notify_reminder", val: boolean) => void;
 }) {
   return (
     <View style={[styles.itemCard, !active && styles.itemCardMuted]}>
       <View style={styles.itemHeader}>
         <View>
-          <Text style={styles.itemName}>{sub.host_name}</Text>
+          <Text style={styles.itemName}>{host.host_name}</Text>
         </View>
-        <TouchableOpacity onPress={onUnsubscribe}>
-          <Text style={styles.unfollowText}>Unsubscribe</Text>
+        <TouchableOpacity onPress={onUnfollow}>
+          <Text style={styles.unfollowText}>Unfollow</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.toggleRow}>
         <Text style={styles.toggleLabel}>New event</Text>
         <Switch
-          value={active && sub.notify_new_event}
+          value={active && host.notify_new_event}
           onValueChange={(v) => onUpdatePref("notify_new_event", v)}
           trackColor={{ false: Colors.border, true: Colors.ember }}
           thumbColor={Colors.white}
@@ -93,7 +93,7 @@ function SubscriptionRow({
         />
         <Text style={[styles.toggleLabel, { marginLeft: 16 }]}>Reminder</Text>
         <Switch
-          value={active && sub.notify_reminder}
+          value={active && host.notify_reminder}
           onValueChange={(v) => onUpdatePref("notify_reminder", v)}
           trackColor={{ false: Colors.border, true: Colors.ember }}
           thumbColor={Colors.white}
@@ -107,13 +107,13 @@ function SubscriptionRow({
 export default function SignalsScreen() {
   const {
     follows,
-    subscriptions,
+    hostFollows,
     loading,
     load,
     unfollow,
-    unsubscribe,
+    unfollowHost,
     updateFollow,
-    updateSubscription,
+    updateHostFollow,
   } = useSubscriptions();
   const { user, refreshUser } = useAuth();
 
@@ -130,7 +130,7 @@ export default function SignalsScreen() {
     refreshUser();
   }
 
-  const isEmpty = follows.length === 0 && subscriptions.length === 0;
+  const isEmpty = follows.length === 0 && hostFollows.length === 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -142,7 +142,7 @@ export default function SignalsScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.eyebrow}>SIGNALS</Text>
-          <Text style={styles.title}>Subscriptions</Text>
+          <Text style={styles.title}>Favorites & Follows</Text>
         </View>
 
         <View style={styles.masterCard}>
@@ -158,12 +158,12 @@ export default function SignalsScreen() {
           />
         </View>
 
-        {loading && follows.length === 0 && subscriptions.length === 0 ? (
+        {loading && follows.length === 0 && hostFollows.length === 0 ? (
           <ActivityIndicator color={Colors.ember} style={{ marginTop: 40 }} />
         ) : isEmpty ? (
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
-              Follow totems and subscribe to hosts on any event page.
+              Follow hosts and favorite places on any event page.
             </Text>
           </View>
         ) : (
@@ -171,7 +171,7 @@ export default function SignalsScreen() {
             {follows.length > 0 && (
               <>
                 <Text style={styles.sectionLabel}>
-                  FOLLOWED TOTEMS · {follows.length}
+                  FAVORITE PLACES · {follows.length}
                 </Text>
                 {follows.map((f) => (
                   <FollowRow
@@ -185,18 +185,18 @@ export default function SignalsScreen() {
               </>
             )}
 
-            {subscriptions.length > 0 && (
+            {hostFollows.length > 0 && (
               <>
                 <Text style={[styles.sectionLabel, { marginTop: 20 }]}>
-                  SUBSCRIBED HOSTS · {subscriptions.length}
+                  HOSTS YOU FOLLOW · {hostFollows.length}
                 </Text>
-                {subscriptions.map((s) => (
-                  <SubscriptionRow
-                    key={s.id}
-                    sub={s}
+                {hostFollows.map((h) => (
+                  <HostFollowRow
+                    key={h.id}
+                    host={h}
                     active={allNotifications}
-                    onUnsubscribe={() => unsubscribe(s.host_user_id)}
-                    onUpdatePref={(key, val) => updateSubscription(s.id, { [key]: val })}
+                    onUnfollow={() => unfollowHost(h.host_user_id)}
+                    onUpdatePref={(key, val) => updateHostFollow(h.id, { [key]: val })}
                   />
                 ))}
               </>

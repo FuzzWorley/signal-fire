@@ -188,7 +188,7 @@ describe("TotemBoardScreen — analytics", () => {
       host: { id: 42, name: "Host Name", blurb: null },
       user_checked_in: false,
       checked_in_at: null,
-      subscribed_to_host: false,
+      following: false,
     };
     mockApi.post.mockResolvedValueOnce({});
     mockUseTotem.mockReturnValueOnce({
@@ -201,9 +201,9 @@ describe("TotemBoardScreen — analytics", () => {
     await act(async () => {
       fireEvent(switches[0], "valueChange", true);
     });
-    expect(posthog.capture).toHaveBeenCalledWith("host_subscribe_toggled", {
+    expect(posthog.capture).toHaveBeenCalledWith("host_follow_toggled", {
       host_user_id: event.host.id,
-      action: "subscribe",
+      action: "follow",
     });
   });
 });

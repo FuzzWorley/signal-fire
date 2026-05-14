@@ -5,16 +5,16 @@ import { FontFamily, FontSize } from "../constants/typography";
 
 interface Props {
   label: string;
-  subscribed: boolean;
+  following: boolean;
   onToggle: (value: boolean) => void;
 }
 
-export function SubscribeToggle({ label, subscribed, onToggle }: Props) {
+export function SubscribeToggle({ label, following, onToggle }: Props) {
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
       <Switch
-        value={subscribed}
+        value={following}
         onValueChange={onToggle}
         trackColor={{ false: Colors.border, true: Colors.ember }}
         thumbColor={Colors.white}

@@ -39,7 +39,7 @@ const activeEvent = {
   host: { id: 10, name: "Maria Santos", blurb: "Welcomes newcomers every week." },
   user_checked_in: false,
   checked_in_at: null,
-  subscribed_to_host: false,
+  following: false,
 };
 
 const cancelledEvent = {
@@ -199,7 +199,7 @@ describe("EventDetailScreen — analytics", () => {
     });
   });
 
-  it("fires host_subscribe_toggled when subscribe switch toggled", async () => {
+  it("fires host_follow_toggled when follow switch toggled", async () => {
     const { Switch } = require("react-native");
     render(<EventDetailScreen />);
     await waitFor(() => screen.getByText("Maria Santos"));
@@ -207,9 +207,9 @@ describe("EventDetailScreen — analytics", () => {
     await act(async () => {
       fireEvent(switches[0], "valueChange", true);
     });
-    expect(posthog.capture).toHaveBeenCalledWith("host_subscribe_toggled", {
+    expect(posthog.capture).toHaveBeenCalledWith("host_follow_toggled", {
       host_user_id: activeEvent.host.id,
-      action: "subscribe",
+      action: "follow",
     });
   });
 });

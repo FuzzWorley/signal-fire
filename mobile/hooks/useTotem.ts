@@ -25,7 +25,7 @@ export interface Event {
   host: EventHost;
   user_checked_in: boolean | null;
   checked_in_at: string | null;
-  subscribed_to_host: boolean | null;
+  following: boolean | null;
 }
 
 export interface TotemBoard {
@@ -67,10 +67,10 @@ export function useTotem(slug: string) {
     if (!totem) return;
     try {
       if (totem.following) {
-        await api.delete(`/api/v1/totem_follows/${totem.id}`);
+        await api.delete(`/api/v1/totem_favorites/${totem.id}`);
         setTotem((t) => t && { ...t, following: false });
       } else {
-        await api.post("/api/v1/totem_follows", { totem_id: totem.id });
+        await api.post("/api/v1/totem_favorites", { totem_id: totem.id });
         setTotem((t) => t && { ...t, following: true });
       }
     } catch {}

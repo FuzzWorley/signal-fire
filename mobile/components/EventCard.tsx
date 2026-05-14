@@ -20,11 +20,11 @@ function formatNextOccurrence(iso: string, recurrenceType: string): string {
 interface Props {
   event: Event;
   onPress: () => void;
-  showSubscribeToggle?: boolean;
-  onSubscribeChange?: (subscribed: boolean) => void;
+  showFollowToggle?: boolean;
+  onFollowChange?: (following: boolean) => void;
 }
 
-export function EventCard({ event, onPress, showSubscribeToggle, onSubscribeChange }: Props) {
+export function EventCard({ event, onPress, showFollowToggle, onFollowChange }: Props) {
   const windowState = event.window_state;
   const isHappeningNow = windowState === "happening_now";
   const isStartingSoon = windowState === "starting_soon";
@@ -67,11 +67,11 @@ export function EventCard({ event, onPress, showSubscribeToggle, onSubscribeChan
         <Text style={styles.blurb} numberOfLines={2}>{event.host.blurb}</Text>
       ) : null}
 
-      {showSubscribeToggle && (
+      {showFollowToggle && (
         <SubscribeToggle
-          label={`Subscribe to ${event.host.name}`}
-          subscribed={event.subscribed_to_host ?? false}
-          onToggle={onSubscribeChange ?? (() => {})}
+          label={`Follow ${event.host.name}`}
+          following={event.following ?? false}
+          onToggle={onFollowChange ?? (() => {})}
         />
       )}
     </TouchableOpacity>

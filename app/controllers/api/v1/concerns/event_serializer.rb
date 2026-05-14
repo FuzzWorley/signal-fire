@@ -4,17 +4,17 @@ module Api::V1::Concerns::EventSerializer
   private
 
   # Builds a hash for a single event. Expects check_ins_by_event and
-  # subscribed_host_ids to be set as instance variables when current_user
+  # followed_host_ids to be set as instance variables when current_user
   # is present (avoids per-event DB queries).
   def build_event_json(event)
     host_profile = event.host_user.host_profile
 
     check_in = nil
-    subscribed = nil
+    following = nil
 
     if current_user
       check_in = @check_ins_by_event&.fetch(event.id, nil)
-      subscribed = @subscribed_host_ids&.include?(event.host_user_id) || false
+      following = @followed_host_ids&.include?(event.host_user_id) || false
     end
 
     {
@@ -38,7 +38,7 @@ module Api::V1::Concerns::EventSerializer
       },
       user_checked_in: current_user ? check_in.present? : nil,
       checked_in_at: check_in&.checked_in_at&.iso8601,
-      subscribed_to_host: subscribed
+      following: following
     }
   end
 
@@ -73,7 +73,7 @@ module Api::V1::Concerns::EventSerializer
     @check_ins_by_event = current_user.check_ins
       .where(event_id: event_ids)
       .index_by(&:event_id)
-    @subscribed_host_ids = current_user.host_follows
+    @followed_host_ids = current_user.host_follows
       .pluck(:host_user_id)
       .to_set
   end

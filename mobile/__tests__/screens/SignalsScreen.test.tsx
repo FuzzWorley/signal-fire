@@ -36,7 +36,7 @@ const follow = {
   notify_reminder: false,
 };
 
-const sub = {
+const hostFollow = {
   id: 1,
   host_user_id: 100,
   host_name: "Maria Santos",
@@ -46,13 +46,13 @@ const sub = {
 
 const defaultHook = {
   follows: [],
-  subscriptions: [],
+  hostFollows: [],
   loading: false,
   load: jest.fn(),
   unfollow: jest.fn(),
-  unsubscribe: jest.fn(),
+  unfollowHost: jest.fn(),
   updateFollow: jest.fn(),
-  updateSubscription: jest.fn(),
+  updateHostFollow: jest.fn(),
 };
 
 const defaultUser = {
@@ -89,26 +89,26 @@ describe("SignalsScreen", () => {
     expect(screen.UNSAFE_getByType(require("react-native").ActivityIndicator)).toBeTruthy();
   });
 
-  it("shows empty state when no follows or subscriptions", () => {
+  it("shows empty state when no follows or host follows", () => {
     render(<SignalsScreen />);
-    expect(screen.getByText(/Follow totems and subscribe to hosts/)).toBeTruthy();
+    expect(screen.getByText(/Follow hosts and favorite places/)).toBeTruthy();
   });
 
-  it("shows followed totems section", () => {
+  it("shows favorite places section", () => {
     mockUseSubscriptions.mockReturnValueOnce({ ...defaultHook, follows: [follow] });
     render(<SignalsScreen />);
-    expect(screen.getByText("FOLLOWED TOTEMS · 1")).toBeTruthy();
+    expect(screen.getByText("FAVORITE PLACES · 1")).toBeTruthy();
     expect(screen.getByText("Waterfront North")).toBeTruthy();
   });
 
-  it("shows subscribed hosts section", () => {
-    mockUseSubscriptions.mockReturnValueOnce({ ...defaultHook, subscriptions: [sub] });
+  it("shows hosts you follow section", () => {
+    mockUseSubscriptions.mockReturnValueOnce({ ...defaultHook, hostFollows: [hostFollow] });
     render(<SignalsScreen />);
-    expect(screen.getByText("SUBSCRIBED HOSTS · 1")).toBeTruthy();
+    expect(screen.getByText("HOSTS YOU FOLLOW · 1")).toBeTruthy();
     expect(screen.getByText("Maria Santos")).toBeTruthy();
   });
 
-  it("calls unfollow when Unfollow is pressed", async () => {
+  it("calls unfollow when Unfollow is pressed on a totem", async () => {
     const unfollow = jest.fn().mockResolvedValueOnce(undefined);
     mockUseSubscriptions.mockReturnValueOnce({ ...defaultHook, follows: [follow], unfollow });
     render(<SignalsScreen />);
@@ -118,18 +118,18 @@ describe("SignalsScreen", () => {
     expect(unfollow).toHaveBeenCalledWith(follow.totem_id);
   });
 
-  it("calls unsubscribe when Unsubscribe is pressed", async () => {
-    const unsubscribe = jest.fn().mockResolvedValueOnce(undefined);
+  it("calls unfollowHost when Unfollow is pressed on a host", async () => {
+    const unfollowHost = jest.fn().mockResolvedValueOnce(undefined);
     mockUseSubscriptions.mockReturnValueOnce({
       ...defaultHook,
-      subscriptions: [sub],
-      unsubscribe,
+      hostFollows: [hostFollow],
+      unfollowHost,
     });
     render(<SignalsScreen />);
     await act(async () => {
-      fireEvent.press(screen.getByText("Unsubscribe"));
+      fireEvent.press(screen.getByText("Unfollow"));
     });
-    expect(unsubscribe).toHaveBeenCalledWith(sub.host_user_id);
+    expect(unfollowHost).toHaveBeenCalledWith(hostFollow.host_user_id);
   });
 
   it("calls updateFollow when new event switch is toggled", async () => {
@@ -190,11 +190,11 @@ describe("master toggle", () => {
     mockUseSubscriptions.mockReturnValueOnce({
       ...defaultHook,
       follows: [follow],
-      subscriptions: [sub],
+      hostFollows: [hostFollow],
     });
     render(<SignalsScreen />);
     const switches = screen.UNSAFE_getAllByType(Switch);
-    // master=0, follow new_event=1, follow reminder=2, sub new_event=3, sub reminder=4
+    // master=0, follow new_event=1, follow reminder=2, hostFollow new_event=3, hostFollow reminder=4
     for (let i = 1; i < switches.length; i++) {
       expect(switches[i].props.value).toBe(false);
       expect(switches[i].props.disabled).toBe(true);

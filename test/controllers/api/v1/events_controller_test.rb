@@ -42,12 +42,12 @@ class Api::V1::EventsControllerTest < ActionDispatch::IntegrationTest
     assert response.parsed_body.dig("event", "checked_in_at").present?
   end
 
-  test "subscribed_to_host reflects subscription status" do
+  test "following reflects host follow status" do
     event = events(:upcoming_event)
     get api_v1_totem_event_path(totem_slug: totems(:main_totem).slug,
                                 event_slug: event.slug), as: :json,
         headers: auth_header(users(:subscriber_user))
-    assert_equal true, response.parsed_body.dig("event", "subscribed_to_host")
+    assert_equal true, response.parsed_body.dig("event", "following")
   end
 
   test "window_state is before for event starting in an hour" do

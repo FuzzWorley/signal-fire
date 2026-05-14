@@ -136,7 +136,7 @@ export default function MeScreen() {
         {/* Menu */}
         <View style={styles.menuSection}>
           <MenuRow
-            label="Subscriptions"
+            label="Favorites & Follows"
             onPress={() => router.push("/(app)/signals")}
           />
           <MenuRow
