@@ -25,7 +25,7 @@ interface NextEvent {
   slug: string;
   title: string;
   next_occurrence: string;
-  recurrence_type: string;
+  recurrence_label: string | null;
 }
 
 interface Board {
@@ -35,11 +35,11 @@ interface Board {
   next_event: NextEvent | null;
 }
 
-function formatNext(iso: string, recurrenceType: string): string {
+function formatNext(iso: string, recurrenceLabel: string | null): string {
   const d = new Date(iso);
-  const day = d.toLocaleDateString("en-US", { weekday: "short" });
   const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  return recurrenceType === "weekly" ? `Next: ${day} · ${time}` : `Next: ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${time}`;
+  if (recurrenceLabel) return `Next: ${recurrenceLabel} · ${time}`;
+  return `Next: ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${time}`;
 }
 
 function BoardCard({ board }: { board: Board }) {
@@ -70,7 +70,7 @@ function BoardCard({ board }: { board: Board }) {
         <>
           <Text style={styles.boardEventTitle}>{next_event.title}</Text>
           <Text style={styles.boardMeta}>
-            {formatNext(next_event.next_occurrence, next_event.recurrence_type)}
+            {formatNext(next_event.next_occurrence, next_event.recurrence_label)}
           </Text>
         </>
       ) : (

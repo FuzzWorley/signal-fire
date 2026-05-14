@@ -178,7 +178,7 @@ export default function SignalsScreen() {
                     key={f.id}
                     follow={f}
                     active={allNotifications}
-                    onUnfollow={() => unfollow(f.totem_id)}
+                    onUnfollow={() => unfollow(f.id)}
                     onUpdatePref={(key, val) => updateFollow(f.id, { [key]: val })}
                   />
                 ))}
@@ -195,7 +195,7 @@ export default function SignalsScreen() {
                     key={h.id}
                     host={h}
                     active={allNotifications}
-                    onUnfollow={() => unfollowHost(h.host_user_id)}
+                    onUnfollow={() => unfollowHost(h.id)}
                     onUpdatePref={(key, val) => updateHostFollow(h.id, { [key]: val })}
                   />
                 ))}

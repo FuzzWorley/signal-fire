@@ -40,14 +40,14 @@ export function useSubscriptions() {
     }
   }, []);
 
-  const unfollow = useCallback(async (totemId: number) => {
-    await api.delete(`/api/v1/totem_favorites/${totemId}`);
-    setFollows((prev) => prev.filter((f) => f.totem_id !== totemId));
+  const unfollow = useCallback(async (favoriteId: number) => {
+    await api.delete(`/api/v1/totem_favorites/${favoriteId}`);
+    setFollows((prev) => prev.filter((f) => f.id !== favoriteId));
   }, []);
 
-  const unfollowHost = useCallback(async (hostUserId: number) => {
-    await api.delete(`/api/v1/host_follows/${hostUserId}`);
-    setHostFollows((prev) => prev.filter((s) => s.host_user_id !== hostUserId));
+  const unfollowHost = useCallback(async (followId: number) => {
+    await api.delete(`/api/v1/host_follows/${followId}`);
+    setHostFollows((prev) => prev.filter((s) => s.id !== followId));
   }, []);
 
   const updateFollow = useCallback(

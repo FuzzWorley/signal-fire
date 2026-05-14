@@ -13,11 +13,12 @@ export interface Event {
   id: number;
   title: string;
   slug: string;
-  recurrence_type: string;
+  recurrence_rule: string | null;
+  recurrence_label: string | null;
   start_time: string;
   end_time: string;
   next_occurrence: string;
-  chat_url: string;
+  chat_url: string | null;
   chat_platform: string;
   status: string;
   description: string | null;

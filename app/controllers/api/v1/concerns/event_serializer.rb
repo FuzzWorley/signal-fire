@@ -22,6 +22,7 @@ module Api::V1::Concerns::EventSerializer
       title: event.title,
       slug: event.slug,
       recurrence_rule: event.recurrence_rule,
+      recurrence_label: event.recurrence_label,
       start_time: event.start_time.iso8601,
       end_time: event.end_time.iso8601,
       next_occurrence: event.next_occurrence.iso8601,

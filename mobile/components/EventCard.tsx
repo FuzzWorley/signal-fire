@@ -5,16 +5,13 @@ import { FontFamily, FontSize } from "../constants/typography";
 import { Event } from "../hooks/useTotem";
 import { SubscribeToggle } from "./SubscribeToggle";
 
-function formatNextOccurrence(iso: string, recurrenceType: string): string {
+function formatNextOccurrence(iso: string, recurrenceLabel: string | null): string {
   const d = new Date(iso);
-  if (recurrenceType === "weekly") {
-    return d.toLocaleDateString("en-US", { weekday: "long" }) +
-      " · " +
-      d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  if (recurrenceLabel) {
+    return `${recurrenceLabel} · ${time}`;
   }
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
-    " · " +
-    d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${time}`;
 }
 
 interface Props {
@@ -60,7 +57,7 @@ export function EventCard({ event, onPress, showFollowToggle, onFollowChange }: 
 
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.meta}>
-        {formatNextOccurrence(event.next_occurrence, event.recurrence_type)} · with {event.host.name}
+        {formatNextOccurrence(event.next_occurrence, event.recurrence_label)} · with {event.host.name}
       </Text>
 
       {event.host.blurb ? (

@@ -14,6 +14,9 @@ Rails.application.routes.draw do
   get  "/t/:slug/e/:event_slug/check_ins/success",   to: "totems/check_ins#success",          as: :totem_event_check_in_success
   post "/empty_totem_email_captures",                 to: "empty_totem_email_captures#create", as: :empty_totem_email_captures
 
+  # Web totem favorite toggle (session auth)
+  resources :totem_favorites, only: [:create, :destroy]
+
   # Regular user auth (web, magic link)
   get    "/sign_up",           to: "auth/user_registrations#new",    as: :sign_up
   post   "/sign_up",           to: "auth/user_registrations#create"

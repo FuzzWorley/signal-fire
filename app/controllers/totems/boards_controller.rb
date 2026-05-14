@@ -22,6 +22,7 @@ class Totems::BoardsController < ApplicationController
       @active_now = @totem.active_now_events
       @upcoming   = @totem.upcoming_events
       @host       = @totem.primary_host
+      @favorite   = current_user && TotemFavorite.find_by(user: current_user, totem: @totem)
       @footer_dismissed = cookies[:footer_dismissed]
     end
   end

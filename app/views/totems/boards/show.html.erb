@@ -2,11 +2,33 @@
 
 <div class="min-h-screen bg-[#f2f0d9]" data-controller="app-nudge<%= ' account-signup' unless app_nudges_enabled? || signed_in? %>">
   <header class="px-4 pt-8 pb-6">
-    <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-1">Totem</p>
-    <h1 class="font-serif text-3xl text-[#1a1a12]"><%= @totem.name %></h1>
-    <% if @totem.character_description.present? %>
-      <p class="mt-2 text-sm text-[#867a60] leading-relaxed"><%= @totem.character_description %></p>
-    <% end %>
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <p class="font-mono text-xs tracking-widest text-[#867a60] uppercase mb-1">Totem</p>
+        <h1 class="font-serif text-3xl text-[#1a1a12]"><%= @totem.name %></h1>
+        <% if @totem.character_description.present? %>
+          <p class="mt-2 text-sm text-[#867a60] leading-relaxed"><%= @totem.character_description %></p>
+        <% end %>
+      </div>
+      <% if current_user %>
+        <button
+          data-controller="totem-favorite"
+          data-totem-favorite-totem-id-value="<%= @totem.id %>"
+          data-totem-favorite-favorite-id-value="<%= @favorite&.id.to_s %>"
+          data-totem-favorite-favorited-value="<%= @favorite.present? %>"
+          data-action="click->totem-favorite#toggle"
+          aria-label="<%= @favorite ? 'Remove from favorites' : 'Add to favorites' %>"
+          aria-pressed="<%= @favorite.present? %>"
+          class="mt-1 shrink-0 p-1.5 rounded-md hover:bg-[#f0ede0] transition-colors star-toggle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+               fill="<%= @favorite ? '#1a1a12' : 'none' %>"
+               stroke="#1a1a12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </button>
+      <% end %>
+    </div>
   </header>
 
   <main class="px-4 pb-24 space-y-8">

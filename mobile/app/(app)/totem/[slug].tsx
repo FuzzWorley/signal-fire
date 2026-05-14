@@ -14,7 +14,7 @@ import { Colors } from "../../../constants/colors";
 import { FontFamily, FontSize } from "../../../constants/typography";
 import { useTotem, Event } from "../../../hooks/useTotem";
 import { EventCard } from "../../../components/EventCard";
-import { FollowChip } from "../../../components/FollowChip";
+import { StarToggle } from "../../../components/StarToggle";
 import { YouAreHereBanner } from "../../../components/YouAreHereBanner";
 import { api } from "../../../services/api";
 import { posthog } from "../../../services/analytics";
@@ -115,7 +115,7 @@ export default function TotemBoardScreen() {
               ) : null}
             </View>
             {totem.following !== null && (
-              <FollowChip following={totem.following} onToggle={handleFollowToggle} />
+              <StarToggle favorited={totem.following} onToggle={handleFollowToggle} />
             )}
           </View>
         </View>

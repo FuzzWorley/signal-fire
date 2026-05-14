@@ -58,7 +58,7 @@
       <div class="flex-1 min-w-0">
         <h3 class="font-medium text-[#1a1a12]"><%= event.title %></h3>
         <p class="text-sm text-[#867a60] mt-0.5">
-          <%= event.weekly? ? "Every #{occurrence.strftime('%A')}" : occurrence.strftime("%a, %b %-d") %>
+          <%= event.recurrence_label.presence || occurrence.strftime("%a, %b %-d") %>
           · <%= occurrence.strftime("%-I:%M %p") %>
           <% if host_name %> · with <%= host_name %><% end %>
         </p>

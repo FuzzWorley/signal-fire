@@ -213,7 +213,7 @@ export default function EventDetailScreen() {
             style={[styles.chatButton, isCancelled && styles.chatButtonOnly]}
             onPress={() => {
               posthog.capture("chat_link_tapped", { event_id: event.id, platform: event.chat_platform });
-              Linking.openURL(event.chat_url);
+              Linking.openURL(event.chat_url!);
             }}
             activeOpacity={0.85}
           >

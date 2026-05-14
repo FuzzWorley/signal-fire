@@ -119,6 +119,34 @@ class Admin::TotemsControllerTest < ActionDispatch::IntegrationTest
     assert_not @totem.reload.active
   end
 
+  test "PATCH /admin/totems/:id saves character_description and neighborhood" do
+    sign_in_as_admin
+    patch admin_totem_path(@totem), params: {
+      totem: {
+        name: @totem.name,
+        location: @totem.location,
+        character_description: "A shaded lawn for morning gatherings.",
+        neighborhood: "Old Northeast"
+      }
+    }
+    assert_redirected_to admin_totems_path
+    @totem.reload
+    assert_equal "A shaded lawn for morning gatherings.", @totem.character_description
+    assert_equal "Old Northeast", @totem.neighborhood
+  end
+
+  test "PATCH /admin/totems/:id rejects character_description over 140 chars" do
+    sign_in_as_admin
+    patch admin_totem_path(@totem), params: {
+      totem: {
+        name: @totem.name,
+        location: @totem.location,
+        character_description: "x" * 141
+      }
+    }
+    assert_response :unprocessable_entity
+  end
+
   # ── Destroy ───────────────────────────────────────────────────────────────
 
   test "DELETE /admin/totems/:id destroys totem with no assignments" do

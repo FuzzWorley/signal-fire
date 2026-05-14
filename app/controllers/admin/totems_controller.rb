@@ -54,6 +54,6 @@ class Admin::TotemsController < Admin::ApplicationController
   end
 
   def totem_params
-    params.require(:totem).permit(:name, :location, :sublocation, :active)
+    params.require(:totem).permit(:name, :location, :sublocation, :active, :character_description, :neighborhood)
   end
 end

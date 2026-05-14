@@ -103,6 +103,38 @@ class Totems::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-account-signup-target='banner']"
   end
 
+  test "star toggle is hidden for unauthenticated users" do
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button[data-controller='totem-favorite']", count: 0
+  end
+
+  test "star toggle is shown for authenticated users" do
+    user = users(:regular_user)
+    user.generate_magic_link_token!
+    get verify_magic_link_path, params: { token: user.magic_link_token }
+
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button[data-controller='totem-favorite']", count: 1
+  end
+
+  test "star toggle shows favorited state for user who has favorited the totem" do
+    user = users(:follower_user)
+    user.generate_magic_link_token!
+    get verify_magic_link_path, params: { token: user.magic_link_token }
+
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button[aria-pressed='true'][data-controller='totem-favorite']"
+  end
+
+  test "star toggle shows unfavorited state for user who has not favorited the totem" do
+    user = users(:regular_user)
+    user.generate_magic_link_token!
+    get verify_magic_link_path, params: { token: user.magic_link_token }
+
+    get totem_board_path(totems(:main_totem).slug)
+    assert_select "button[aria-pressed='false'][data-controller='totem-favorite']"
+  end
+
   test "tracks totem_board_viewed with totem_id and auth_state" do
     totem = totems(:main_totem)
     tracked = []

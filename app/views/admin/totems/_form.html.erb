@@ -31,6 +31,23 @@
     <%= f.text_field :sublocation, placeholder: "e.g. Pier entry", class: field_class %>
   </div>
 
+  <div data-controller="charcount" data-charcount-max-value="140">
+    <%= f.label :character_description, "Character description", class: label_class %>
+    <p class="text-xs text-stone mb-1">One sentence. Required for the city board. Max 140 characters.</p>
+    <%= f.text_field :character_description,
+          maxlength: 140,
+          placeholder: "e.g. The shaded lawn where Sunday morning belongs to bodies in the air.",
+          class: field_class,
+          data: { charcount_target: "input", action: "input->charcount#update" } %>
+    <p class="text-xs text-stone mt-1" data-charcount-target="counter">140 characters remaining</p>
+  </div>
+
+  <div>
+    <%= f.label :neighborhood, "Neighborhood", class: label_class %>
+    <p class="text-xs text-stone mb-1">e.g. Old Northeast, Downtown, Crescent Lake</p>
+    <%= f.text_field :neighborhood, placeholder: "e.g. Old Northeast", class: field_class %>
+  </div>
+
   <fieldset>
     <legend class="<%= label_class %>">Status</legend>
     <label class="flex items-center gap-2 cursor-pointer">

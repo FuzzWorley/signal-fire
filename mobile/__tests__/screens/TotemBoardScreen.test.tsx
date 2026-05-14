@@ -145,24 +145,24 @@ describe("auto-follow on scan", () => {
 });
 
 describe("TotemBoardScreen — analytics", () => {
-  it("fires totem_follow_toggled when follow chip pressed", async () => {
+  it("fires totem_follow_toggled when star toggled to follow", async () => {
     render(<TotemBoardScreen />);
-    await waitFor(() => screen.getByText("Follow"));
-    fireEvent.press(screen.getByText("Follow"));
+    await waitFor(() => screen.getByLabelText("Add to favorites"));
+    fireEvent.press(screen.getByLabelText("Add to favorites"));
     expect(posthog.capture).toHaveBeenCalledWith("totem_follow_toggled", {
       totem_slug: "waterfront-north",
       action: "follow",
     });
   });
 
-  it("fires totem_follow_toggled:unfollow when already following", async () => {
+  it("fires totem_follow_toggled:unfollow when star toggled to unfavorite", async () => {
     mockUseTotem.mockReturnValueOnce({
       ...defaultHook,
       totem: { ...baseTotem, following: true },
     });
     render(<TotemBoardScreen />);
-    await waitFor(() => screen.getByText("● Following"));
-    fireEvent.press(screen.getByText("● Following"));
+    await waitFor(() => screen.getByLabelText("Remove from favorites"));
+    fireEvent.press(screen.getByLabelText("Remove from favorites"));
     expect(posthog.capture).toHaveBeenCalledWith("totem_follow_toggled", {
       totem_slug: "waterfront-north",
       action: "unfollow",
@@ -175,7 +175,8 @@ describe("TotemBoardScreen — analytics", () => {
       id: 1,
       title: "Morning Run",
       slug: "morning-run",
-      recurrence_type: "weekly" as const,
+      recurrence_rule: "FREQ=WEEKLY;BYDAY=MO",
+      recurrence_label: "Weekly on Mondays",
       start_time: new Date().toISOString(),
       end_time: new Date().toISOString(),
       next_occurrence: new Date().toISOString(),
@@ -185,7 +186,7 @@ describe("TotemBoardScreen — analytics", () => {
       description: null,
       community_norms: null,
       window_state: "happening_now" as const,
-      host: { id: 42, name: "Host Name", blurb: null },
+      host: { id: 42, name: "Host Name", blurb: null, slug: null },
       user_checked_in: false,
       checked_in_at: null,
       following: false,
@@ -208,28 +209,28 @@ describe("TotemBoardScreen — analytics", () => {
   });
 });
 
-describe("FollowChip", () => {
-  it("renders Follow chip when following=false", () => {
+describe("StarToggle", () => {
+  it("renders Add to favorites button when not favorited", () => {
     render(<TotemBoardScreen />);
-    expect(screen.getByText("Follow")).toBeTruthy();
+    expect(screen.getByLabelText("Add to favorites")).toBeTruthy();
   });
 
-  it("renders Following chip when following=true", () => {
+  it("renders Remove from favorites button when favorited", () => {
     mockUseTotem.mockReturnValueOnce({
       ...defaultHook,
       totem: { ...baseTotem, following: true },
     });
     render(<TotemBoardScreen />);
-    expect(screen.getByText("● Following")).toBeTruthy();
+    expect(screen.getByLabelText("Remove from favorites")).toBeTruthy();
   });
 
-  it("does not render FollowChip when following=null (unauthenticated)", () => {
+  it("does not render StarToggle when following=null (unauthenticated)", () => {
     mockUseTotem.mockReturnValueOnce({
       ...defaultHook,
       totem: { ...baseTotem, following: null },
     });
     render(<TotemBoardScreen />);
-    expect(screen.queryByText("Follow")).toBeNull();
-    expect(screen.queryByText("● Following")).toBeNull();
+    expect(screen.queryByLabelText("Add to favorites")).toBeNull();
+    expect(screen.queryByLabelText("Remove from favorites")).toBeNull();
   });
 });
