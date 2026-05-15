@@ -20,42 +20,18 @@ import { posthog } from "../../services/analytics";
 
 function FollowRow({
   follow,
-  active,
   onUnfollow,
-  onUpdatePref,
 }: {
   follow: TotemFollow;
-  active: boolean;
   onUnfollow: () => void;
-  onUpdatePref: (key: "notify_new_event" | "notify_reminder", val: boolean) => void;
 }) {
   return (
-    <View style={[styles.itemCard, !active && styles.itemCardMuted]}>
+    <View style={styles.itemCard}>
       <View style={styles.itemHeader}>
-        <View>
-          <Text style={styles.itemName}>{follow.totem_name}</Text>
-        </View>
+        <Text style={styles.itemName}>{follow.totem_name}</Text>
         <TouchableOpacity onPress={onUnfollow}>
-          <Text style={styles.unfollowText}>Unfollow</Text>
+          <Text style={styles.unfollowText}>Unfavorite</Text>
         </TouchableOpacity>
-      </View>
-      <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>New event</Text>
-        <Switch
-          value={active && follow.notify_new_event}
-          onValueChange={(v) => onUpdatePref("notify_new_event", v)}
-          trackColor={{ false: Colors.border, true: Colors.ember }}
-          thumbColor={Colors.white}
-          disabled={!active}
-        />
-        <Text style={[styles.toggleLabel, { marginLeft: 16 }]}>Reminder</Text>
-        <Switch
-          value={active && follow.notify_reminder}
-          onValueChange={(v) => onUpdatePref("notify_reminder", v)}
-          trackColor={{ false: Colors.border, true: Colors.ember }}
-          thumbColor={Colors.white}
-          disabled={!active}
-        />
       </View>
     </View>
   );
@@ -63,42 +39,18 @@ function FollowRow({
 
 function HostFollowRow({
   host,
-  active,
   onUnfollow,
-  onUpdatePref,
 }: {
   host: HostFollow;
-  active: boolean;
   onUnfollow: () => void;
-  onUpdatePref: (key: "notify_new_event" | "notify_reminder", val: boolean) => void;
 }) {
   return (
-    <View style={[styles.itemCard, !active && styles.itemCardMuted]}>
+    <View style={styles.itemCard}>
       <View style={styles.itemHeader}>
-        <View>
-          <Text style={styles.itemName}>{host.host_name}</Text>
-        </View>
+        <Text style={styles.itemName}>{host.host_name}</Text>
         <TouchableOpacity onPress={onUnfollow}>
           <Text style={styles.unfollowText}>Unfollow</Text>
         </TouchableOpacity>
-      </View>
-      <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>New event</Text>
-        <Switch
-          value={active && host.notify_new_event}
-          onValueChange={(v) => onUpdatePref("notify_new_event", v)}
-          trackColor={{ false: Colors.border, true: Colors.ember }}
-          thumbColor={Colors.white}
-          disabled={!active}
-        />
-        <Text style={[styles.toggleLabel, { marginLeft: 16 }]}>Reminder</Text>
-        <Switch
-          value={active && host.notify_reminder}
-          onValueChange={(v) => onUpdatePref("notify_reminder", v)}
-          trackColor={{ false: Colors.border, true: Colors.ember }}
-          thumbColor={Colors.white}
-          disabled={!active}
-        />
       </View>
     </View>
   );
@@ -112,8 +64,6 @@ export default function SignalsScreen() {
     load,
     unfollow,
     unfollowHost,
-    updateFollow,
-    updateHostFollow,
   } = useSubscriptions();
   const { user, refreshUser } = useAuth();
 
@@ -122,11 +72,11 @@ export default function SignalsScreen() {
     posthog.capture("signals_tab_viewed");
   }, [load]));
 
-  const allNotifications = user?.notification_prefs?.all !== false;
+  const weeklyDigestOn  = user?.notification_prefs?.new_event !== false;
+  const remindersOn     = user?.notification_prefs?.reminder  !== false;
 
-  async function toggleAllNotifications(value: boolean) {
-    posthog.capture("master_notifications_toggled", { value });
-    await api.patch("/api/v1/me", { notification_prefs: { all: value } }).catch(() => {});
+  async function togglePref(key: "new_event" | "reminder", value: boolean) {
+    await api.patch("/api/v1/me", { notification_prefs: { [key]: value } }).catch(() => {});
     refreshUser();
   }
 
@@ -147,12 +97,25 @@ export default function SignalsScreen() {
 
         <View style={styles.masterCard}>
           <View style={styles.masterText}>
-            <Text style={styles.masterLabel}>All notifications</Text>
-            <Text style={styles.masterSubtitle}>Master toggle — turns everything off</Text>
+            <Text style={styles.masterLabel}>Weekly digest of what's happening</Text>
+            <Text style={styles.masterSubtitle}>Thursday morning roundup of your spots</Text>
           </View>
           <Switch
-            value={allNotifications}
-            onValueChange={toggleAllNotifications}
+            value={weeklyDigestOn}
+            onValueChange={(v) => togglePref("new_event", v)}
+            trackColor={{ false: Colors.border, true: Colors.ember }}
+            thumbColor={Colors.white}
+          />
+        </View>
+
+        <View style={[styles.masterCard, { marginTop: -10 }]}>
+          <View style={styles.masterText}>
+            <Text style={styles.masterLabel}>Reminders for events I've attended</Text>
+            <Text style={styles.masterSubtitle}>1-hour heads-up before events you've been to</Text>
+          </View>
+          <Switch
+            value={remindersOn}
+            onValueChange={(v) => togglePref("reminder", v)}
             trackColor={{ false: Colors.border, true: Colors.ember }}
             thumbColor={Colors.white}
           />
@@ -177,9 +140,7 @@ export default function SignalsScreen() {
                   <FollowRow
                     key={f.id}
                     follow={f}
-                    active={allNotifications}
                     onUnfollow={() => unfollow(f.id)}
-                    onUpdatePref={(key, val) => updateFollow(f.id, { [key]: val })}
                   />
                 ))}
               </>
@@ -194,9 +155,7 @@ export default function SignalsScreen() {
                   <HostFollowRow
                     key={h.id}
                     host={h}
-                    active={allNotifications}
                     onUnfollow={() => unfollowHost(h.id)}
-                    onUpdatePref={(key, val) => updateHostFollow(h.id, { [key]: val })}
                   />
                 ))}
               </>
@@ -239,9 +198,6 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
   },
-  itemCardMuted: {
-    opacity: 0.45,
-  },
   itemHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -254,16 +210,6 @@ const styles = StyleSheet.create({
     color: Colors.ink,
   },
   unfollowText: {
-    fontFamily: FontFamily.sans,
-    fontSize: FontSize.sm,
-    color: Colors.stone,
-  },
-  toggleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  toggleLabel: {
     fontFamily: FontFamily.sans,
     fontSize: FontSize.sm,
     color: Colors.stone,

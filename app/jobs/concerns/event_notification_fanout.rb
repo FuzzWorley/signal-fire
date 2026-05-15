@@ -36,10 +36,22 @@ module EventNotificationFanout
       .index_by(&:id)
 
     all_ids = (by_host_follow.keys + by_totem_favorite.keys).uniq
-    all_ids.map do |user_id|
+    recipients = all_ids.map do |user_id|
       source = by_host_follow.key?(user_id) ? :host_follow : :totem_favorite
       { user: by_host_follow[user_id] || by_totem_favorite[user_id], source_type: source }
     end
+
+    if event.recurring?
+      prior_attendee_ids = CheckIn
+        .joins(:event)
+        .where(events: { totem_id: event.totem_id, host_user_id: event.host_user_id })
+        .where.not(event_id: event.id)
+        .distinct
+        .pluck(:user_id)
+      recipients = recipients.select { |r| prior_attendee_ids.include?(r[:user].id) }
+    end
+
+    recipients
   end
 
   def cancellation_recipients_for(event)

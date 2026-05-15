@@ -108,12 +108,12 @@ describe("SignalsScreen", () => {
     expect(screen.getByText("Maria Santos")).toBeTruthy();
   });
 
-  it("calls unfollow when Unfollow is pressed on a totem", async () => {
+  it("calls unfollow when Unfavorite is pressed on a totem", async () => {
     const unfollow = jest.fn().mockResolvedValueOnce(undefined);
     mockUseSubscriptions.mockReturnValueOnce({ ...defaultHook, follows: [follow], unfollow });
     render(<SignalsScreen />);
     await act(async () => {
-      fireEvent.press(screen.getByText("Unfollow"));
+      fireEvent.press(screen.getByText("Unfavorite"));
     });
     expect(unfollow).toHaveBeenCalledWith(follow.id);
   });
@@ -131,44 +131,52 @@ describe("SignalsScreen", () => {
     });
     expect(unfollowHost).toHaveBeenCalledWith(hostFollow.id);
   });
-
-  it("calls updateFollow when new event switch is toggled", async () => {
-    const updateFollow = jest.fn().mockResolvedValueOnce(undefined);
-    mockUseSubscriptions.mockReturnValueOnce({ ...defaultHook, follows: [follow], updateFollow });
-    render(<SignalsScreen />);
-    // index 0 = master toggle, index 1 = follow new event, index 2 = follow reminder
-    const switches = screen.UNSAFE_getAllByType(Switch);
-    await act(async () => {
-      fireEvent(switches[1], "valueChange", false);
-    });
-    expect(updateFollow).toHaveBeenCalledWith(follow.id, { notify_new_event: false });
-  });
 });
 
-describe("master toggle", () => {
-  it("shows master toggle with All notifications label", () => {
+describe("V1.5 notification prefs toggles", () => {
+  it("shows Weekly digest toggle", () => {
     render(<SignalsScreen />);
-    expect(screen.getByText("All notifications")).toBeTruthy();
-    expect(screen.getByText(/Master toggle/)).toBeTruthy();
+    expect(screen.getByText("Weekly digest of what's happening")).toBeTruthy();
   });
 
-  it("master switch is on when notification_prefs.all is true", () => {
+  it("shows Reminders toggle", () => {
+    render(<SignalsScreen />);
+    expect(screen.getByText("Reminders for events I've attended")).toBeTruthy();
+  });
+
+  it("weekly digest switch is on when notification_prefs.new_event is true", () => {
     render(<SignalsScreen />);
     const switches = screen.UNSAFE_getAllByType(Switch);
     expect(switches[0].props.value).toBe(true);
   });
 
-  it("master switch is off when notification_prefs.all is false", () => {
+  it("weekly digest switch is off when notification_prefs.new_event is false", () => {
     mockUseAuth.mockReturnValueOnce({
       ...defaultAuth,
-      user: { ...defaultUser, notification_prefs: { new_event: true, reminder: true, all: false } },
+      user: { ...defaultUser, notification_prefs: { new_event: false, reminder: true, all: true } },
     });
     render(<SignalsScreen />);
     const switches = screen.UNSAFE_getAllByType(Switch);
     expect(switches[0].props.value).toBe(false);
   });
 
-  it("PATCHes /api/v1/me and refreshes user when master toggled off", async () => {
+  it("reminders switch is on when notification_prefs.reminder is true", () => {
+    render(<SignalsScreen />);
+    const switches = screen.UNSAFE_getAllByType(Switch);
+    expect(switches[1].props.value).toBe(true);
+  });
+
+  it("reminders switch is off when notification_prefs.reminder is false", () => {
+    mockUseAuth.mockReturnValueOnce({
+      ...defaultAuth,
+      user: { ...defaultUser, notification_prefs: { new_event: true, reminder: false, all: true } },
+    });
+    render(<SignalsScreen />);
+    const switches = screen.UNSAFE_getAllByType(Switch);
+    expect(switches[1].props.value).toBe(false);
+  });
+
+  it("PATCHes new_event pref and refreshes user when weekly digest toggled off", async () => {
     const refreshUser = jest.fn();
     mockUseAuth.mockReturnValueOnce({ ...defaultAuth, refreshUser });
     render(<SignalsScreen />);
@@ -177,42 +185,23 @@ describe("master toggle", () => {
       fireEvent(switches[0], "valueChange", false);
     });
     expect(mockApi.patch).toHaveBeenCalledWith("/api/v1/me", {
-      notification_prefs: { all: false },
+      notification_prefs: { new_event: false },
     });
     expect(refreshUser).toHaveBeenCalled();
   });
 
-  it("row switches are disabled and show off when master is off", () => {
-    mockUseAuth.mockReturnValueOnce({
-      ...defaultAuth,
-      user: { ...defaultUser, notification_prefs: { new_event: true, reminder: true, all: false } },
-    });
-    mockUseSubscriptions.mockReturnValueOnce({
-      ...defaultHook,
-      follows: [follow],
-      hostFollows: [hostFollow],
-    });
+  it("PATCHes reminder pref and refreshes user when reminders toggled off", async () => {
+    const refreshUser = jest.fn();
+    mockUseAuth.mockReturnValueOnce({ ...defaultAuth, refreshUser });
     render(<SignalsScreen />);
     const switches = screen.UNSAFE_getAllByType(Switch);
-    // master=0, follow new_event=1, follow reminder=2, hostFollow new_event=3, hostFollow reminder=4
-    for (let i = 1; i < switches.length; i++) {
-      expect(switches[i].props.value).toBe(false);
-      expect(switches[i].props.disabled).toBe(true);
-    }
-  });
-
-  it("row switches are enabled and show real values when master is on", () => {
-    mockUseSubscriptions.mockReturnValueOnce({
-      ...defaultHook,
-      follows: [follow],
+    await act(async () => {
+      fireEvent(switches[1], "valueChange", false);
     });
-    render(<SignalsScreen />);
-    const switches = screen.UNSAFE_getAllByType(Switch);
-    // follow.notify_new_event=true, follow.notify_reminder=false
-    expect(switches[1].props.value).toBe(true);
-    expect(switches[1].props.disabled).toBe(false);
-    expect(switches[2].props.value).toBe(false);
-    expect(switches[2].props.disabled).toBe(false);
+    expect(mockApi.patch).toHaveBeenCalledWith("/api/v1/me", {
+      notification_prefs: { reminder: false },
+    });
+    expect(refreshUser).toHaveBeenCalled();
   });
 });
 
@@ -220,14 +209,5 @@ describe("SignalsScreen — analytics", () => {
   it("fires signals_tab_viewed on focus", () => {
     render(<SignalsScreen />);
     expect(posthog.capture).toHaveBeenCalledWith("signals_tab_viewed");
-  });
-
-  it("fires master_notifications_toggled when master switch toggled", async () => {
-    render(<SignalsScreen />);
-    const switches = screen.UNSAFE_getAllByType(Switch);
-    await act(async () => {
-      fireEvent(switches[0], "valueChange", false);
-    });
-    expect(posthog.capture).toHaveBeenCalledWith("master_notifications_toggled", { value: false });
   });
 });

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Platform } from "react-native";
+import { Linking, Platform } from "react-native";
 import { Stack, router } from "expo-router";
 import { useFonts } from "expo-font";
 import {
@@ -36,9 +36,26 @@ if (Platform.OS !== "web") {
   });
 }
 
-function navigateToEvent(data: Record<string, unknown> | undefined) {
-  if (data?.totem_slug && data?.event_slug) {
-    router.push(`/(app)/totem/${data.totem_slug}/${data.event_slug}`);
+function handleNotificationData(data: Record<string, unknown> | undefined) {
+  if (!data) return;
+
+  // New V1.5 notifications carry a `type` field; older ones use `notification_type`.
+  const type = (data.type || data.notification_type) as string | undefined;
+
+  switch (type) {
+    case "weekly_digest":
+      router.push("/(app)/");
+      break;
+    case "first_stranger":
+      if (typeof data.sso_url === "string") {
+        Linking.openURL(data.sso_url);
+      }
+      break;
+    default:
+      // Legacy event notifications and pre_event_reminder: route by slug if present
+      if (data.totem_slug && data.event_slug) {
+        router.push(`/(app)/totem/${data.totem_slug}/${data.event_slug}`);
+      }
   }
 }
 
@@ -61,7 +78,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (Platform.OS === "web") return;
     const sub = Notifications.addNotificationResponseReceivedListener((response) => {
-      navigateToEvent(response.notification.request.content.data as Record<string, unknown>);
+      handleNotificationData(response.notification.request.content.data as Record<string, unknown>);
     });
     return () => sub.remove();
   }, []);
@@ -71,7 +88,7 @@ export default function RootLayout() {
     if (Platform.OS === "web") return;
     Notifications.getLastNotificationResponseAsync().then((response) => {
       if (!response) return;
-      navigateToEvent(response.notification.request.content.data as Record<string, unknown>);
+      handleNotificationData(response.notification.request.content.data as Record<string, unknown>);
     });
   }, []);
 

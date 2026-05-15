@@ -3,7 +3,7 @@ class JwtService
   EXPIRY = 30.days
 
   def self.encode(payload)
-    payload = payload.merge(exp: EXPIRY.from_now.to_i)
+    payload = { exp: EXPIRY.from_now.to_i }.merge(payload)
     JWT.encode(payload, secret, ALGORITHM)
   end
 

@@ -6,4 +6,6 @@ class CheckIn < ApplicationRecord
   validates :checked_in_at, presence: true
 
   before_validation { self.checked_in_at ||= Time.current }
+
+  after_create_commit -> { FirstStrangerDetectionJob.perform_later(id) }
 end
