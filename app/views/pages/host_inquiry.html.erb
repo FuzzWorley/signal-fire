@@ -1,0 +1,143 @@
+<% content_for :title, "Host with us — Signal Fire" %>
+
+<div class="min-h-screen bg-[#f2f0d9] text-[#1a1a12] flex flex-col">
+  <%# Desktop nav %>
+  <nav class="hidden md:flex items-center justify-between px-8 py-5 border-b border-[#d6d0c4]">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#e24820]"></span>
+      <span class="font-semibold text-[#1a1a12] text-base">Signal Fire</span>
+    </div>
+    <div class="flex items-center gap-8">
+      <%= link_to "How it works", about_path, class: "text-sm text-[#867a60] hover:text-[#1a1a12] transition-colors" %>
+      <%= link_to "Host with us", host_inquiry_path, class: "text-sm font-semibold text-[#1a1a12]" %>
+      <%= link_to "About", about_path, class: "text-sm text-[#867a60] hover:text-[#1a1a12] transition-colors" %>
+      <button data-controller="app-nudge" data-action="click->app-nudge#open"
+              class="bg-[#e24820] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#c83e1a] transition-colors">
+        Get the app
+      </button>
+    </div>
+  </nav>
+
+  <%# Mobile nav %>
+  <nav class="md:hidden flex items-center justify-between px-4 py-4 border-b border-[#d6d0c4]">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#e24820]"></span>
+      <span class="font-semibold text-[#1a1a12] text-sm">Signal Fire</span>
+    </div>
+    <button class="text-[#867a60] p-1" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu-host-inquiry">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </nav>
+
+  <main class="flex-1 px-4 md:px-8 py-10 md:py-14 max-w-5xl mx-auto w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
+
+      <%# Left column — framing + content %>
+      <div class="lg:col-span-2">
+        <p class="font-mono text-[10px] tracking-widest text-[#867a60] uppercase mb-4">For hosts</p>
+        <h1 class="font-serif text-4xl md:text-5xl leading-tight mb-6">
+          Already gathering people?<br>
+          <em>Let us hold the front door.</em>
+        </h1>
+        <p class="text-base text-[#867a60] leading-relaxed mb-10 max-w-xl">
+          Signal Fire is for community gatherings that are <strong class="text-[#1a1a12]">already happening</strong> —
+          recurring, free or low-barrier, in public or semi-public spaces where
+          strangers would be welcome. We're not a tool to start a group from scratch.
+          We're a front door for groups that want one.
+        </p>
+
+        <%# What you get / What we ask %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
+          <div>
+            <p class="font-mono text-[10px] tracking-widest text-[#867a60] uppercase mb-4">What you get</p>
+            <ul class="space-y-2 text-sm text-[#1a1a12] leading-relaxed">
+              <li>A totem at your location</li>
+              <li>A simple host dashboard</li>
+              <li>A way for strangers to find you</li>
+              <li>No fees — V1.5 is on us</li>
+            </ul>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest text-[#867a60] uppercase mb-4">What we ask</p>
+            <ul class="space-y-2 text-sm text-[#1a1a12] leading-relaxed">
+              <li>Post your events</li>
+              <li>Keep the group welcoming</li>
+              <li>Reply when people check in</li>
+            </ul>
+          </div>
+        </div>
+
+        <%# FAQ %>
+        <div class="border-t border-[#d6d0c4] pt-8">
+          <p class="font-mono text-[10px] tracking-widest text-[#867a60] uppercase mb-6">Questions we get</p>
+          <div class="space-y-6">
+            <div>
+              <h2 class="font-semibold text-sm mb-1">Does it cost anything?</h2>
+              <p class="text-sm text-[#867a60] leading-relaxed">
+                Not in V1.5. We may add a premium host tier later — current hosts will keep core access.
+              </p>
+            </div>
+            <div>
+              <h2 class="font-semibold text-sm mb-1">What if my group is brand new?</h2>
+              <p class="text-sm text-[#867a60] leading-relaxed">
+                Come back when you've run for a few months. We're optimizing for places strangers can show up to and find a real thing.
+              </p>
+            </div>
+            <div>
+              <h2 class="font-semibold text-sm mb-1">What about paid classes or commercial events?</h2>
+              <p class="text-sm text-[#867a60] leading-relaxed">
+                Not a fit for V1.5. Signal Fire is for the free or low-barrier corner of the gathering economy.
+              </p>
+            </div>
+            <div>
+              <h2 class="font-semibold text-sm mb-1">What if the totem gets damaged or stolen?</h2>
+              <p class="text-sm text-[#867a60] leading-relaxed">
+                Tell us, we'll replace it. It's part of the experiment.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Right column — contact panel %>
+      <div class="lg:col-span-1">
+        <div class="rounded-xl border border-[#d6d0c4] bg-white/60 p-6">
+          <p class="font-mono text-[10px] tracking-widest text-[#867a60] uppercase mb-3">If this is you</p>
+          <h2 class="font-serif text-2xl leading-snug mb-3">Tell us about your gathering.</h2>
+          <p class="text-sm text-[#867a60] leading-relaxed mb-6">
+            A short email gets you on the founders' radar.
+            We respond within 5 business days.
+          </p>
+
+          <%= link_to "Open a draft email",
+                "mailto:info@signalfire.live?subject=Host%20inquiry&body=Location%3A%20%0AFrequency%3A%20%0ARegulars%3A%20%0AHow%20you%20currently%20coordinate%3A%20",
+                class: "block w-full text-center bg-[#e24820] hover:bg-[#c83e1a] text-white font-medium rounded-lg px-4 py-3 text-sm transition-colors mb-3" %>
+
+          <p class="text-xs text-center text-[#867a60]">
+            Or write to
+            <%= mail_to "info@signalfire.live", "info@signalfire.live",
+                  class: "underline hover:text-[#1a1a12] transition-colors" %>
+          </p>
+
+          <p class="text-xs text-[#867a60] leading-relaxed mt-6 pt-6 border-t border-[#d6d0c4]">
+            We may not be a fit yet — and we'll tell you why and when to come back.
+            That's a real possibility, not a soft no.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <%# Footer %>
+  <footer class="mt-auto border-t border-[#d6d0c4] px-6 py-4 flex justify-between text-sm text-[#867a60]">
+    <span>Community Play Tools &middot; St. Petersburg, FL</span>
+    <%= mail_to "info@signalfire.live", "info@signalfire.live",
+          class: "hover:text-[#1a1a12] transition-colors" %>
+  </footer>
+</div>

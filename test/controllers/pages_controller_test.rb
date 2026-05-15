@@ -19,4 +19,25 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   ensure
     ENV.delete("APP_NUDGES_ENABLED")
   end
+
+  test "GET /host-with-us returns 200" do
+    get host_inquiry_path
+    assert_response :success
+  end
+
+  test "host inquiry page fires analytics event" do
+    tracked = []
+    AnalyticsService.stub(:track, ->(name, **props) { tracked << [name, props] }) do
+      get host_inquiry_path
+    end
+    assert_includes tracked.map(&:first), "host_inquiry_viewed"
+  end
+
+  test "host inquiry mailto link contains all four structured body fields" do
+    get host_inquiry_path
+    assert_match "Location%3A", response.body
+    assert_match "Frequency%3A", response.body
+    assert_match "Regulars%3A", response.body
+    assert_match "coordinate%3A", response.body
+  end
 end
