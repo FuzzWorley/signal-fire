@@ -1,5 +1,5 @@
 databases:
-  - name: signal-fire-db
+  - name: signal_fire
     databaseName: signal_fire
     user: signal_fire
     plan: free
@@ -26,5 +26,5 @@ services:
         sync: false
       - key: DATABASE_URL
         fromDatabase:
-          name: signal-fire-db
+          name: signal_fire
           property: connectionString
